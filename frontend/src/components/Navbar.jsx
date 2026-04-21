@@ -1,17 +1,37 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Menu, X, Globe, ChevronDown } from 'lucide-react';
+import { Menu, X, Globe, ChevronDown, User as UserIcon, LogOut, Settings, LayoutDashboard } from 'lucide-react';
 import { useLanguage, LANGUAGES } from '../context/LanguageContext';
 import { ByteLogo } from './ByteMascot';
 import { Button } from './ui/button';
+import { isAuthed, getStoredUser, logout as doLogout } from '../lib/api';
 
 export default function Navbar() {
   const { t, lang, setLang } = useLanguage();
   const [open, setOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
+  const [userOpen, setUserOpen] = useState(false);
+  const [user, setUser] = useState(getStoredUser());
   const navigate = useNavigate();
 
+  // Sync auth state on route changes
+  useEffect(() => {
+    const sync = () => setUser(getStoredUser());
+    window.addEventListener('storage', sync);
+    return () => window.removeEventListener('storage', sync);
+  }, []);
+
+  const authed = isAuthed();
   const current = LANGUAGES.find((l) => l.code === lang);
+
+  const handleLogout = () => {
+    doLogout();
+    setUser(null);
+    setUserOpen(false);
+    navigate('/');
+  };
+
+  const initials = (user?.name || 'CF').split(' ').map((s) => s[0]).slice(0, 2).join('').toUpperCase();
 
   return (
     <header className="sticky top-0 z-50 backdrop-blur-md" style={{ background: 'rgba(10,15,30,0.85)', borderBottom: '1px solid var(--cf-border)' }}>
@@ -27,6 +47,7 @@ export default function Navbar() {
 
           <nav className="hidden md:flex items-center gap-8">
             <Link to="/catalogo" className="text-slate-300 hover:text-white transition-colors text-sm font-semibold">{t('nav.catalog')}</Link>
+            {authed && <Link to="/dashboard" className="text-slate-300 hover:text-white transition-colors text-sm font-semibold">{t('nav.dashboard')}</Link>}
             <Link to="/jornada/python-zero" className="text-slate-300 hover:text-white transition-colors text-sm font-semibold">{t('nav.paths')}</Link>
             <Link to="/leaderboard" className="text-slate-300 hover:text-white transition-colors text-sm font-semibold">Leaderboard</Link>
             <a href="#pro" className="text-slate-300 hover:text-white transition-colors text-sm font-semibold">{t('nav.pro')}</a>
@@ -64,10 +85,47 @@ export default function Navbar() {
               )}
             </div>
 
-            <Link to="/login" className="hidden md:inline text-slate-300 hover:text-white text-sm font-semibold px-3 py-2">{t('nav.login')}</Link>
-            <Button onClick={() => navigate('/onboard')} className="cf-btn-lime hidden md:inline-flex h-10 px-5 rounded-full">
-              {t('nav.start')}
-            </Button>
+            {!authed ? (
+              <>
+                <Link to="/login" className="hidden md:inline text-slate-300 hover:text-white text-sm font-semibold px-3 py-2">{t('nav.login')}</Link>
+                <Button onClick={() => navigate('/onboard')} className="cf-btn-lime hidden md:inline-flex h-10 px-5 rounded-full">
+                  {t('nav.start')}
+                </Button>
+              </>
+            ) : (
+              <div className="relative hidden md:block">
+                <button
+                  onClick={() => setUserOpen((v) => !v)}
+                  className="flex items-center gap-2 pl-1.5 pr-2 py-1.5 rounded-full border hover:border-[#A3E635] transition"
+                  style={{ borderColor: 'var(--cf-border)', background: 'var(--cf-panel)' }}
+                >
+                  <span className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-[#0A0F1E] bg-[#A3E635]">{initials}</span>
+                  <span className="text-sm font-bold text-white max-w-[120px] truncate">{user?.name}</span>
+                  <ChevronDown size={14} className="text-slate-400" />
+                </button>
+                {userOpen && (
+                  <div
+                    className="absolute right-0 mt-2 w-52 py-1 rounded-xl border shadow-xl"
+                    style={{ background: 'var(--cf-panel)', borderColor: 'var(--cf-border)' }}
+                    onMouseLeave={() => setUserOpen(false)}
+                  >
+                    <Link to="/dashboard" onClick={() => setUserOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm text-slate-200 hover:bg-[#1C2235]">
+                      <LayoutDashboard size={14} /> {t('nav.dashboard')}
+                    </Link>
+                    <Link to="/perfil" onClick={() => setUserOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm text-slate-200 hover:bg-[#1C2235]">
+                      <UserIcon size={14} /> Perfil
+                    </Link>
+                    <Link to="/configuracoes" onClick={() => setUserOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm text-slate-200 hover:bg-[#1C2235]">
+                      <Settings size={14} /> Configurações
+                    </Link>
+                    <div className="my-1 h-px bg-[#1E293B]" />
+                    <button onClick={handleLogout} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-400 hover:bg-[#1C2235]">
+                      <LogOut size={14} /> Sair
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
 
             <button onClick={() => setOpen((v) => !v)} className="md:hidden p-2 text-slate-300" aria-label="Menu">
               {open ? <X size={22} /> : <Menu size={22} />}
@@ -82,10 +140,20 @@ export default function Navbar() {
             <Link to="/catalogo" onClick={() => setOpen(false)} className="py-2 text-slate-200 font-semibold">{t('nav.catalog')}</Link>
             <Link to="/jornada/python-zero" onClick={() => setOpen(false)} className="py-2 text-slate-200 font-semibold">{t('nav.paths')}</Link>
             <Link to="/leaderboard" onClick={() => setOpen(false)} className="py-2 text-slate-200 font-semibold">Leaderboard</Link>
-            <Link to="/login" onClick={() => setOpen(false)} className="py-2 text-slate-200 font-semibold">{t('nav.login')}</Link>
-            <Button onClick={() => { setOpen(false); navigate('/onboard'); }} className="cf-btn-lime mt-2 h-11 rounded-full">
-              {t('nav.start')}
-            </Button>
+            {authed ? (
+              <>
+                <Link to="/dashboard" onClick={() => setOpen(false)} className="py-2 text-slate-200 font-semibold">{t('nav.dashboard')}</Link>
+                <Link to="/perfil" onClick={() => setOpen(false)} className="py-2 text-slate-200 font-semibold">Perfil</Link>
+                <button onClick={() => { setOpen(false); handleLogout(); }} className="py-2 text-left text-red-400 font-semibold">Sair</button>
+              </>
+            ) : (
+              <>
+                <Link to="/login" onClick={() => setOpen(false)} className="py-2 text-slate-200 font-semibold">{t('nav.login')}</Link>
+                <Button onClick={() => { setOpen(false); navigate('/onboard'); }} className="cf-btn-lime mt-2 h-11 rounded-full">
+                  {t('nav.start')}
+                </Button>
+              </>
+            )}
           </div>
         </div>
       )}

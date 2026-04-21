@@ -11,33 +11,18 @@ const CHAPTERS = [
     title: 'Capítulo 1: Fundamentos',
     color: '#7C3AED',
     lessons: [
-      { id: 1, title: 'Olá, Mundo!', status: 'done' },
-      { id: 2, title: 'Variáveis', status: 'done' },
-      { id: 3, title: 'Tipos de Dados', status: 'active' },
-      { id: 4, title: 'Entrada e Saída', status: 'locked' },
-      { id: 5, title: 'Operadores', status: 'locked' },
+      { id: 1, title: 'Olá, Mundo!', slug: 'ola-mundo', status: 'done' },
+      { id: 2, title: 'Variáveis', slug: 'variaveis', status: 'done' },
+      { id: 3, title: 'Tipos de Dados', slug: 'tipos', status: 'active' },
+      { id: 4, title: 'Operadores', slug: 'operadores', status: 'locked' },
     ],
   },
   {
     title: 'Capítulo 2: Controle de Fluxo',
     color: '#3B82F6',
     lessons: [
-      { id: 6, title: 'if / else', status: 'locked' },
-      { id: 7, title: 'elif e lógica', status: 'locked' },
-      { id: 8, title: 'while', status: 'locked' },
-      { id: 9, title: 'for', status: 'locked' },
-      { id: 10, title: 'break / continue', status: 'locked' },
-    ],
-  },
-  {
-    title: 'Capítulo 3: Funções',
-    color: '#34D399',
-    lessons: [
-      { id: 11, title: 'def e return', status: 'locked' },
-      { id: 12, title: 'Parâmetros', status: 'locked' },
-      { id: 13, title: '*args e **kwargs', status: 'locked' },
-      { id: 14, title: 'Recursão', status: 'locked' },
-      { id: 15, title: 'Projeto Final', status: 'locked' },
+      { id: 5, title: 'if / else', slug: 'if-else', status: 'locked' },
+      { id: 6, title: 'Loop while', slug: 'while', status: 'locked' },
     ],
   },
 ];
@@ -105,7 +90,7 @@ export default function JourneyPage() {
                         <div className="w-1 h-8" style={{ background: isLocked && !chap.lessons[i - 1].status === 'done' ? 'var(--cf-border)' : chap.color }} />
                       )}
                       <Link
-                        to={isLocked ? '#' : `/licao/${lesson.title.toLowerCase().replace(/\s/g, '-')}`}
+                        to={isLocked ? '#' : `/licao/${lesson.slug}`}
                         className={`relative w-20 h-20 flex items-center justify-center transform transition hover:scale-110 ${isLocked ? 'cursor-not-allowed' : ''}`}
                         onClick={(e) => { if (isLocked) e.preventDefault(); }}
                       >

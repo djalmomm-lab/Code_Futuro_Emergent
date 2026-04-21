@@ -11,6 +11,7 @@ import Lesson from './pages/Lesson';
 import JourneyPage from './pages/JourneyPage';
 import LeaderboardPage from './pages/LeaderboardPage';
 import Catalog from './pages/Catalog';
+import Profile from './pages/Profile';
 
 function App() {
   return (
@@ -28,6 +29,8 @@ function App() {
             <Route path="/leaderboard" element={<LeaderboardPage />} />
             <Route path="/catalogo" element={<Catalog />} />
             <Route path="/catalog" element={<Catalog />} />
+            <Route path="/perfil" element={<Profile />} />
+            <Route path="/configuracoes" element={<Profile />} />
           </Routes>
         </BrowserRouter>
         <Toaster position="top-right" richColors />
