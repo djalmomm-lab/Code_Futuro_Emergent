@@ -1,0 +1,144 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap');
+
+:root {
+  --cf-space: #0A0F1E;
+  --cf-panel: #141824;
+  --cf-panel-light: #1C2235;
+  --cf-lime: #A3E635;
+  --cf-lime-dark: #84CC16;
+  --cf-purple: #7C3AED;
+  --cf-blue: #3B82F6;
+  --cf-green: #34D399;
+  --cf-orange: #F97316;
+  --cf-text-muted: #64748B;
+  --cf-border: #1E293B;
+}
+
+body {
+  margin: 0;
+  font-family: 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--cf-space);
+  color: #E2E8F0;
+}
+
+code, pre, .font-code {
+  font-family: 'Fira Code', monospace;
+}
+
+.font-display {
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.font-body {
+  font-family: 'Nunito', sans-serif;
+}
+
+@layer base {
+  :root {
+    --background: 222 47% 7%;
+    --foreground: 210 40% 98%;
+    --card: 222 40% 12%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222 40% 12%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 83 78% 56%;
+    --primary-foreground: 222 47% 11%;
+    --secondary: 223 30% 16%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 223 30% 16%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 223 30% 16%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 222 33% 18%;
+    --input: 222 33% 18%;
+    --ring: 83 78% 56%;
+    --radius: 0.75rem;
+  }
+}
+
+@layer base {
+  * { @apply border-border; }
+  body { @apply bg-background text-foreground; }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--cf-space); }
+::-webkit-scrollbar-thumb { background: var(--cf-panel-light); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #2a334d; }
+
+/* Glow effects */
+.cf-glow-lime {
+  box-shadow: 0 0 40px rgba(163, 230, 53, 0.35), 0 0 80px rgba(163, 230, 53, 0.15);
+}
+
+.cf-btn-lime {
+  background: #A3E635;
+  color: #0A0F1E;
+  font-weight: 800;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+.cf-btn-lime:hover {
+  background: #b8f04d;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(163, 230, 53, 0.35);
+}
+.cf-btn-lime:active { transform: translateY(0); }
+
+.cf-card {
+  background: var(--cf-panel);
+  border: 1px solid var(--cf-border);
+  border-radius: 16px;
+}
+
+.cf-card-hover {
+  transition: border-color 0.2s ease, transform 0.2s ease, background 0.2s ease;
+}
+.cf-card-hover:hover {
+  border-color: rgba(163, 230, 53, 0.45);
+  transform: translateY(-4px);
+  background: var(--cf-panel-light);
+}
+
+/* Grid background */
+.cf-grid-bg {
+  background-image:
+    linear-gradient(rgba(163, 230, 53, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(163, 230, 53, 0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Float animation */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+}
+.animate-float { animation: float 4s ease-in-out infinite; }
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.2); }
+}
+.animate-pulse-dot { animation: pulse-dot 1.4s ease-in-out infinite; }
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.cf-shimmer {
+  background: linear-gradient(90deg, transparent, rgba(163,230,53,0.1), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 3s infinite;
+}
+
+/* Hide scrollbar helper */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
