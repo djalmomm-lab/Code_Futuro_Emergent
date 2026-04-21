@@ -10,7 +10,7 @@ import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Checkbox } from '../components/ui/checkbox';
 import { toast } from 'sonner';
-import { onboardApi, isAuthed } from '../lib/api';
+import { onboardApi, isAuthed, getErrorMessage } from '../lib/api';
 
 function calcAge(birthDate) {
   if (!birthDate) return null;
@@ -120,7 +120,7 @@ export default function Onboard() {
       toast.success('Pronto! Vamos começar sua jornada 🚀');
       setTimeout(() => navigate('/dashboard'), 700);
     } catch (err) {
-      toast.error(err.response?.data?.detail || 'Erro ao salvar perfil');
+      toast.error(getErrorMessage(err));
     }
   };
 

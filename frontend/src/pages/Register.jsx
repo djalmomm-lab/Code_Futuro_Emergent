@@ -7,7 +7,7 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { toast } from 'sonner';
-import { authApi, saveAuth } from '../lib/api';
+import { authApi, saveAuth, getErrorMessage } from '../lib/api';
 
 export default function Register() {
   const { t } = useLanguage();
@@ -28,7 +28,7 @@ export default function Register() {
       toast.success('Conta criada! Vamos começar.');
       setTimeout(() => navigate('/onboard'), 400);
     } catch (err) {
-      toast.error(err.response?.data?.detail || 'Erro ao criar conta');
+      toast.error(getErrorMessage(err));
     } finally {
       setLoading(false);
     }

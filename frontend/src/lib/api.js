@@ -52,6 +52,14 @@ export const privacyApi = {
   delete: () => api.delete('/privacy/delete').then((r) => r.data),
 };
 
+export const getErrorMessage = (err) => {
+  const detail = err?.response?.data?.detail;
+  if (!detail) return err?.message || 'Erro inesperado';
+  if (typeof detail === 'string') return detail;
+  if (Array.isArray(detail)) return detail.map((d) => d.msg || JSON.stringify(d)).join(', ');
+  return JSON.stringify(detail);
+};
+
 export const saveAuth = (data) => {
   localStorage.setItem('cf_token', data.token);
   localStorage.setItem('cf_user', JSON.stringify(data.user));
