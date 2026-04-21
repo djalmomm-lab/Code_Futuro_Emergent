@@ -10,6 +10,7 @@ import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Checkbox } from '../components/ui/checkbox';
 import { toast } from 'sonner';
+import { onboardApi, isAuthed } from '../lib/api';
 
 function calcAge(birthDate) {
   if (!birthDate) return null;
@@ -91,24 +92,36 @@ export default function Onboard() {
     setStep(activeSteps[stepIndex - 1]);
   };
 
-  const finish = () => {
-    const profile = {
-      name: studentName,
-      birthDate,
-      age,
-      parentName: needsParent ? parentName : null,
-      parentEmail: needsParent ? parentEmail : null,
-      consentData: needsParent ? consentData : null,
-      consentComm: needsParent ? consentComm : null,
-      interest,
-      score,
-      recommendation,
-      createdAt: new Date().toISOString(),
-    };
-    localStorage.setItem('cf_profile', JSON.stringify(profile));
-    localStorage.setItem('cf_user', JSON.stringify({ name: studentName }));
-    toast.success('Pronto! Vamos começar sua jornada 🚀');
-    setTimeout(() => navigate('/dashboard'), 700);
+  const finish = async () => {
+    if (!isAuthed()) {
+      // Store locally and send to register
+      localStorage.setItem('cf_pending_onboard', JSON.stringify({
+        name: studentName, birthDate, interest, score, recommendation,
+        parentName: needsParent ? parentName : null,
+        parentEmail: needsParent ? parentEmail : null,
+        consentData: needsParent ? consentData : null,
+        consentComm: needsParent ? consentComm : null,
+      }));
+      toast.info('Crie sua conta para salvar a jornada');
+      setTimeout(() => navigate('/register'), 500);
+      return;
+    }
+    try {
+      await onboardApi.save({
+        birth_date: birthDate,
+        parent_name: needsParent ? parentName : null,
+        parent_email: needsParent ? parentEmail : null,
+        consent_data: needsParent ? consentData : null,
+        consent_comm: needsParent ? consentComm : null,
+        interest,
+        diagnostic_score: score,
+        recommendation,
+      });
+      toast.success('Pronto! Vamos começar sua jornada 🚀');
+      setTimeout(() => navigate('/dashboard'), 700);
+    } catch (err) {
+      toast.error(err.response?.data?.detail || 'Erro ao salvar perfil');
+    }
   };
 
   return (

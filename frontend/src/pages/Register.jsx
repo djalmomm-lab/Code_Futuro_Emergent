@@ -7,23 +7,31 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { toast } from 'sonner';
+import { authApi, saveAuth } from '../lib/api';
 
 export default function Register() {
   const { t } = useLanguage();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault();
-    if (!name || !email || !password) {
-      toast.error('Preencha todos os campos');
-      return;
+    if (!name || !email || !password) { toast.error('Preencha todos os campos'); return; }
+    if (password.length < 8) { toast.error('Senha deve ter no mínimo 8 caracteres'); return; }
+    setLoading(true);
+    try {
+      const data = await authApi.register({ name, email, password });
+      saveAuth(data);
+      toast.success('Conta criada! Vamos começar.');
+      setTimeout(() => navigate('/onboard'), 400);
+    } catch (err) {
+      toast.error(err.response?.data?.detail || 'Erro ao criar conta');
+    } finally {
+      setLoading(false);
     }
-    localStorage.setItem('cf_user', JSON.stringify({ name, email }));
-    toast.success('Conta criada! Vamos começar.');
-    setTimeout(() => navigate('/onboard'), 500);
   };
 
   return (
@@ -71,8 +79,8 @@ export default function Register() {
               </div>
             </div>
 
-            <Button type="submit" className="cf-btn-lime w-full h-12 rounded-full text-base">
-              {t('auth.register')}
+            <Button type="submit" disabled={loading} className="cf-btn-lime w-full h-12 rounded-full text-base disabled:opacity-60">
+              {loading ? 'Criando...' : t('auth.register')}
             </Button>
           </form>
 

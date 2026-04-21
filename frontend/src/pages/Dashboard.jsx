@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Flame, Zap, Star, Trophy, Play, BookOpen, Target, ChevronRight } from 'lucide-react';
 import Navbar from '../components/Navbar';
@@ -6,12 +6,51 @@ import Footer from '../components/Footer';
 import { useLanguage } from '../context/LanguageContext';
 import { USER_MOCK, PATHS_MOCK, MODULES, LEADERBOARD } from '../data/mockData';
 import { Button } from '../components/ui/button';
+import { authApi, leaderboardApi, isAuthed } from '../lib/api';
 
 export default function Dashboard() {
   const { t } = useLanguage();
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem('cf_user') || 'null') || { name: USER_MOCK.name };
-  const progressPct = Math.min(100, (USER_MOCK.xpToday / USER_MOCK.dailyGoal) * 100);
+  const [user, setUser] = useState({ name: USER_MOCK.name });
+  const [progress, setProgress] = useState(USER_MOCK);
+  const [board, setBoard] = useState(LEADERBOARD);
+
+  useEffect(() => {
+    if (!isAuthed()) { navigate('/login'); return; }
+    (async () => {
+      try {
+        const me = await authApi.me();
+        setUser(me.user);
+        if (me.progress) {
+          setProgress({
+            name: me.user.name,
+            streak: me.progress.streak,
+            xpToday: me.progress.xp_today,
+            dailyGoal: me.progress.daily_goal,
+            energy: me.progress.energy,
+            maxEnergy: me.progress.max_energy,
+            level: me.progress.level,
+            xpTotal: me.progress.xp_total,
+            tokens: me.progress.tokens,
+          });
+        }
+        const lb = await leaderboardApi.get('week');
+        if (lb.rows?.length > 0) {
+          setBoard(lb.rows.slice(0, 5).map((r, i) => ({
+            rank: i + 1,
+            name: r.name,
+            xp: r.xp,
+            streak: r.streak >= 7 ? '7+' : String(r.streak),
+            avatar: `https://api.dicebear.com/7.x/identicon/svg?seed=${r.user_id}`,
+          })));
+        }
+      } catch (e) {
+        // fallback to mocks
+      }
+    })();
+  }, [navigate]);
+
+  const progressPct = Math.min(100, (progress.xpToday / progress.dailyGoal) * 100);
 
   const currentPath = PATHS_MOCK[0];
   const moduleColor = MODULES.find((m) => m.id === currentPath.module)?.color || '#7C3AED';
@@ -26,10 +65,10 @@ export default function Dashboard() {
             <h1 className="font-display text-3xl md:text-4xl font-bold text-white">{t('dashboard.greeting')}, {user.name} 👋</h1>
           </div>
           <div className="flex items-center gap-3">
-            <StatPill icon={<Flame size={16} />} value={USER_MOCK.streak} label={t('dashboard.streak')} color="#F97316" />
-            <StatPill icon={<Zap size={16} />} value={`${USER_MOCK.energy}/${USER_MOCK.maxEnergy}`} label={t('dashboard.energy')} color="#3B82F6" />
-            <StatPill icon={<Star size={16} />} value={USER_MOCK.xpTotal} label="XP" color="#A3E635" />
-            <StatPill icon={<Trophy size={16} />} value={USER_MOCK.level} label={t('dashboard.level')} color="#7C3AED" />
+            <StatPill icon={<Flame size={16} />} value={progress.streak} label={t('dashboard.streak')} color="#F97316" />
+            <StatPill icon={<Zap size={16} />} value={`${progress.energy}/${progress.maxEnergy}`} label={t('dashboard.energy')} color="#3B82F6" />
+            <StatPill icon={<Star size={16} />} value={progress.xpTotal} label="XP" color="#A3E635" />
+            <StatPill icon={<Trophy size={16} />} value={progress.level} label={t('dashboard.level')} color="#7C3AED" />
           </div>
         </div>
 
@@ -68,8 +107,8 @@ export default function Dashboard() {
                 <circle cx="90" cy="90" r="70" fill="none" stroke="#A3E635" strokeWidth="14" strokeLinecap="round" strokeDasharray={`${2 * Math.PI * 70}`} strokeDashoffset={`${2 * Math.PI * 70 * (1 - progressPct / 100)}`} style={{ transition: 'stroke-dashoffset 1s ease' }} />
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <div className="font-display text-3xl font-bold text-white">{USER_MOCK.xpToday}</div>
-                <div className="text-xs text-slate-400">/ {USER_MOCK.dailyGoal} XP</div>
+                <div className="font-display text-3xl font-bold text-white">{progress.xpToday}</div>
+                <div className="text-xs text-slate-400">/ {progress.dailyGoal} XP</div>
               </div>
             </div>
             <div className="mt-4 text-center text-xs text-slate-400">{t('dashboard.xpToday')}</div>
@@ -111,7 +150,7 @@ export default function Dashboard() {
             </h3>
             <div className="cf-card p-4">
               <ul className="space-y-1">
-                {LEADERBOARD.slice(0, 5).map((p) => (
+                {board.slice(0, 5).map((p) => (
                   <li key={p.rank} className="flex items-center gap-3 px-2 py-2">
                     <span className="w-6 text-slate-400 font-bold text-sm text-center">{p.rank}</span>
                     <img src={p.avatar} alt={p.name} className="w-8 h-8 rounded-full" />

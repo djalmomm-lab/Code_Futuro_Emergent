@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Flame, Trophy, TrendingUp, Crown, Medal, Award } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { useLanguage } from '../context/LanguageContext';
 import { LEADERBOARD } from '../data/mockData';
+import { leaderboardApi } from '../lib/api';
 
 const EXTENDED = [
   ...LEADERBOARD,
@@ -24,6 +25,24 @@ const rankIcon = (rank) => {
 export default function LeaderboardPage() {
   const { t } = useLanguage();
   const [tab, setTab] = useState('week');
+  const [rows, setRows] = useState(EXTENDED);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const r = await leaderboardApi.get(tab);
+        if (r.rows?.length) {
+          setRows(r.rows.map((p, i) => ({
+            rank: i + 1,
+            name: p.name,
+            xp: p.xp,
+            streak: p.streak >= 7 ? '7+' : String(p.streak),
+            avatar: `https://api.dicebear.com/7.x/identicon/svg?seed=${p.user_id}`,
+          })));
+        }
+      } catch {}
+    })();
+  }, [tab]);
 
   return (
     <div className="min-h-screen" style={{ background: 'var(--cf-space)' }}>
@@ -51,7 +70,7 @@ export default function LeaderboardPage() {
 
         <div className="cf-card p-2">
           <ul>
-            {EXTENDED.map((p, i) => (
+            {rows.map((p, i) => (
               <li key={p.rank}>
                 {i === 7 && (
                   <div className="my-2 py-2 rounded-xl text-center text-[11px] font-bold uppercase tracking-wider flex items-center justify-center gap-1.5" style={{ background: 'rgba(163,230,53,0.1)', color: '#A3E635' }}>

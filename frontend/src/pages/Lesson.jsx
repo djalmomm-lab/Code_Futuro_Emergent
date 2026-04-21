@@ -5,6 +5,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { DEFAULT_LESSON, USER_MOCK } from '../data/mockData';
 import { Button } from '../components/ui/button';
 import { toast } from 'sonner';
+import { progressApi, isAuthed } from '../lib/api';
 
 export default function Lesson() {
   const { t, lang } = useLanguage();
@@ -20,12 +21,21 @@ export default function Lesson() {
   const [energy, setEnergy] = useState(USER_MOCK.energy);
   const [showHint, setShowHint] = useState(false);
 
-  const run = () => {
+  const run = async () => {
     if (energy <= 0) { toast.error('Sem energia! Aguarde o reset ou faça upgrade Pro.'); return; }
     setRunning(true);
-    setEnergy((e) => e - 1);
-    setTimeout(() => {
-      // Simulated Python interpreter - very light
+    // consume energy via API if logged in
+    if (isAuthed()) {
+      try {
+        const e = await progressApi.consumeEnergy();
+        setEnergy(e.energy);
+      } catch (err) {
+        if (err.response?.status !== 429) setEnergy((e) => e - 1);
+      }
+    } else {
+      setEnergy((e) => e - 1);
+    }
+    setTimeout(async () => {
       let out = '';
       try {
         const match = code.match(/print\(\s*['"]([^'"]*)['"]\s*\)/);
@@ -41,7 +51,15 @@ export default function Lesson() {
       setTab('console');
 
       if (allPassed) {
-        toast.success('🎉 Lição concluída! +50 XP');
+        if (isAuthed()) {
+          try {
+            const res = await progressApi.completeLesson({ lesson_slug: slug || lesson.slug, path_slug: 'python-zero' });
+            if (res.already_completed) toast.success('🎉 Lição já concluída!');
+            else toast.success(`🎉 Lição concluída! +${res.xp_earned} XP`);
+          } catch { toast.success('🎉 Lição concluída! +50 XP'); }
+        } else {
+          toast.success('🎉 Lição concluída! +50 XP');
+        }
       } else {
         toast.error('Alguns testes falharam. Tente de novo!');
       }

@@ -101,3 +101,157 @@
 #====================================================================================================
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
+
+user_problem_statement: "Teste completo do backend CodeFuturo em FastAPI com todos os endpoints de autenticação, onboarding, progresso, energia, leaderboard, tracks e LGPD"
+
+backend:
+  - task: "Health Check Endpoint"
+    implemented: true
+    working: true
+    file: "server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "GET /api/ endpoint working correctly, returns {name: 'CodeFuturo API', status: 'ok'}"
+
+  - task: "User Registration"
+    implemented: true
+    working: true
+    file: "server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "POST /api/auth/register working correctly. Returns token and user data. Properly rejects duplicate emails with 409 status. Password validation (min 8 chars) working."
+
+  - task: "User Login"
+    implemented: true
+    working: true
+    file: "server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "POST /api/auth/login working correctly. Returns token and user data for valid credentials. Properly rejects invalid credentials with 401 status."
+
+  - task: "Authentication Middleware"
+    implemented: true
+    working: true
+    file: "server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "GET /api/auth/me working correctly. Returns user, profile, and progress data with valid token. Properly rejects requests without token with 401 status."
+
+  - task: "User Onboarding"
+    implemented: true
+    working: true
+    file: "server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "POST /api/onboard working correctly. Adult users (≥13) can onboard without parent consent. Child users (<13) require parent_name, parent_email, and consent_data - properly returns 422 when missing. Child onboarding with consent saves consent_ip and consent_at correctly."
+
+  - task: "Progress Tracking"
+    implemented: true
+    working: true
+    file: "server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "GET /api/progress working correctly. Returns user progress with XP, level, energy, streak data. POST /api/progress/complete working correctly - first completion awards 50 XP, subsequent completions are idempotent (already_completed=true, xp_earned=0)."
+
+  - task: "Energy System"
+    implemented: true
+    working: true
+    file: "server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "POST /api/energy/consume working correctly. Decrements energy on each call. When energy reaches 0, properly returns 429 status with appropriate error message."
+
+  - task: "Leaderboard"
+    implemented: true
+    working: true
+    file: "server.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "GET /api/leaderboard working correctly. Returns period and rows array with user rankings based on XP. Public endpoint (no auth required)."
+
+  - task: "Learning Tracks"
+    implemented: true
+    working: true
+    file: "server.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "GET /api/tracks working correctly. Returns modules and specialized tracks with proper structure. Public endpoint (no auth required)."
+
+  - task: "LGPD Data Export"
+    implemented: true
+    working: true
+    file: "server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "GET /api/privacy/export working correctly. Returns complete user data including user, profile, progress, and completions for LGPD compliance. Requires authentication."
+
+  - task: "LGPD Account Deletion"
+    implemented: true
+    working: true
+    file: "server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "DELETE /api/privacy/delete working correctly. Completely removes user data from all collections (users, profiles, progress, lesson_completions) for LGPD compliance. Requires authentication."
+
+frontend:
+  # No frontend testing performed as per instructions
+
+metadata:
+  created_by: "testing_agent"
+  version: "1.0"
+  test_sequence: 1
+  run_ui: false
+
+test_plan:
+  current_focus: []
+  stuck_tasks: []
+  test_all: true
+  test_priority: "high_first"
+
+agent_communication:
+  - agent: "testing"
+    message: "Comprehensive backend testing completed successfully. All 12 endpoints tested with 20 test cases covering authentication, authorization, onboarding (including child consent validation), progress tracking, energy system, leaderboard, tracks, and LGPD compliance. End-to-end flow tested: register → onboard (child with consent) → complete lessons → verify progress → leaderboard → export data → delete account. All tests passed with proper status codes and response validation. Backend is fully functional and ready for production."

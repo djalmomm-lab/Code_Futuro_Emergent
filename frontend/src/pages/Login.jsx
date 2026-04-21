@@ -7,23 +7,30 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { toast } from 'sonner';
+import { authApi, saveAuth } from '../lib/api';
 
 export default function Login() {
   const { t } = useLanguage();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [show, setShow] = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault();
-    if (!email || !password) {
-      toast.error('Preencha todos os campos');
-      return;
+    if (!email || !password) { toast.error('Preencha todos os campos'); return; }
+    setLoading(true);
+    try {
+      const data = await authApi.login({ email, password });
+      saveAuth(data);
+      toast.success('Bem-vindo de volta!');
+      setTimeout(() => navigate('/dashboard'), 400);
+    } catch (err) {
+      toast.error(err.response?.data?.detail || 'Credenciais inválidas');
+    } finally {
+      setLoading(false);
     }
-    localStorage.setItem('cf_user', JSON.stringify({ email, name: email.split('@')[0] }));
-    toast.success('Bem-vindo de volta!');
-    setTimeout(() => navigate('/dashboard'), 500);
   };
 
   return (
@@ -70,8 +77,8 @@ export default function Login() {
               </div>
             </div>
 
-            <Button type="submit" className="cf-btn-lime w-full h-12 rounded-full text-base">
-              {t('auth.login')}
+            <Button type="submit" disabled={loading} className="cf-btn-lime w-full h-12 rounded-full text-base disabled:opacity-60">
+              {loading ? 'Entrando...' : t('auth.login')}
             </Button>
           </form>
 
