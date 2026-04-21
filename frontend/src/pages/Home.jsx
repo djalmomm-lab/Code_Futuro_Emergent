@@ -5,6 +5,7 @@ import HeroSection from '../components/HeroSection';
 import LearnByDoingSection from '../components/LearnByDoingSection';
 import StreakSection from '../components/StreakSection';
 import ModulesSection from '../components/ModulesSection';
+import SpecializedTracksSection from '../components/SpecializedTracksSection';
 import JourneyMapSection from '../components/JourneyMapSection';
 import LeaderboardSection from '../components/LeaderboardSection';
 import { AnywhereSection, CertificateSection, CTASection } from '../components/BottomSections';
@@ -18,6 +19,7 @@ export default function Home() {
         <LearnByDoingSection />
         <StreakSection />
         <ModulesSection />
+        <SpecializedTracksSection />
         <JourneyMapSection />
         <AnywhereSection />
         <LeaderboardSection />

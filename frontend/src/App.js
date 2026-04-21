@@ -10,6 +10,7 @@ import Dashboard from './pages/Dashboard';
 import Lesson from './pages/Lesson';
 import JourneyPage from './pages/JourneyPage';
 import LeaderboardPage from './pages/LeaderboardPage';
+import Catalog from './pages/Catalog';
 
 function App() {
   return (
@@ -25,6 +26,8 @@ function App() {
             <Route path="/licao/:slug" element={<Lesson />} />
             <Route path="/jornada/:slug" element={<JourneyPage />} />
             <Route path="/leaderboard" element={<LeaderboardPage />} />
+            <Route path="/catalogo" element={<Catalog />} />
+            <Route path="/catalog" element={<Catalog />} />
           </Routes>
         </BrowserRouter>
         <Toaster position="top-right" richColors />

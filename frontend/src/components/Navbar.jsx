@@ -26,7 +26,7 @@ export default function Navbar() {
           </Link>
 
           <nav className="hidden md:flex items-center gap-8">
-            <Link to="/dashboard" className="text-slate-300 hover:text-white transition-colors text-sm font-semibold">{t('nav.catalog')}</Link>
+            <Link to="/catalogo" className="text-slate-300 hover:text-white transition-colors text-sm font-semibold">{t('nav.catalog')}</Link>
             <Link to="/jornada/python-zero" className="text-slate-300 hover:text-white transition-colors text-sm font-semibold">{t('nav.paths')}</Link>
             <Link to="/leaderboard" className="text-slate-300 hover:text-white transition-colors text-sm font-semibold">Leaderboard</Link>
             <a href="#pro" className="text-slate-300 hover:text-white transition-colors text-sm font-semibold">{t('nav.pro')}</a>
@@ -79,7 +79,7 @@ export default function Navbar() {
       {open && (
         <div className="md:hidden border-t" style={{ borderColor: 'var(--cf-border)', background: 'var(--cf-panel)' }}>
           <div className="px-4 py-3 flex flex-col gap-1">
-            <Link to="/dashboard" onClick={() => setOpen(false)} className="py-2 text-slate-200 font-semibold">{t('nav.catalog')}</Link>
+            <Link to="/catalogo" onClick={() => setOpen(false)} className="py-2 text-slate-200 font-semibold">{t('nav.catalog')}</Link>
             <Link to="/jornada/python-zero" onClick={() => setOpen(false)} className="py-2 text-slate-200 font-semibold">{t('nav.paths')}</Link>
             <Link to="/leaderboard" onClick={() => setOpen(false)} className="py-2 text-slate-200 font-semibold">Leaderboard</Link>
             <Link to="/login" onClick={() => setOpen(false)} className="py-2 text-slate-200 font-semibold">{t('nav.login')}</Link>
