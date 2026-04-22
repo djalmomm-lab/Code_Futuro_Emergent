@@ -5,6 +5,7 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { Input } from '../components/ui/input';
 import { pathsApi } from '../lib/api';
+import { logError } from '../lib/logger';
 
 export default function Catalog() {
   const navigate = useNavigate();
@@ -17,7 +18,9 @@ export default function Catalog() {
       try {
         const res = await pathsApi.list();
         setPaths(res.paths || []);
-      } catch {}
+      } catch (err) {
+        logError('Catalog.loadPaths', err);
+      }
       setLoading(false);
     })();
   }, []);

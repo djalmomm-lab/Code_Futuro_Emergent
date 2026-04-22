@@ -5,6 +5,7 @@ import Footer from '../components/Footer';
 import { useLanguage } from '../context/LanguageContext';
 import { LEADERBOARD } from '../data/mockData';
 import { leaderboardApi } from '../lib/api';
+import { logError } from '../lib/logger';
 
 const EXTENDED = [
   ...LEADERBOARD,
@@ -40,7 +41,9 @@ export default function LeaderboardPage() {
             avatar: `https://api.dicebear.com/7.x/identicon/svg?seed=${p.user_id}`,
           })));
         }
-      } catch {}
+      } catch (err) {
+        logError('LeaderboardPage.load', err, { tab });
+      }
     })();
   }, [tab]);
 

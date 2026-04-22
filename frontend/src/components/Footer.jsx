@@ -28,8 +28,13 @@ export default function Footer() {
             </Link>
             <p className="mt-4 text-sm text-slate-400 max-w-xs">Plataforma gratuita de programação para crianças e jovens. Do primeiro clique ao deploy.</p>
             <div className="flex gap-3 mt-5">
-              {[Github, Twitter, Instagram, Youtube].map((Icon, i) => (
-                <a key={i} href="#" className="w-9 h-9 rounded-full flex items-center justify-center text-slate-400 hover:text-[#A3E635] border transition" style={{ borderColor: 'var(--cf-border)' }}>
+              {[
+                { Icon: Github, name: 'github' },
+                { Icon: Twitter, name: 'twitter' },
+                { Icon: Instagram, name: 'instagram' },
+                { Icon: Youtube, name: 'youtube' },
+              ].map(({ Icon, name }) => (
+                <a key={name} href="#" aria-label={name} className="w-9 h-9 rounded-full flex items-center justify-center text-slate-400 hover:text-[#A3E635] border transition" style={{ borderColor: 'var(--cf-border)' }}>
                   <Icon size={16} />
                 </a>
               ))}

@@ -9,6 +9,7 @@ import { Label } from '../components/ui/label';
 import { Checkbox } from '../components/ui/checkbox';
 import { toast } from 'sonner';
 import { onboardApi, pathsApi, isAuthed, getErrorMessage } from '../lib/api';
+import { logError } from '../lib/logger';
 
 function calcAge(birthDate) {
   if (!birthDate) return null;
@@ -41,7 +42,9 @@ export default function Onboard() {
       try {
         const r = await pathsApi.list();
         setPaths(r.paths || []);
-      } catch {}
+      } catch (err) {
+        logError('Onboard.loadPaths', err);
+      }
     })();
   }, []);
 

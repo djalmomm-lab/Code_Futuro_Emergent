@@ -92,9 +92,8 @@ def extract_json(text: str):
     return json.loads(text[start:end + 1])
 
 
-async def generate_path(path_cfg: dict):
-    print(f"→ Generating {path_cfg['name']} ({path_cfg['count']} lessons)...")
-    user_prompt = f"""Crie uma trilha completa de {path_cfg['count']} lições para a linguagem **{path_cfg['name']}** ({path_cfg['language']}).
+def _build_prompt(path_cfg: dict) -> str:
+    return f"""Crie uma trilha completa de {path_cfg['count']} lições para a linguagem **{path_cfg['name']}** ({path_cfg['language']}).
 
 Nível: do zero absoluto até intermediário, organizadas em capítulos lógicos.
 Público-alvo: pessoas de qualquer idade (adolescentes até adultos profissionais) que querem aprender {path_cfg['name']} do zero.
@@ -103,18 +102,22 @@ Contexto da linguagem: {path_cfg['desc']}
 
 Retorne exatamente {path_cfg['count']} lições no formato JSON array descrito no sistema. Numere order de 1 a {path_cfg['count']}.
 """
+
+
+async def _call_llm(path_cfg: dict) -> list:
     chat = LlmChat(
         api_key=EMERGENT_KEY,
         session_id=f"seed-{path_cfg['slug']}-{datetime.utcnow().timestamp()}",
         system_message=SYSTEM_PROMPT,
     ).with_model("openai", "gpt-5.1")
-
-    response = await chat.send_message(UserMessage(text=user_prompt))
+    response = await chat.send_message(UserMessage(text=_build_prompt(path_cfg)))
     lessons = extract_json(response)
     if not isinstance(lessons, list) or not lessons:
         raise ValueError(f"Invalid lessons response for {path_cfg['slug']}")
+    return lessons
 
-    # Upsert path metadata
+
+async def _upsert_path_meta(path_cfg: dict, lessons_count: int) -> None:
     await db.paths.update_one(
         {"slug": path_cfg["slug"]},
         {"$set": {
@@ -124,39 +127,50 @@ Retorne exatamente {path_cfg['count']} lições no formato JSON array descrito n
             "color": path_cfg["color"],
             "desc": path_cfg["desc"],
             "real_exec": path_cfg["real_exec"],
-            "total_lessons": len(lessons),
+            "total_lessons": lessons_count,
             "updated_at": datetime.utcnow().isoformat(),
         }},
         upsert=True,
     )
 
-    # Upsert lessons
-    for i, les in enumerate(lessons):
-        order = int(les.get("order") or (i + 1))
-        slug_base = re.sub(r"[^a-z0-9]+", "-", les["title"].lower()).strip("-")[:40]
-        lesson_slug = f"{path_cfg['slug']}-{order:02d}-{slug_base}"
-        doc = {
-            "id": str(uuid.uuid4()),
-            "slug": lesson_slug,
-            "path_slug": path_cfg["slug"],
-            "order": order,
-            "title": les["title"],
-            "chapter": les.get("chapter", "Capítulo 1"),
-            "instruction_pt": les.get("instruction_pt") or les.get("instruction", ""),
-            "instruction_en": les.get("instruction_en", ""),
-            "instruction_es": les.get("instruction_es", ""),
-            "starter_code": les.get("starter_code", ""),
-            "hint": les.get("hint", ""),
-            "tests": les.get("tests", []),
-            "language": path_cfg["language"],
-            "real_exec": path_cfg["real_exec"],
-            "updated_at": datetime.utcnow().isoformat(),
-        }
+
+def _build_lesson_doc(path_cfg: dict, les: dict, idx: int) -> dict:
+    order = int(les.get("order") or (idx + 1))
+    slug_base = re.sub(r"[^a-z0-9]+", "-", les["title"].lower()).strip("-")[:40]
+    return {
+        "id": str(uuid.uuid4()),
+        "slug": f"{path_cfg['slug']}-{order:02d}-{slug_base}",
+        "path_slug": path_cfg["slug"],
+        "order": order,
+        "title": les["title"],
+        "chapter": les.get("chapter", "Capítulo 1"),
+        "instruction_pt": les.get("instruction_pt") or les.get("instruction", ""),
+        "instruction_en": les.get("instruction_en", ""),
+        "instruction_es": les.get("instruction_es", ""),
+        "starter_code": les.get("starter_code", ""),
+        "hint": les.get("hint", ""),
+        "tests": les.get("tests", []),
+        "language": path_cfg["language"],
+        "real_exec": path_cfg["real_exec"],
+        "updated_at": datetime.utcnow().isoformat(),
+    }
+
+
+async def _upsert_lessons(path_cfg: dict, lessons: list) -> None:
+    for idx, les in enumerate(lessons):
+        doc = _build_lesson_doc(path_cfg, les, idx)
         await db.lessons.update_one(
-            {"path_slug": path_cfg["slug"], "order": order},
+            {"path_slug": path_cfg["slug"], "order": doc["order"]},
             {"$set": doc},
             upsert=True,
         )
+
+
+async def generate_path(path_cfg: dict):
+    print(f"→ Generating {path_cfg['name']} ({path_cfg['count']} lessons)...")
+    lessons = await _call_llm(path_cfg)
+    await _upsert_path_meta(path_cfg, len(lessons))
+    await _upsert_lessons(path_cfg, lessons)
     print(f"✓ {path_cfg['name']}: {len(lessons)} lessons saved")
 
 

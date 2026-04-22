@@ -1,5 +1,15 @@
 import axios from 'axios';
 
+// NOTE (security tradeoff): We currently persist the JWT in localStorage.
+// This is a conscious MVP tradeoff — it's simple and survives page reloads
+// without requiring cookie/CORS changes on the backend. It is vulnerable to
+// XSS, so we mitigate by:
+//   - Sanitizing user-rendered content (React escapes by default)
+//   - Avoiding dangerouslySetInnerHTML
+//   - Validating inputs on the backend
+// Roadmap: migrate to httpOnly + SameSite=Strict cookies with /api/auth/refresh
+// when we add subscriptions / store sensitive data beyond learning progress.
+
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 export const API_BASE = `${BACKEND_URL}/api`;
 

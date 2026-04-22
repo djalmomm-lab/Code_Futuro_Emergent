@@ -34,7 +34,7 @@ export function AnywhereSection() {
               <span className="text-3xl font-display font-bold text-[#A3E635]">4.9</span>
               <div>
                 <div className="flex gap-0.5">
-                  {[...Array(5)].map((_, i) => <Star key={i} size={14} className="text-yellow-400 fill-yellow-400" />)}
+                  {['s1', 's2', 's3', 's4', 's5'].map((id) => <Star key={id} size={14} className="text-yellow-400 fill-yellow-400" />)}
                 </div>
                 <div className="text-xs text-slate-400 mt-0.5">{t('anywhere.rating')}</div>
               </div>

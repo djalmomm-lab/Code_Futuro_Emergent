@@ -37,6 +37,8 @@ export function usePyodide() {
   const pyRef = useRef(null);
 
   useEffect(() => {
+    // initPyodide is a module-level singleton (stable reference);
+    // `mounted` is local to this effect's closure — no deps needed.
     let mounted = true;
     setLoading(true);
     initPyodide()
@@ -52,6 +54,7 @@ export function usePyodide() {
         setLoading(false);
       });
     return () => { mounted = false; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const run = async (code, stdin = '') => {

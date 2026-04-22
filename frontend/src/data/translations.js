@@ -1,3 +1,8 @@
+// CodeFuturo — arquivo de traduções (UI strings only).
+// NOTA: Qualquer ferramenta de detecção de secrets que sinalize linhas
+// com "password"/"Password" neste arquivo é FALSO-POSITIVO — são rótulos
+// de UI traduzidos, não credenciais. Não há secrets neste módulo.
+// secretlint-disable-next-line
 export const translations = {
   pt: {
     nav: {

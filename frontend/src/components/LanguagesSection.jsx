@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowRight, Sparkles, Code2 } from 'lucide-react';
 import { pathsApi } from '../lib/api';
 import { LANGUAGES_STACK } from '../data/mockData';
+import { logError } from '../lib/logger';
 
 export default function LanguagesSection() {
   const navigate = useNavigate();
@@ -13,7 +14,9 @@ export default function LanguagesSection() {
       try {
         const res = await pathsApi.list();
         setPaths(res.paths || []);
-      } catch {}
+      } catch (err) {
+        logError('LanguagesSection.loadPaths', err);
+      }
     })();
   }, []);
 

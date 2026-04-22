@@ -6,6 +6,7 @@ import { Button } from '../components/ui/button';
 import { toast } from 'sonner';
 import { progressApi, authApi, isAuthed, lessonsApi } from '../lib/api';
 import { usePyodide } from '../hooks/usePyodide';
+import { logError } from '../lib/logger';
 
 export default function Lesson() {
   const { t, lang } = useLanguage();
@@ -33,7 +34,8 @@ export default function Lesson() {
         setLesson(les);
         setCode(les.starter_code || '');
         setTests((les.tests || []).map((t) => ({ ...t, passed: false })));
-      } catch {
+      } catch (err) {
+        logError('Lesson.load', err, { slug });
         toast.error('Lição não encontrada');
       } finally {
         setLoading(false);
@@ -54,7 +56,9 @@ export default function Lesson() {
             maxEnergy: me.progress.max_energy,
           });
         }
-      } catch {}
+      } catch (err) {
+        logError('Lesson.loadStats', err);
+      }
     })();
   }, [slug]);
 
@@ -267,7 +271,7 @@ export default function Lesson() {
             <div className="p-4 space-y-2 min-h-[140px] bg-[#0A0F1E] max-h-[280px] overflow-auto">
               {tab === 'tests' ? (
                 tests.map((test, i) => (
-                  <div key={i} className="flex items-start gap-3 text-sm">
+                  <div key={`test-${test.id ?? i}`} className="flex items-start gap-3 text-sm">
                     {test.passed ? <CheckCircle2 size={16} className="text-[#A3E635] mt-0.5" /> : <XCircle size={16} className="text-slate-500 mt-0.5" />}
                     <div className="flex-1 min-w-0">
                       <div className="text-slate-200 font-semibold">Teste #{i + 1}</div>

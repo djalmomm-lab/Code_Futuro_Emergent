@@ -32,7 +32,7 @@ export default function StreakSection() {
               </div>
               <div className="grid grid-cols-7 gap-1.5">
                 {['D', 'S', 'T', 'Q', 'Q', 'S', 'S'].map((d, i) => (
-                  <div key={i} className="text-center text-[10px] font-bold text-slate-500 pb-1">{d}</div>
+                  <div key={`weekday-${i}`} className="text-center text-[10px] font-bold text-slate-500 pb-1">{d}</div>
                 ))}
                 {days.map((d) => {
                   const inStreak = streakDays.includes(d);
@@ -85,8 +85,8 @@ export default function StreakSection() {
                 { icon: Flame, color: 'text-orange-400', bg: 'bg-orange-500/15', text: 'Sequência diária que motiva' },
                 { icon: Snowflake, color: 'text-blue-400', bg: 'bg-blue-500/15', text: 'Streak Freeze protege seu progresso' },
                 { icon: Calendar, color: 'text-[#A3E635]', bg: 'bg-[#A3E635]/15', text: 'Metas semanais e recompensas' },
-              ].map((item, i) => (
-                <li key={i} className="flex items-center gap-3 text-slate-200">
+              ].map((item) => (
+                <li key={item.text} className="flex items-center gap-3 text-slate-200">
                   <span className={`w-10 h-10 rounded-xl flex items-center justify-center ${item.bg}`}>
                     <item.icon size={18} className={item.color} />
                   </span>

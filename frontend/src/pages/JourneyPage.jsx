@@ -6,6 +6,7 @@ import Footer from '../components/Footer';
 import { useLanguage } from '../context/LanguageContext';
 import { USER_MOCK } from '../data/mockData';
 import { pathsApi, authApi, isAuthed } from '../lib/api';
+import { logError } from '../lib/logger';
 
 export default function JourneyPage() {
   const { slug } = useParams();
@@ -23,7 +24,9 @@ export default function JourneyPage() {
         const res = await pathsApi.get(slug);
         setPath(res.path);
         setLessons(res.lessons || []);
-      } catch {}
+      } catch (err) {
+        logError('JourneyPage.loadPath', err, { slug });
+      }
       if (isAuthed()) {
         try {
           const me = await authApi.me();
@@ -34,7 +37,9 @@ export default function JourneyPage() {
               energy: me.progress.energy,
             });
           }
-        } catch {}
+        } catch (err) {
+          logError('JourneyPage.loadProgress', err);
+        }
       }
     })();
   }, [slug]);

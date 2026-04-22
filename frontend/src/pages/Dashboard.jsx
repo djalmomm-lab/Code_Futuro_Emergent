@@ -7,6 +7,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { LEADERBOARD } from '../data/mockData';
 import { Button } from '../components/ui/button';
 import { authApi, leaderboardApi, pathsApi, isAuthed } from '../lib/api';
+import { logError } from '../lib/logger';
 
 export default function Dashboard() {
   const { t } = useLanguage();
@@ -45,7 +46,9 @@ export default function Dashboard() {
           })));
         }
         if (pathsRes?.paths) setPaths(pathsRes.paths);
-      } catch {}
+      } catch (err) {
+        logError('Dashboard.loadData', err);
+      }
     })();
   }, [navigate]);
 
