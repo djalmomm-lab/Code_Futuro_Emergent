@@ -237,13 +237,61 @@ backend:
         agent: "testing"
         comment: "DELETE /api/privacy/delete working correctly. Completely removes user data from all collections (users, profiles, progress, lesson_completions) for LGPD compliance. Requires authentication."
 
+  - task: "New Tracks Endpoint"
+    implemented: true
+    working: true
+    file: "server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "GET /api/tracks working correctly. Returns {paths: [...]} with 9 tracks (python-zero, javascript, html-css, sql, typescript, java, cpp, go, ai-prompts). Each path has required fields: slug, name, language, color, desc, real_exec, total_lessons."
+
+  - task: "Path Details Endpoint"
+    implemented: true
+    working: true
+    file: "server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "GET /api/paths/{slug} working correctly. Returns {path: {...}, lessons: [...]} with proper structure. Python-zero returns 12 lessons, JavaScript returns 10 lessons. Properly returns 404 for nonexistent paths. Lessons are properly ordered and contain all required fields."
+
+  - task: "Lesson Details Endpoint"
+    implemented: true
+    working: true
+    file: "server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "GET /api/lessons/{slug} working correctly. Returns lesson with complete structure including 'next' field pointing to next lesson (or null for last lesson). Properly returns 404 for nonexistent lessons."
+
+  - task: "End-to-End Lesson Completion Flow"
+    implemented: true
+    working: true
+    file: "server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "Complete E2E flow working: register user → get real lesson slug from /api/paths/python-zero → complete lesson via POST /api/progress/complete → verify XP incremented by 50. Integration between tracks, lessons, and progress systems working correctly."
+
 frontend:
   # No frontend testing performed as per instructions
 
 metadata:
   created_by: "testing_agent"
   version: "1.0"
-  test_sequence: 1
+  test_sequence: 2
   run_ui: false
 
 test_plan:
@@ -255,3 +303,5 @@ test_plan:
 agent_communication:
   - agent: "testing"
     message: "Comprehensive backend testing completed successfully. All 12 endpoints tested with 20 test cases covering authentication, authorization, onboarding (including child consent validation), progress tracking, energy system, leaderboard, tracks, and LGPD compliance. End-to-end flow tested: register → onboard (child with consent) → complete lessons → verify progress → leaderboard → export data → delete account. All tests passed with proper status codes and response validation. Backend is fully functional and ready for production."
+  - agent: "testing"
+    message: "NEW TRACKS/LESSONS ENDPOINTS TESTING COMPLETED: All 8 test scenarios passed successfully. Tested GET /api/tracks (9 tracks with proper structure), GET /api/paths/python-zero (12 lessons), GET /api/paths/javascript (10 lessons), 404 handling for nonexistent paths/lessons, lesson details with 'next' field, and complete E2E flow (register → complete lesson → verify XP). Legacy endpoints confirmed working without regression. All new tracks/lessons functionality is fully operational."

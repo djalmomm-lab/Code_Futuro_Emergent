@@ -1,29 +1,33 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Flame, Zap, Star, Trophy, Play, BookOpen, Target, ChevronRight } from 'lucide-react';
+import { Flame, Zap, Star, Trophy, Play, BookOpen, Target, ChevronRight, ArrowRight } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { useLanguage } from '../context/LanguageContext';
-import { USER_MOCK, PATHS_MOCK, MODULES, LEADERBOARD } from '../data/mockData';
+import { LEADERBOARD } from '../data/mockData';
 import { Button } from '../components/ui/button';
-import { authApi, leaderboardApi, isAuthed } from '../lib/api';
+import { authApi, leaderboardApi, pathsApi, isAuthed } from '../lib/api';
 
 export default function Dashboard() {
   const { t } = useLanguage();
   const navigate = useNavigate();
-  const [user, setUser] = useState({ name: USER_MOCK.name });
-  const [progress, setProgress] = useState(USER_MOCK);
+  const [user, setUser] = useState({ name: 'Você' });
+  const [paths, setPaths] = useState([]);
+  const [progress, setProgress] = useState({ streak: 0, xpToday: 0, dailyGoal: 200, energy: 5, maxEnergy: 5, level: 1, xpTotal: 0 });
   const [board, setBoard] = useState(LEADERBOARD);
 
   useEffect(() => {
     if (!isAuthed()) { navigate('/login'); return; }
     (async () => {
       try {
-        const me = await authApi.me();
-        setUser(me.user);
-        if (me.progress) {
+        const [me, lb, pathsRes] = await Promise.all([
+          authApi.me().catch(() => null),
+          leaderboardApi.get('week').catch(() => null),
+          pathsApi.list().catch(() => null),
+        ]);
+        if (me?.user) setUser(me.user);
+        if (me?.progress) {
           setProgress({
-            name: me.user.name,
             streak: me.progress.streak,
             xpToday: me.progress.xp_today,
             dailyGoal: me.progress.daily_goal,
@@ -31,29 +35,22 @@ export default function Dashboard() {
             maxEnergy: me.progress.max_energy,
             level: me.progress.level,
             xpTotal: me.progress.xp_total,
-            tokens: me.progress.tokens,
           });
         }
-        const lb = await leaderboardApi.get('week');
-        if (lb.rows?.length > 0) {
+        if (lb?.rows?.length) {
           setBoard(lb.rows.slice(0, 5).map((r, i) => ({
-            rank: i + 1,
-            name: r.name,
-            xp: r.xp,
+            rank: i + 1, name: r.name, xp: r.xp,
             streak: r.streak >= 7 ? '7+' : String(r.streak),
             avatar: `https://api.dicebear.com/7.x/identicon/svg?seed=${r.user_id}`,
           })));
         }
-      } catch (e) {
-        // fallback to mocks
-      }
+        if (pathsRes?.paths) setPaths(pathsRes.paths);
+      } catch {}
     })();
   }, [navigate]);
 
   const progressPct = Math.min(100, (progress.xpToday / progress.dailyGoal) * 100);
-
-  const currentPath = PATHS_MOCK[0];
-  const moduleColor = MODULES.find((m) => m.id === currentPath.module)?.color || '#7C3AED';
+  const featuredPath = paths[0];
 
   return (
     <div className="min-h-screen" style={{ background: 'var(--cf-space)' }}>
@@ -64,7 +61,7 @@ export default function Dashboard() {
             <div className="text-sm text-slate-400 font-semibold">{t('dashboard.today')}</div>
             <h1 className="font-display text-3xl md:text-4xl font-bold text-white">{t('dashboard.greeting')}, {user.name} 👋</h1>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-wrap">
             <StatPill icon={<Flame size={16} />} value={progress.streak} label={t('dashboard.streak')} color="#F97316" />
             <StatPill icon={<Zap size={16} />} value={`${progress.energy}/${progress.maxEnergy}`} label={t('dashboard.energy')} color="#3B82F6" />
             <StatPill icon={<Star size={16} />} value={progress.xpTotal} label="XP" color="#A3E635" />
@@ -72,30 +69,20 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Continue learning */}
         <div className="mt-8 grid lg:grid-cols-3 gap-5">
-          <div className="lg:col-span-2 cf-card overflow-hidden relative">
-            <div className="absolute -top-20 -right-20 w-60 h-60 rounded-full blur-3xl opacity-40" style={{ background: moduleColor }} />
-            <div className="relative p-6 md:p-8">
-              <div className="text-xs font-bold uppercase tracking-wider" style={{ color: moduleColor }}>{t('dashboard.continueLearning')}</div>
-              <h2 className="mt-2 font-display text-2xl md:text-3xl font-bold text-white">{currentPath.name}</h2>
-              <p className="text-sm text-slate-400 mt-1">Capítulo 1 · Lição 3 de {currentPath.lessons}</p>
-
-              <div className="mt-5">
-                <div className="flex items-center justify-between text-xs text-slate-400 font-semibold mb-2">
-                  <span>{t('dashboard.progress')}</span>
-                  <span>{currentPath.completed}/{currentPath.lessons}</span>
-                </div>
-                <div className="h-2 rounded-full bg-[#1C2235] overflow-hidden">
-                  <div className="h-full rounded-full transition-all" style={{ width: `${(currentPath.completed / currentPath.lessons) * 100}%`, background: moduleColor }} />
-                </div>
+          {featuredPath && (
+            <div className="lg:col-span-2 cf-card overflow-hidden relative">
+              <div className="absolute -top-20 -right-20 w-60 h-60 rounded-full blur-3xl opacity-40" style={{ background: featuredPath.color }} />
+              <div className="relative p-6 md:p-8">
+                <div className="text-xs font-bold uppercase tracking-wider" style={{ color: featuredPath.color }}>{t('dashboard.continueLearning')}</div>
+                <h2 className="mt-2 font-display text-2xl md:text-3xl font-bold text-white">{featuredPath.name}</h2>
+                <p className="text-sm text-slate-400 mt-1 max-w-2xl">{featuredPath.desc}</p>
+                <Button onClick={() => navigate(`/jornada/${featuredPath.slug}`)} className="mt-6 cf-btn-lime h-12 px-6 rounded-full inline-flex items-center gap-2">
+                  <Play size={16} /> {t('dashboard.resume')}
+                </Button>
               </div>
-
-              <Button onClick={() => navigate('/licao/ola-mundo')} className="mt-6 cf-btn-lime h-12 px-6 rounded-full inline-flex items-center gap-2">
-                <Play size={16} /> {t('dashboard.resume')}
-              </Button>
             </div>
-          </div>
+          )}
 
           <div className="cf-card p-6">
             <div className="flex items-center gap-2 text-sm font-bold text-white">
@@ -115,32 +102,28 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Paths + Leaderboard */}
         <div className="mt-8 grid lg:grid-cols-3 gap-5">
           <div className="lg:col-span-2">
-            <h3 className="font-display text-xl font-bold text-white mb-4 flex items-center gap-2">
-              <BookOpen size={18} /> {t('dashboard.yourPaths')}
-            </h3>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-display text-xl font-bold text-white flex items-center gap-2">
+                <BookOpen size={18} /> Trilhas disponíveis
+              </h3>
+              <Link to="/catalogo" className="text-xs font-bold text-[#A3E635] hover:underline flex items-center gap-1">Ver todas <ArrowRight size={12} /></Link>
+            </div>
             <div className="grid sm:grid-cols-2 gap-4">
-              {PATHS_MOCK.map((p) => {
-                const color = MODULES.find((m) => m.id === p.module)?.color || '#A3E635';
-                const pct = (p.completed / p.lessons) * 100;
-                return (
-                  <Link key={p.id} to={`/jornada/${p.id}`} className="cf-card cf-card-hover p-5 flex flex-col">
-                    <div className="flex items-center justify-between">
-                      <div className="w-10 h-10 rounded-xl flex items-center justify-center font-display font-bold text-white text-sm" style={{ background: color }}>
-                        {p.name.substring(0, 2).toUpperCase()}
-                      </div>
-                      <ChevronRight size={18} className="text-slate-500" />
+              {paths.slice(0, 6).map((p) => (
+                <Link key={p.slug} to={`/jornada/${p.slug}`} className="cf-card cf-card-hover p-5 flex flex-col">
+                  <div className="flex items-center justify-between">
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center font-display font-bold text-white text-sm" style={{ background: p.color }}>
+                      {p.name.substring(0, 2).toUpperCase()}
                     </div>
-                    <h4 className="mt-4 font-display font-bold text-white">{p.name}</h4>
-                    <div className="mt-3 text-xs text-slate-400">{p.completed}/{p.lessons} lições</div>
-                    <div className="mt-2 h-1.5 rounded-full bg-[#1C2235] overflow-hidden">
-                      <div className="h-full rounded-full" style={{ width: `${pct}%`, background: color }} />
-                    </div>
-                  </Link>
-                );
-              })}
+                    <ChevronRight size={18} className="text-slate-500" />
+                  </div>
+                  <h4 className="mt-4 font-display font-bold text-white">{p.name}</h4>
+                  <div className="mt-1 text-xs text-slate-400 line-clamp-2">{p.desc}</div>
+                  <div className="mt-3 text-[11px] text-slate-500 font-bold">{p.total_lessons} lições</div>
+                </Link>
+              ))}
             </div>
           </div>
 

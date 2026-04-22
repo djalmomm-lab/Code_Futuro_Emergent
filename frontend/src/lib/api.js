@@ -46,6 +46,16 @@ export const leaderboardApi = {
   get: (period = 'week') => api.get(`/leaderboard?period=${period}`).then((r) => r.data),
 };
 
+// Paths / Lessons (from DB)
+export const pathsApi = {
+  list: () => api.get('/tracks').then((r) => r.data),
+  get: (slug) => api.get(`/paths/${slug}`).then((r) => r.data),
+};
+
+export const lessonsApi = {
+  get: (slug) => api.get(`/lessons/${slug}`).then((r) => r.data),
+};
+
 // Privacy
 export const privacyApi = {
   export: () => api.get('/privacy/export').then((r) => r.data),

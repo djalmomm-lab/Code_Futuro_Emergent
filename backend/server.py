@@ -308,24 +308,36 @@ async def leaderboard(period: str = "week", limit: int = 20):
 
 @api.get("/tracks")
 async def tracks():
-    # Static seed for now
-    modules = [
-        {"id": "m1", "name": "Explorador Digital", "age": "6-8", "color": "#34D399", "lessons": 42, "level": "Iniciante"},
-        {"id": "m2", "name": "Criador de Blocos", "age": "9-11", "color": "#3B82F6", "lessons": 48, "level": "Iniciante"},
-        {"id": "m3", "name": "Programador Iniciante", "age": "12-14", "color": "#7C3AED", "lessons": 60, "level": "Intermediário"},
-        {"id": "m4", "name": "Desenvolvedor", "age": "15-17", "color": "#F97316", "lessons": 72, "level": "Avançado"},
-    ]
-    specialized = [
-        {"id": "webfs", "name": "Web Full Stack", "level": "Intermediário", "lessons": 86, "color": "#A3E635"},
-        {"id": "datasci", "name": "Ciência de Dados", "level": "Intermediário", "lessons": 72, "color": "#3B82F6"},
-        {"id": "ml", "name": "Machine Learning", "level": "Avançado", "lessons": 64, "color": "#7C3AED"},
-        {"id": "mobile", "name": "Mobile Dev", "level": "Intermediário", "lessons": 58, "color": "#F97316"},
-        {"id": "gamedev", "name": "Game Dev", "level": "Intermediário", "lessons": 70, "color": "#EC4899"},
-        {"id": "cyber", "name": "Cybersecurity", "level": "Avançado", "lessons": 54, "color": "#EF4444"},
-        {"id": "devops", "name": "DevOps & Cloud", "level": "Avançado", "lessons": 62, "color": "#06B6D4"},
-        {"id": "dba", "name": "Banco de Dados", "level": "Intermediário", "lessons": 48, "color": "#84CC16"},
-    ]
-    return {"modules": modules, "specialized": specialized}
+    """List learning paths from DB (seeded by seed_lessons.py)."""
+    cursor = db.paths.find({}, {"_id": 0})
+    rows = await cursor.to_list(100)
+    # Sort: highlight common beginners first
+    order = ["python-zero", "javascript", "html-css", "sql", "typescript", "java", "cpp", "go", "ai-prompts"]
+    rows.sort(key=lambda r: order.index(r["slug"]) if r["slug"] in order else 99)
+    return {"paths": rows}
+
+
+@api.get("/paths/{slug}")
+async def path_detail(slug: str):
+    path = await db.paths.find_one({"slug": slug}, {"_id": 0})
+    if not path:
+        raise HTTPException(404, "Path not found")
+    lessons = await db.lessons.find({"path_slug": slug}, {"_id": 0}).sort("order", 1).to_list(200)
+    return {"path": path, "lessons": lessons}
+
+
+@api.get("/lessons/{lesson_slug}")
+async def lesson_detail(lesson_slug: str):
+    les = await db.lessons.find_one({"slug": lesson_slug}, {"_id": 0})
+    if not les:
+        raise HTTPException(404, "Lesson not found")
+    # Also return next lesson for chaining
+    nxt = await db.lessons.find_one(
+        {"path_slug": les["path_slug"], "order": les["order"] + 1},
+        {"_id": 0, "slug": 1, "title": 1},
+    )
+    les["next"] = nxt
+    return les
 
 
 # --- LGPD: user data export & deletion ---

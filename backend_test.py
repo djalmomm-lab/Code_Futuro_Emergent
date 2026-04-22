@@ -1,410 +1,403 @@
 #!/usr/bin/env python3
 """
-CodeFuturo Backend API Test Suite
-Tests all endpoints as specified in the review request.
+CodeFuturo Backend Testing - New Tracks/Lessons Endpoints
+Testing the new tracks and lessons endpoints as requested.
 """
 
 import requests
 import json
 import sys
-from datetime import datetime, date
-from typing import Dict, Any, Optional
+from datetime import datetime
 
-# Get backend URL from frontend .env
-def get_backend_url():
+# Use the production URL from frontend/.env
+BASE_URL = "https://web-replica-128.preview.emergentagent.com/api"
+
+def log_test(test_name, success, details=""):
+    status = "✅ PASS" if success else "❌ FAIL"
+    print(f"{status} {test_name}")
+    if details:
+        print(f"   {details}")
+    print()
+
+def test_tracks_endpoint():
+    """Test GET /api/tracks - should return 9 tracks with proper structure"""
+    print("=== Testing GET /api/tracks ===")
+    
     try:
-        with open('/app/frontend/.env', 'r') as f:
-            for line in f:
-                if line.startswith('REACT_APP_BACKEND_URL='):
-                    return line.split('=', 1)[1].strip() + '/api'
-        return 'http://localhost:8001/api'
-    except:
-        return 'http://localhost:8001/api'
-
-BASE_URL = get_backend_url()
-print(f"Testing backend at: {BASE_URL}")
-
-class TestResults:
-    def __init__(self):
-        self.passed = 0
-        self.failed = 0
-        self.errors = []
+        response = requests.get(f"{BASE_URL}/tracks")
         
-    def success(self, test_name: str):
-        self.passed += 1
-        print(f"✅ {test_name}")
-        
-    def failure(self, test_name: str, error: str):
-        self.failed += 1
-        self.errors.append(f"{test_name}: {error}")
-        print(f"❌ {test_name}: {error}")
-        
-    def summary(self):
-        total = self.passed + self.failed
-        print(f"\n{'='*50}")
-        print(f"TEST SUMMARY: {self.passed}/{total} passed")
-        if self.errors:
-            print(f"\nFAILURES:")
-            for error in self.errors:
-                print(f"  - {error}")
-        print(f"{'='*50}")
-        return self.failed == 0
-
-results = TestResults()
-
-def make_request(method: str, endpoint: str, data: Dict = None, headers: Dict = None, expected_status: int = 200) -> Optional[Dict]:
-    """Make HTTP request and handle response"""
-    url = f"{BASE_URL}{endpoint}"
-    try:
-        if method.upper() == 'GET':
-            response = requests.get(url, headers=headers, timeout=10)
-        elif method.upper() == 'POST':
-            response = requests.post(url, json=data, headers=headers, timeout=10)
-        elif method.upper() == 'DELETE':
-            response = requests.delete(url, headers=headers, timeout=10)
-        else:
-            raise ValueError(f"Unsupported method: {method}")
+        if response.status_code != 200:
+            log_test("Tracks endpoint status", False, f"Expected 200, got {response.status_code}")
+            return False
             
-        if response.status_code != expected_status:
-            raise Exception(f"Expected status {expected_status}, got {response.status_code}: {response.text}")
+        data = response.json()
+        
+        # Check response structure
+        if "paths" not in data:
+            log_test("Tracks response structure", False, "Missing 'paths' key in response")
+            return False
             
-        return response.json() if response.content else {}
+        paths = data["paths"]
         
-    except requests.exceptions.RequestException as e:
-        raise Exception(f"Request failed: {str(e)}")
-    except json.JSONDecodeError as e:
-        raise Exception(f"Invalid JSON response: {str(e)}")
-
-# Test data
-test_user_data = {
-    "email": "maria.silva@codefuturo.com",
-    "password": "senhaSegura123",
-    "name": "Maria Silva"
-}
-
-test_child_data = {
-    "email": "crianca.teste@codefuturo.com", 
-    "password": "senhaSegura456",
-    "name": "João Santos"
-}
-
-# Global variables for test flow
-user_token = None
-child_token = None
-
-def test_health_check():
-    """Test 1: GET /api/ - health check"""
-    try:
-        response = make_request('GET', '/')
-        if response.get('status') == 'ok':
-            results.success("Health check")
-        else:
-            results.failure("Health check", f"Unexpected response: {response}")
-    except Exception as e:
-        results.failure("Health check", str(e))
-
-def test_register():
-    """Test 2: POST /api/auth/register"""
-    global user_token, child_token
-    
-    # Test successful registration
-    try:
-        response = make_request('POST', '/auth/register', test_user_data)
-        if 'token' in response and 'user' in response:
-            user_token = response['token']
-            results.success("User registration")
-        else:
-            results.failure("User registration", f"Missing token or user in response: {response}")
-    except Exception as e:
-        results.failure("User registration", str(e))
-    
-    # Test duplicate email (409)
-    try:
-        make_request('POST', '/auth/register', test_user_data, expected_status=409)
-        results.success("Duplicate email rejection")
-    except Exception as e:
-        results.failure("Duplicate email rejection", str(e))
-    
-    # Register child user for later tests
-    try:
-        response = make_request('POST', '/auth/register', test_child_data)
-        if 'token' in response:
-            child_token = response['token']
-            results.success("Child user registration")
-        else:
-            results.failure("Child user registration", f"Missing token in response: {response}")
-    except Exception as e:
-        results.failure("Child user registration", str(e))
-
-def test_login():
-    """Test 3: POST /api/auth/login"""
-    # Test successful login
-    try:
-        login_data = {"email": test_user_data["email"], "password": test_user_data["password"]}
-        response = make_request('POST', '/auth/login', login_data)
-        if 'token' in response and 'user' in response:
-            results.success("User login")
-        else:
-            results.failure("User login", f"Missing token or user in response: {response}")
-    except Exception as e:
-        results.failure("User login", str(e))
-    
-    # Test invalid credentials (401)
-    try:
-        invalid_data = {"email": test_user_data["email"], "password": "wrongpassword"}
-        make_request('POST', '/auth/login', invalid_data, expected_status=401)
-        results.success("Invalid credentials rejection")
-    except Exception as e:
-        results.failure("Invalid credentials rejection", str(e))
-
-def test_auth_me():
-    """Test 4: GET /api/auth/me"""
-    if not user_token:
-        results.failure("Auth me test", "No user token available")
-        return
+        # Check we have 9 tracks
+        expected_tracks = ["python-zero", "javascript", "html-css", "sql", "typescript", "java", "cpp", "go", "ai-prompts"]
+        if len(paths) != 9:
+            log_test("Tracks count", False, f"Expected 9 tracks, got {len(paths)}")
+            return False
+            
+        # Check each track has required fields
+        required_fields = ["slug", "name", "language", "color", "desc", "real_exec", "total_lessons"]
+        for path in paths:
+            for field in required_fields:
+                if field not in path:
+                    log_test("Track structure", False, f"Missing field '{field}' in track {path.get('slug', 'unknown')}")
+                    return False
+                    
+        # Check specific tracks exist
+        track_slugs = [p["slug"] for p in paths]
+        for expected in expected_tracks:
+            if expected not in track_slugs:
+                log_test("Expected tracks", False, f"Missing expected track: {expected}")
+                return False
+                
+        log_test("Tracks endpoint", True, f"Found {len(paths)} tracks with proper structure")
+        return True
         
-    # Test with valid token
-    try:
-        headers = {"Authorization": f"Bearer {user_token}"}
-        response = make_request('GET', '/auth/me', headers=headers)
-        if 'user' in response and 'progress' in response:
-            results.success("Auth me with token")
-        else:
-            results.failure("Auth me with token", f"Missing user or progress in response: {response}")
     except Exception as e:
-        results.failure("Auth me with token", str(e))
-    
-    # Test without token (401)
-    try:
-        make_request('GET', '/auth/me', expected_status=401)
-        results.success("Auth me without token rejection")
-    except Exception as e:
-        results.failure("Auth me without token rejection", str(e))
+        log_test("Tracks endpoint", False, f"Exception: {str(e)}")
+        return False
 
-def test_onboarding():
-    """Test 5: POST /api/onboard"""
-    if not user_token or not child_token:
-        results.failure("Onboarding test", "Missing tokens")
-        return
+def test_python_zero_path():
+    """Test GET /api/paths/python-zero - should return 12 Python lessons"""
+    print("=== Testing GET /api/paths/python-zero ===")
     
-    # Test adult user (≥13) onboarding
     try:
-        adult_onboard_data = {
-            "birth_date": "1995-05-15",  # Adult
-            "interest": "programacao",
-            "diagnostic_score": 75,
-            "recommendation": {"type": "module", "id": "m3", "reason": "Bom conhecimento básico"}
+        response = requests.get(f"{BASE_URL}/paths/python-zero")
+        
+        if response.status_code != 200:
+            log_test("Python-zero path status", False, f"Expected 200, got {response.status_code}")
+            return False
+            
+        data = response.json()
+        
+        # Check response structure
+        if "path" not in data or "lessons" not in data:
+            log_test("Python-zero response structure", False, "Missing 'path' or 'lessons' key")
+            return False
+            
+        path = data["path"]
+        lessons = data["lessons"]
+        
+        # Check we have 12 lessons
+        if len(lessons) != 12:
+            log_test("Python-zero lessons count", False, f"Expected 12 lessons, got {len(lessons)}")
+            return False
+            
+        # Check lesson structure
+        required_lesson_fields = ["slug", "path_slug", "order", "title", "chapter", 
+                                "instruction_pt", "instruction_en", "instruction_es", 
+                                "starter_code", "hint", "tests", "language", "real_exec"]
+        
+        for lesson in lessons:
+            for field in required_lesson_fields:
+                if field not in lesson:
+                    log_test("Lesson structure", False, f"Missing field '{field}' in lesson {lesson.get('slug', 'unknown')}")
+                    return False
+                    
+        # Check lessons are ordered
+        orders = [lesson["order"] for lesson in lessons]
+        if orders != sorted(orders):
+            log_test("Lesson ordering", False, "Lessons are not properly ordered")
+            return False
+            
+        log_test("Python-zero path", True, f"Found path with {len(lessons)} properly structured lessons")
+        return True
+        
+    except Exception as e:
+        log_test("Python-zero path", False, f"Exception: {str(e)}")
+        return False
+
+def test_javascript_path():
+    """Test GET /api/paths/javascript - should return 10 JS lessons"""
+    print("=== Testing GET /api/paths/javascript ===")
+    
+    try:
+        response = requests.get(f"{BASE_URL}/paths/javascript")
+        
+        if response.status_code != 200:
+            log_test("JavaScript path status", False, f"Expected 200, got {response.status_code}")
+            return False
+            
+        data = response.json()
+        
+        # Check response structure
+        if "path" not in data or "lessons" not in data:
+            log_test("JavaScript response structure", False, "Missing 'path' or 'lessons' key")
+            return False
+            
+        lessons = data["lessons"]
+        
+        # Check we have 10 lessons
+        if len(lessons) != 10:
+            log_test("JavaScript lessons count", False, f"Expected 10 lessons, got {len(lessons)}")
+            return False
+            
+        log_test("JavaScript path", True, f"Found path with {len(lessons)} lessons")
+        return True
+        
+    except Exception as e:
+        log_test("JavaScript path", False, f"Exception: {str(e)}")
+        return False
+
+def test_nonexistent_path():
+    """Test GET /api/paths/inexistente - should return 404"""
+    print("=== Testing GET /api/paths/inexistente ===")
+    
+    try:
+        response = requests.get(f"{BASE_URL}/paths/inexistente")
+        
+        if response.status_code != 404:
+            log_test("Nonexistent path", False, f"Expected 404, got {response.status_code}")
+            return False
+            
+        log_test("Nonexistent path", True, "Correctly returned 404 for nonexistent path")
+        return True
+        
+    except Exception as e:
+        log_test("Nonexistent path", False, f"Exception: {str(e)}")
+        return False
+
+def test_lesson_detail():
+    """Test GET /api/lessons/<slug> - should return lesson with 'next' field"""
+    print("=== Testing GET /api/lessons/<slug> ===")
+    
+    try:
+        # First get a lesson slug from python-zero path
+        response = requests.get(f"{BASE_URL}/paths/python-zero")
+        if response.status_code != 200:
+            log_test("Lesson detail setup", False, "Could not get python-zero lessons")
+            return False
+            
+        lessons = response.json()["lessons"]
+        if not lessons:
+            log_test("Lesson detail setup", False, "No lessons found in python-zero")
+            return False
+            
+        # Test first lesson
+        first_lesson_slug = lessons[0]["slug"]
+        response = requests.get(f"{BASE_URL}/lessons/{first_lesson_slug}")
+        
+        if response.status_code != 200:
+            log_test("Lesson detail status", False, f"Expected 200, got {response.status_code}")
+            return False
+            
+        lesson = response.json()
+        
+        # Check lesson has 'next' field
+        if "next" not in lesson:
+            log_test("Lesson next field", False, "Missing 'next' field in lesson response")
+            return False
+            
+        # For first lesson, next should point to second lesson
+        if lesson["next"] is None:
+            log_test("Lesson next value", False, "First lesson should have a next lesson")
+            return False
+            
+        # Test last lesson (should have next = null)
+        last_lesson_slug = lessons[-1]["slug"]
+        response = requests.get(f"{BASE_URL}/lessons/{last_lesson_slug}")
+        
+        if response.status_code != 200:
+            log_test("Last lesson detail", False, f"Expected 200, got {response.status_code}")
+            return False
+            
+        last_lesson = response.json()
+        if last_lesson["next"] is not None:
+            log_test("Last lesson next", False, "Last lesson should have next = null")
+            return False
+            
+        log_test("Lesson detail", True, "Lesson endpoint returns proper structure with 'next' field")
+        return True
+        
+    except Exception as e:
+        log_test("Lesson detail", False, f"Exception: {str(e)}")
+        return False
+
+def test_nonexistent_lesson():
+    """Test GET /api/lessons/inexistente - should return 404"""
+    print("=== Testing GET /api/lessons/inexistente ===")
+    
+    try:
+        response = requests.get(f"{BASE_URL}/lessons/inexistente")
+        
+        if response.status_code != 404:
+            log_test("Nonexistent lesson", False, f"Expected 404, got {response.status_code}")
+            return False
+            
+        log_test("Nonexistent lesson", True, "Correctly returned 404 for nonexistent lesson")
+        return True
+        
+    except Exception as e:
+        log_test("Nonexistent lesson", False, f"Exception: {str(e)}")
+        return False
+
+def test_end_to_end_flow():
+    """Test end-to-end: register user → complete lesson → verify XP"""
+    print("=== Testing End-to-End Flow ===")
+    
+    try:
+        # 1. Register new user
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        user_data = {
+            "email": f"testuser_{timestamp}@codefuturo.com",
+            "password": "testpass123",
+            "name": f"Test User {timestamp}"
         }
-        headers = {"Authorization": f"Bearer {user_token}"}
-        response = make_request('POST', '/onboard', adult_onboard_data, headers=headers)
-        if response.get('ok') and 'profile' in response:
-            results.success("Adult onboarding")
-        else:
-            results.failure("Adult onboarding", f"Unexpected response: {response}")
-    except Exception as e:
-        results.failure("Adult onboarding", str(e))
-    
-    # Test child (<13) without consent (422)
-    try:
-        child_onboard_data = {
-            "birth_date": "2015-03-10",  # Child (9 years old)
-            "interest": "jogos",
-            "diagnostic_score": 45,
-            "recommendation": {"type": "module", "id": "m2", "reason": "Iniciante em programação"}
+        
+        response = requests.post(f"{BASE_URL}/auth/register", json=user_data)
+        if response.status_code != 200:
+            log_test("E2E - User registration", False, f"Registration failed: {response.status_code}")
+            return False
+            
+        auth_data = response.json()
+        token = auth_data["token"]
+        headers = {"Authorization": f"Bearer {token}"}
+        
+        log_test("E2E - User registration", True, "User registered successfully")
+        
+        # 2. Get initial progress
+        response = requests.get(f"{BASE_URL}/progress", headers=headers)
+        if response.status_code != 200:
+            log_test("E2E - Initial progress", False, f"Could not get progress: {response.status_code}")
+            return False
+            
+        initial_progress = response.json()
+        initial_xp = initial_progress["xp_total"]
+        
+        # 3. Get a real lesson slug from python-zero
+        response = requests.get(f"{BASE_URL}/paths/python-zero")
+        if response.status_code != 200:
+            log_test("E2E - Get lesson", False, "Could not get python-zero lessons")
+            return False
+            
+        lessons = response.json()["lessons"]
+        if not lessons:
+            log_test("E2E - Get lesson", False, "No lessons found")
+            return False
+            
+        lesson_slug = lessons[0]["slug"]
+        
+        # 4. Complete the lesson
+        complete_data = {
+            "lesson_slug": lesson_slug,
+            "path_slug": "python-zero"
         }
-        headers = {"Authorization": f"Bearer {child_token}"}
-        make_request('POST', '/onboard', child_onboard_data, headers=headers, expected_status=422)
-        results.success("Child onboarding without consent rejection")
-    except Exception as e:
-        results.failure("Child onboarding without consent rejection", str(e))
-    
-    # Test child (<13) with consent
-    try:
-        child_onboard_with_consent = {
-            "birth_date": "2015-03-10",  # Child (9 years old)
-            "parent_name": "Ana Santos",
-            "parent_email": "ana.santos@email.com",
-            "consent_data": True,
-            "consent_comm": True,
-            "interest": "jogos",
-            "diagnostic_score": 45,
-            "recommendation": {"type": "module", "id": "m2", "reason": "Iniciante em programação"}
-        }
-        headers = {"Authorization": f"Bearer {child_token}"}
-        response = make_request('POST', '/onboard', child_onboard_with_consent, headers=headers)
-        if response.get('ok') and 'profile' in response:
-            profile = response['profile']
-            if profile.get('consent_ip') and profile.get('consent_at'):
-                results.success("Child onboarding with consent")
-            else:
-                results.failure("Child onboarding with consent", "Missing consent_ip or consent_at")
-        else:
-            results.failure("Child onboarding with consent", f"Unexpected response: {response}")
-    except Exception as e:
-        results.failure("Child onboarding with consent", str(e))
-
-def test_progress():
-    """Test 6: GET /api/progress"""
-    if not user_token:
-        results.failure("Progress test", "No user token available")
-        return
         
-    try:
-        headers = {"Authorization": f"Bearer {user_token}"}
-        response = make_request('GET', '/progress', headers=headers)
-        if 'xp_total' in response and 'level' in response and 'energy' in response:
-            results.success("Get progress")
-        else:
-            results.failure("Get progress", f"Missing progress fields: {response}")
-    except Exception as e:
-        results.failure("Get progress", str(e))
-
-def test_complete_lesson():
-    """Test 7: POST /api/progress/complete"""
-    if not user_token:
-        results.failure("Complete lesson test", "No user token available")
-        return
-    
-    # Test first completion (50 XP)
-    try:
-        lesson_data = {"lesson_slug": "variaveis-python", "path_slug": "python-zero"}
-        headers = {"Authorization": f"Bearer {user_token}"}
-        response = make_request('POST', '/progress/complete', lesson_data, headers=headers)
-        if response.get('already_completed') == False and response.get('xp_earned') == 50:
-            results.success("First lesson completion")
-        else:
-            results.failure("First lesson completion", f"Unexpected response: {response}")
-    except Exception as e:
-        results.failure("First lesson completion", str(e))
-    
-    # Test second completion (idempotent, 0 XP)
-    try:
-        lesson_data = {"lesson_slug": "variaveis-python", "path_slug": "python-zero"}
-        headers = {"Authorization": f"Bearer {user_token}"}
-        response = make_request('POST', '/progress/complete', lesson_data, headers=headers)
-        if response.get('already_completed') == True and response.get('xp_earned') == 0:
-            results.success("Idempotent lesson completion")
-        else:
-            results.failure("Idempotent lesson completion", f"Unexpected response: {response}")
-    except Exception as e:
-        results.failure("Idempotent lesson completion", str(e))
-
-def test_energy_consume():
-    """Test 8: POST /api/energy/consume"""
-    if not user_token:
-        results.failure("Energy consume test", "No user token available")
-        return
-    
-    # Test energy consumption
-    try:
-        headers = {"Authorization": f"Bearer {user_token}"}
-        response = make_request('POST', '/energy/consume', headers=headers)
-        if 'energy' in response and 'max_energy' in response:
-            results.success("Energy consumption")
-        else:
-            results.failure("Energy consumption", f"Missing energy fields: {response}")
-    except Exception as e:
-        results.failure("Energy consumption", str(e))
-    
-    # Consume all energy to test 429 response
-    try:
-        headers = {"Authorization": f"Bearer {user_token}"}
-        # Consume remaining energy (should be 4 more times)
-        for i in range(5):
-            try:
-                make_request('POST', '/energy/consume', headers=headers)
-            except:
-                break
+        response = requests.post(f"{BASE_URL}/progress/complete", json=complete_data, headers=headers)
+        if response.status_code != 200:
+            log_test("E2E - Complete lesson", False, f"Could not complete lesson: {response.status_code}")
+            return False
+            
+        completion_result = response.json()
         
-        # This should return 429
-        make_request('POST', '/energy/consume', headers=headers, expected_status=429)
-        results.success("Energy depletion (429)")
-    except Exception as e:
-        results.failure("Energy depletion (429)", str(e))
-
-def test_leaderboard():
-    """Test 9: GET /api/leaderboard"""
-    try:
-        response = make_request('GET', '/leaderboard?period=week')
-        if 'period' in response and 'rows' in response and isinstance(response['rows'], list):
-            results.success("Leaderboard")
-        else:
-            results.failure("Leaderboard", f"Invalid leaderboard format: {response}")
-    except Exception as e:
-        results.failure("Leaderboard", str(e))
-
-def test_tracks():
-    """Test 10: GET /api/tracks"""
-    try:
-        response = make_request('GET', '/tracks')
-        if 'modules' in response and 'specialized' in response:
-            modules = response['modules']
-            specialized = response['specialized']
-            if isinstance(modules, list) and isinstance(specialized, list) and len(modules) > 0:
-                results.success("Tracks")
-            else:
-                results.failure("Tracks", "Empty or invalid tracks data")
-        else:
-            results.failure("Tracks", f"Missing modules or specialized: {response}")
-    except Exception as e:
-        results.failure("Tracks", str(e))
-
-def test_privacy_export():
-    """Test 11: GET /api/privacy/export"""
-    if not user_token:
-        results.failure("Privacy export test", "No user token available")
-        return
+        # 5. Verify XP was incremented
+        if completion_result.get("already_completed"):
+            log_test("E2E - XP increment", False, "Lesson was already completed")
+            return False
+            
+        xp_earned = completion_result.get("xp_earned", 0)
+        if xp_earned != 50:
+            log_test("E2E - XP amount", False, f"Expected 50 XP, got {xp_earned}")
+            return False
+            
+        # 6. Verify progress was updated
+        response = requests.get(f"{BASE_URL}/progress", headers=headers)
+        if response.status_code != 200:
+            log_test("E2E - Final progress", False, "Could not get final progress")
+            return False
+            
+        final_progress = response.json()
+        final_xp = final_progress["xp_total"]
         
-    try:
-        headers = {"Authorization": f"Bearer {user_token}"}
-        response = make_request('GET', '/privacy/export', headers=headers)
-        if 'user' in response and 'profile' in response and 'progress' in response and 'completions' in response:
-            results.success("Privacy data export (LGPD)")
-        else:
-            results.failure("Privacy data export (LGPD)", f"Missing data fields: {response}")
-    except Exception as e:
-        results.failure("Privacy data export (LGPD)", str(e))
-
-def test_privacy_delete():
-    """Test 12: DELETE /api/privacy/delete"""
-    if not child_token:
-        results.failure("Privacy delete test", "No child token available")
-        return
+        if final_xp != initial_xp + 50:
+            log_test("E2E - XP verification", False, f"XP not properly incremented: {initial_xp} -> {final_xp}")
+            return False
+            
+        log_test("E2E - Complete flow", True, f"Successfully completed lesson and earned {xp_earned} XP")
+        return True
         
-    try:
-        headers = {"Authorization": f"Bearer {child_token}"}
-        response = make_request('DELETE', '/privacy/delete', headers=headers)
-        if response.get('ok') and 'deleted_user_id' in response:
-            results.success("Account deletion (LGPD)")
-        else:
-            results.failure("Account deletion (LGPD)", f"Unexpected response: {response}")
     except Exception as e:
-        results.failure("Account deletion (LGPD)", str(e))
+        log_test("E2E - Complete flow", False, f"Exception: {str(e)}")
+        return False
 
-def run_all_tests():
-    """Run all tests in sequence"""
-    print("Starting CodeFuturo Backend API Tests...")
-    print(f"Backend URL: {BASE_URL}")
-    print("="*50)
+def test_legacy_endpoints():
+    """Verify that old endpoints still work without regression"""
+    print("=== Testing Legacy Endpoints (No Regression) ===")
     
-    # Run tests in order
-    test_health_check()
-    test_register()
-    test_login()
-    test_auth_me()
-    test_onboarding()
-    test_progress()
-    test_complete_lesson()
-    test_energy_consume()
-    test_leaderboard()
-    test_tracks()
-    test_privacy_export()
-    test_privacy_delete()
+    try:
+        # Test health check
+        response = requests.get(f"{BASE_URL}/")
+        if response.status_code != 200:
+            log_test("Legacy - Health check", False, f"Health check failed: {response.status_code}")
+            return False
+        log_test("Legacy - Health check", True, "Health endpoint working")
+        
+        # Test leaderboard (public endpoint)
+        response = requests.get(f"{BASE_URL}/leaderboard")
+        if response.status_code != 200:
+            log_test("Legacy - Leaderboard", False, f"Leaderboard failed: {response.status_code}")
+            return False
+        log_test("Legacy - Leaderboard", True, "Leaderboard endpoint working")
+        
+        # Test auth endpoints with invalid credentials (should return 401)
+        response = requests.post(f"{BASE_URL}/auth/login", json={"email": "invalid@test.com", "password": "wrong"})
+        if response.status_code != 401:
+            log_test("Legacy - Auth validation", False, f"Expected 401, got {response.status_code}")
+            return False
+        log_test("Legacy - Auth validation", True, "Auth endpoints working")
+        
+        return True
+        
+    except Exception as e:
+        log_test("Legacy endpoints", False, f"Exception: {str(e)}")
+        return False
+
+def main():
+    print("CodeFuturo Backend Testing - New Tracks/Lessons Endpoints")
+    print("=" * 60)
+    print(f"Testing against: {BASE_URL}")
+    print()
     
-    # Print summary
-    success = results.summary()
-    return success
+    tests = [
+        test_tracks_endpoint,
+        test_python_zero_path,
+        test_javascript_path,
+        test_nonexistent_path,
+        test_lesson_detail,
+        test_nonexistent_lesson,
+        test_end_to_end_flow,
+        test_legacy_endpoints
+    ]
+    
+    passed = 0
+    total = len(tests)
+    
+    for test_func in tests:
+        try:
+            if test_func():
+                passed += 1
+        except Exception as e:
+            print(f"❌ FAIL {test_func.__name__}: {str(e)}")
+    
+    print("=" * 60)
+    print(f"RESULTS: {passed}/{total} tests passed")
+    
+    if passed == total:
+        print("🎉 All tests passed! New tracks/lessons endpoints are working correctly.")
+        return 0
+    else:
+        print("⚠️  Some tests failed. Check the details above.")
+        return 1
 
 if __name__ == "__main__":
-    success = run_all_tests()
-    sys.exit(0 if success else 1)
+    sys.exit(main())
