@@ -295,6 +295,11 @@ async def complete_lesson(data: CompleteLessonIn, user=Depends(current_user)):
         "completed_at": datetime.utcnow().isoformat(),
     })
 
+    # If this completion finishes the path AND user is Pro, upsert the certificate
+    # record so it can be publicly verified at /verificar/<cert_id> even before download.
+    if user.get("is_pro"):
+        await _ensure_certificate_record(user, data.path_slug)
+
     prog.update(update)
     return {"already_completed": False, "progress": serialize(prog), "xp_earned": xp}
 
@@ -446,6 +451,35 @@ async def _track_completion_status(user_id: str, path_slug: str) -> dict:
     }
 
 
+def _compute_cert_id(user_id: str, path_slug: str) -> str:
+    return "CF-" + hashlib.sha1(f"{user_id}:{path_slug}".encode()).hexdigest()[:12].upper()
+
+
+async def _ensure_certificate_record(user: dict, path_slug: str) -> Optional[str]:
+    """Upsert the certificate record if (and only if) the user has fully completed
+    the path. Returns the cert_id when the record exists, else None."""
+    st = await _track_completion_status(user["id"], path_slug)
+    if not st["is_complete"]:
+        return None
+    cert_id = _compute_cert_id(user["id"], path_slug)
+    progress = await db.progress.find_one({"user_id": user["id"]}) or {}
+    await db.certificates.update_one(
+        {"cert_id": cert_id},
+        {"$setOnInsert": {
+            "cert_id": cert_id,
+            "user_id": user["id"],
+            "path_slug": path_slug,
+            "track_name": st["path"]["name"],
+            "student_name": user.get("name") or user.get("email", "Aluno"),
+            "total_lessons": st["total"],
+            "xp_earned": int(progress.get("xp_total", 0)),
+            "issued_at": datetime.utcnow().isoformat(),
+        }},
+        upsert=True,
+    )
+    return cert_id
+
+
 @api.get("/certificates")
 async def list_certificates(user=Depends(current_user)):
     """Return per-track completion status for the current user."""
@@ -479,39 +513,19 @@ async def download_certificate(path_slug: str, user=Depends(current_user)):
     if not st["is_complete"]:
         raise HTTPException(403, f"Trilha incompleta: {st['completed']}/{st['total']} lições concluídas")
 
-    # Stable cert id from (user_id + path_slug)
-    cert_id = "CF-" + hashlib.sha1(f"{user['id']}:{path_slug}".encode()).hexdigest()[:12].upper()
-
-    progress = await db.progress.find_one({"user_id": user["id"]}) or {}
-    student_name = user.get("name") or user.get("email", "Aluno")
-    issued_at = datetime.utcnow()
-    track_name = st["path"]["name"]
-
-    # Persist certificate record (idempotent on cert_id) so it can be publicly verified.
-    await db.certificates.update_one(
-        {"cert_id": cert_id},
-        {"$setOnInsert": {
-            "cert_id": cert_id,
-            "user_id": user["id"],
-            "path_slug": path_slug,
-            "track_name": track_name,
-            "student_name": student_name,
-            "total_lessons": st["total"],
-            "xp_earned": int(progress.get("xp_total", 0)),
-            "issued_at": issued_at.isoformat(),
-        }},
-        upsert=True,
-    )
+    # Persist (idempotent) so it can be publicly verified.
+    cert_id = await _ensure_certificate_record(user, path_slug)
+    rec = await db.certificates.find_one({"cert_id": cert_id}, {"_id": 0})
 
     pdf_bytes = render_certificate(
-        student_name=student_name,
-        track_name=track_name,
-        completed_at=issued_at,
+        student_name=rec["student_name"],
+        track_name=rec["track_name"],
+        completed_at=datetime.fromisoformat(rec["issued_at"]),
         cert_id=cert_id,
-        total_lessons=st["total"],
-        xp_earned=int(progress.get("xp_total", 0)),
+        total_lessons=rec["total_lessons"],
+        xp_earned=rec.get("xp_earned", 0),
     )
-    filename = cert_filename(path_slug, student_name)
+    filename = cert_filename(path_slug, rec["student_name"])
     return Response(
         content=pdf_bytes,
         media_type="application/pdf",

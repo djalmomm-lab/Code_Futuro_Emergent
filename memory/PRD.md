@@ -11,57 +11,66 @@ User language preference: **Portuguese (pt-BR)**.
 - Integrations: Stripe (test mode), Emergent LLM key (GPT for lesson generation, Nano Banana for product image).
 
 ## Core Architecture
-- `frontend/src/pages/`: Home, Login, Register, Onboard, Dashboard, Lesson, JourneyPage, LeaderboardPage, Catalog, Profile, Plans, PaymentSuccess, **Certificates**.
-- `frontend/src/components/`: Navbar, Footer, Paywall, LanguagesSection, etc.
-- `backend/server.py`: Auth, onboarding, progress, energy, leaderboard, tracks/paths, lessons, paywall enforcement, **certificates**, LGPD endpoints.
+- `frontend/src/pages/`: Home, Login, Register, Onboard, Dashboard, Lesson, JourneyPage, LeaderboardPage, Catalog, Profile, Plans, PaymentSuccess, Certificates, **VerifyCertificate**.
+- `frontend/src/components/`: Navbar, Footer, Paywall, **UpgradeCelebration**, LanguagesSection, etc.
+- `frontend/src/lib/runners.js`: JS sandbox runner + HTML preview/normalization.
+- `backend/server.py`: Auth, onboarding, progress, energy, leaderboard, tracks/paths, lessons, paywall enforcement, certificates, **public verify endpoint**, LGPD endpoints.
 - `backend/subscription_routes.py`: Stripe checkout/portal/webhook.
 - `backend/certificates.py`: reportlab-based PDF generator.
 - `backend/seed_lessons.py`: LLM-driven lesson seeder.
 
 ## DB Collections
-- `users` `{id, email, password_hash, name, age, is_pro, plan, tier, stripe_customer_id, subscription_status, subscription_ends_at}`
-- `paths` `{slug, name, language, color, desc, total_lessons}`
-- `lessons` `{id, slug, path_slug, chapter, order, title, instruction_pt, starter_code, tests, language}`
-- `progress` `{user_id, xp_total, streak, energy, level, ...}`
-- `lesson_completions` `{user_id, lesson_slug, completed_at}` (unique compound index)
-- `payment_transactions` `{user_id, stripe_session_id, amount, status, ...}`
+- `users`, `paths`, `lessons`, `progress`, `lesson_completions`, `payment_transactions`, `profiles`,
+- **`certificates` `{cert_id (unique), user_id, path_slug, track_name, student_name, total_lessons, xp_earned, issued_at}`** — issued idempotently on track completion (Pro users).
 
 ## Paywall Rules
-- `FREE_LESSONS_PER_PATH = 3` (first 3 lessons free per track)
-- Backend enforces:
-  - `GET /api/paths/{slug}` → tags each lesson with `requires_pro` (order > 3 AND not is_pro)
-  - `GET /api/lessons/{slug}` → returns minimal payload `{requires_pro: true}` for locked lessons
-  - `POST /api/progress/complete` → 402 for locked lessons
-- Frontend: `Paywall.jsx` component + lock icons + PRO badges + upgrade banner.
+- `FREE_LESSONS_PER_PATH = 3`. Backend enforces in `/api/paths/{slug}`, `/api/lessons/{slug}`, `/api/progress/complete`.
+- Frontend: `Paywall.jsx` modal + lock icons + PRO badges + Journey upgrade banner.
+
+## Conversion Popup (UpgradeCelebration)
+- Triggered when an authenticated **non-Pro** user completes the **3rd** (last free) lesson of any track.
+- Celebrates the milestone, previews 4 of the upcoming locked lessons, offers Pro CTA.
+- Suppressed for Pro users and skipped on idempotent re-completes.
 
 ## Certificates (Pro feature)
 - `GET /api/certificates` → list of all tracks with completion stats + `is_pro`
 - `GET /api/certificates/{path_slug}` → 200 PDF (Pro + completed) | 402 (free) | 403 (incomplete)
-- Frontend `/certificados` page with download flow (blob → trigger save).
-- Stable cert ID: `CF-` + sha1(user_id:path_slug)[:12]
+- **`GET /api/verify/{cert_id}` → 200 public verification** (no auth) | 404 if invalid.
+- Certificate auto-issued on `/api/progress/complete` when Pro user finishes the last lesson — verifiable instantly without needing to download.
+- Stable cert ID: `CF-` + sha1(user_id:path_slug)[:12].
+- Frontend pages: `/certificados` (private, listing + download) and `/verificar`, `/verificar/:certId` (public).
+
+## Live Code Execution
+- **Python**: Pyodide WASM in browser (real exec).
+- **JavaScript**: sandboxed iframe + postMessage capture of `console.log` (`runJavaScript()`).
+- **HTML/CSS**: live iframe preview pane with normalized HTML comparison for tests.
+- Other languages (SQL, TS, Java, etc.): textual validation mode (fallback).
 
 ## Implemented (Changelog)
 - 2026-04: CodeFuturo identity, multi-language UI, LGPD onboarding, Stripe subscriptions (checkout + portal + webhooks), 76 lessons across 9 tracks via LLM, Pyodide Python execution, paywall backend.
-- **2026-05-01: Paywall frontend (Lesson.jsx, JourneyPage.jsx, Paywall.jsx). Beautiful Pro upgrade modal with 4 benefit bullets, lock icons + PRO pills on locked lessons, contextual upgrade banner on Journey page.**
-- **2026-05-01: PDF Certificate generation. Backend `/api/certificates` endpoints with reportlab-rendered A4 landscape PDF. Frontend `/certificados` page with grid + progress bars + download buttons. Navbar dropdown link added.**
+- 2026-05-01: Paywall frontend (Lesson.jsx, JourneyPage.jsx, Paywall.jsx).
+- 2026-05-01: PDF Certificate generation. Backend `/api/certificates` endpoints + frontend `/certificados`.
+- **2026-05-01 (later): UpgradeCelebration popup. JS live execution + HTML preview pane in Lesson page. Public certificate verification endpoint `/api/verify/{cert_id}` + page `/verificar/:certId`. Auto-issuance of cert on track completion.**
 
 ## Test Coverage
-- Backend regression: `/app/backend/tests/test_paywall_certs.py` (16 cases, 100%).
-- E2E frontend: 8/8 flows green via Playwright (anonymous + free + Pro).
+- Backend regression: `/app/backend/tests/test_paywall_certs.py` + `test_verify_endpoint.py` (**19/19 100%**).
+- E2E frontend: 4/4 new flows + 8/8 paywall flows green via Playwright.
 
 ## Roadmap
 
 ### P1 — Next
-- Live code execution / advanced validation for JavaScript and HTML/CSS (currently only Python via Pyodide).
-- "Verify certificate" public endpoint (lookup by cert_id) — UI placeholder already mentions `codefuturo.app/verificar`.
+- (none of the original P1 items remain; all delivered)
+- Bonus polish: cert auto-issue confirmation toast in Lesson page when track is fully completed.
 
 ### P2 — Later
 - B2B "CodeFuturo Escolas" panel (teacher dashboard, classes, bulk invoices).
-- Refactor: split `server.py` (~530 lines) into routers under `/app/backend/routes/` (auth, lessons, progress, certificates).
+- Refactor: split `server.py` (~580 lines) into routers under `/app/backend/routes/` (auth, lessons, progress, certificates, verify).
 - Wrap `render_certificate` in `asyncio.to_thread` if PDFs grow heavy.
+- Production hardening: pin postMessage origin in `runJavaScript`, switch to allow-list projection on verify response.
 - Cleanup: prune orphan free-test users created during automated tests.
 
 ## Critical Info
 - Stripe runs in TEST mode with real test keys in `backend/.env`.
 - Pro test user (with all Python lessons completed): `cert.test@codefuturo.app / TestPro123!`
+- Public verify URL example: `/verificar/CF-FD26B52ECDE6`
 - Always speak with the user in Portuguese (pt-BR).
