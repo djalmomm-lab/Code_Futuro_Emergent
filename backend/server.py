@@ -109,7 +109,15 @@ def calc_age(birth_date: str) -> int:
 
 
 def public_user(u: dict) -> dict:
-    return {"id": u["id"], "email": u["email"], "name": u["name"]}
+    return {
+        "id": u["id"],
+        "email": u["email"],
+        "name": u["name"],
+        "is_pro": bool(u.get("is_pro", False)),
+        "tier": u.get("tier"),
+        "plan": u.get("plan"),
+        "subscription_ends_at": u.get("subscription_ends_at"),
+    }
 
 
 async def ensure_progress(user_id: str) -> dict:
@@ -365,6 +373,12 @@ async def delete_account(user=Depends(current_user)):
 
 
 app.include_router(api)
+
+# Stripe subscription routes (depend on db + auth dep already defined above)
+from subscription_routes import build_router as _sub_router, build_webhook_router as _sub_webhook  # noqa: E402
+app.include_router(_sub_router(db, current_user))
+app.include_router(_sub_webhook(db))
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Menu, X, Globe, ChevronDown, User as UserIcon, LogOut, Settings, LayoutDashboard } from 'lucide-react';
+import { Menu, X, Globe, ChevronDown, User as UserIcon, LogOut, Settings, LayoutDashboard, Crown } from 'lucide-react';
 import { useLanguage, LANGUAGES } from '../context/LanguageContext';
 import { ByteLogo } from './ByteMascot';
 import { Button } from './ui/button';
-import { isAuthed, getStoredUser, logout as doLogout } from '../lib/api';
+import { isAuthed, getStoredUser, logout as doLogout, authApi } from '../lib/api';
 
 export default function Navbar() {
   const { t, lang, setLang } = useLanguage();
@@ -12,12 +12,21 @@ export default function Navbar() {
   const [langOpen, setLangOpen] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
   const [user, setUser] = useState(getStoredUser());
+  const [isPro, setIsPro] = useState(false);
   const navigate = useNavigate();
 
-  // Sync auth state on route changes
+  // Sync auth state on route changes + fetch fresh subscription status
   useEffect(() => {
     const sync = () => setUser(getStoredUser());
     window.addEventListener('storage', sync);
+    if (isAuthed()) {
+      authApi.me().then((me) => {
+        if (me?.user) {
+          setUser(me.user);
+          setIsPro(!!me.user.is_pro);
+        }
+      }).catch(() => {});
+    }
     return () => window.removeEventListener('storage', sync);
   }, []);
 
@@ -50,7 +59,7 @@ export default function Navbar() {
             {authed && <Link to="/dashboard" className="text-slate-300 hover:text-white transition-colors text-sm font-semibold">{t('nav.dashboard')}</Link>}
             <Link to="/jornada/python-zero" className="text-slate-300 hover:text-white transition-colors text-sm font-semibold">{t('nav.paths')}</Link>
             <Link to="/leaderboard" className="text-slate-300 hover:text-white transition-colors text-sm font-semibold">Leaderboard</Link>
-            <a href="#pro" className="text-slate-300 hover:text-white transition-colors text-sm font-semibold">{t('nav.pro')}</a>
+            <Link to="/planos" className="text-slate-300 hover:text-white transition-colors text-sm font-semibold">{t('nav.pro')}</Link>
           </nav>
 
           <div className="flex items-center gap-2">
@@ -96,11 +105,19 @@ export default function Navbar() {
               <div className="relative hidden md:block">
                 <button
                   onClick={() => setUserOpen((v) => !v)}
-                  className="flex items-center gap-2 pl-1.5 pr-2 py-1.5 rounded-full border hover:border-[#A3E635] transition"
-                  style={{ borderColor: 'var(--cf-border)', background: 'var(--cf-panel)' }}
+                  className="flex items-center gap-2 pl-1.5 pr-2 py-1.5 rounded-full border hover:border-[#A3E635] transition relative"
+                  style={{ borderColor: isPro ? '#A3E635' : 'var(--cf-border)', background: 'var(--cf-panel)' }}
                 >
-                  <span className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-[#0A0F1E] bg-[#A3E635]">{initials}</span>
+                  <span className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-[#0A0F1E] bg-[#A3E635] relative">
+                    {initials}
+                    {isPro && (
+                      <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#0A0F1E] flex items-center justify-center" title="Pro">
+                        <Crown size={9} className="text-[#A3E635]" fill="#A3E635" />
+                      </span>
+                    )}
+                  </span>
                   <span className="text-sm font-bold text-white max-w-[120px] truncate">{user?.name}</span>
+                  {isPro && <span className="text-[9px] font-bold tracking-wider px-1.5 py-0.5 rounded bg-[#A3E635] text-[#0A0F1E]">PRO</span>}
                   <ChevronDown size={14} className="text-slate-400" />
                 </button>
                 {userOpen && (
@@ -115,6 +132,16 @@ export default function Navbar() {
                     <Link to="/perfil" onClick={() => setUserOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm text-slate-200 hover:bg-[#1C2235]">
                       <UserIcon size={14} /> Perfil
                     </Link>
+                    {!isPro && (
+                      <Link to="/planos" onClick={() => setUserOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm font-bold text-[#A3E635] hover:bg-[#1C2235]">
+                        <Crown size={14} /> Fazer upgrade
+                      </Link>
+                    )}
+                    {isPro && (
+                      <Link to="/planos" onClick={() => setUserOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm text-slate-200 hover:bg-[#1C2235]">
+                        <Crown size={14} className="text-[#A3E635]" /> Minha assinatura
+                      </Link>
+                    )}
                     <Link to="/configuracoes" onClick={() => setUserOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm text-slate-200 hover:bg-[#1C2235]">
                       <Settings size={14} /> Configurações
                     </Link>

@@ -66,6 +66,18 @@ export const lessonsApi = {
   get: (slug) => api.get(`/lessons/${slug}`).then((r) => r.data),
 };
 
+// Subscription / Billing
+export const subscriptionApi = {
+  plans: () => api.get('/subscription/plans').then((r) => r.data),
+  me: () => api.get('/subscription/me').then((r) => r.data),
+  checkout: (planId) => api.post('/subscription/checkout', {
+    plan_id: planId,
+    origin_url: window.location.origin,
+  }).then((r) => r.data),
+  status: (sessionId) => api.get(`/subscription/status/${sessionId}`).then((r) => r.data),
+  portal: () => api.post('/subscription/portal', { origin_url: window.location.origin }).then((r) => r.data),
+};
+
 // Privacy
 export const privacyApi = {
   export: () => api.get('/privacy/export').then((r) => r.data),

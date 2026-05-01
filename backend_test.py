@@ -362,13 +362,420 @@ def test_legacy_endpoints():
         log_test("Legacy endpoints", False, f"Exception: {str(e)}")
         return False
 
+def test_subscription_plans():
+    """Test GET /api/subscription/plans - should return 3 plans"""
+    print("=== Testing GET /api/subscription/plans ===")
+    
+    try:
+        response = requests.get(f"{BASE_URL}/subscription/plans")
+        
+        if response.status_code != 200:
+            log_test("Subscription plans status", False, f"Expected 200, got {response.status_code}")
+            return False
+            
+        data = response.json()
+        
+        # Check response structure
+        if "plans" not in data:
+            log_test("Plans response structure", False, "Missing 'plans' key in response")
+            return False
+            
+        plans = data["plans"]
+        
+        # Check we have 3 plans
+        if len(plans) != 3:
+            log_test("Plans count", False, f"Expected 3 plans, got {len(plans)}")
+            return False
+            
+        # Check specific plans exist with correct structure
+        expected_plans = {
+            "pro_annual": {"price_brl": 347.00, "interval": "year", "trial_days": 7},
+            "pro_pioneer": {"price_brl": 197.00, "interval": "year", "trial_days": 7},
+            "lifetime": {"price_brl": 997.00, "interval": "one_time", "trial_days": 0}
+        }
+        
+        plan_ids = [p["id"] for p in plans]
+        for expected_id, expected_data in expected_plans.items():
+            if expected_id not in plan_ids:
+                log_test("Expected plans", False, f"Missing expected plan: {expected_id}")
+                return False
+                
+            # Find the plan and verify its data
+            plan = next(p for p in plans if p["id"] == expected_id)
+            for key, value in expected_data.items():
+                if plan.get(key) != value:
+                    log_test(f"Plan {expected_id} data", False, f"Expected {key}={value}, got {plan.get(key)}")
+                    return False
+                    
+        log_test("Subscription plans", True, f"Found {len(plans)} plans with correct structure")
+        return True
+        
+    except Exception as e:
+        log_test("Subscription plans", False, f"Exception: {str(e)}")
+        return False
+
+def test_subscription_me_new_user():
+    """Test GET /api/subscription/me - new user should have is_pro=false"""
+    print("=== Testing GET /api/subscription/me (new user) ===")
+    
+    try:
+        # Register new user
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        user_data = {
+            "email": f"stripe_test_{timestamp}@codefuturo.com",
+            "password": "testpass123",
+            "name": f"Stripe Test {timestamp}"
+        }
+        
+        response = requests.post(f"{BASE_URL}/auth/register", json=user_data)
+        if response.status_code != 200:
+            log_test("Subscription me - registration", False, f"Registration failed: {response.status_code}")
+            return False
+            
+        auth_data = response.json()
+        token = auth_data["token"]
+        headers = {"Authorization": f"Bearer {token}"}
+        
+        # Get subscription status
+        response = requests.get(f"{BASE_URL}/subscription/me", headers=headers)
+        
+        if response.status_code != 200:
+            log_test("Subscription me status", False, f"Expected 200, got {response.status_code}")
+            return False
+            
+        data = response.json()
+        
+        # Check response structure
+        required_fields = ["is_pro", "plan", "tier", "subscription_ends_at", "stripe_customer_id"]
+        for field in required_fields:
+            if field not in data:
+                log_test("Subscription me structure", False, f"Missing field: {field}")
+                return False
+                
+        # New user should not be pro
+        if data["is_pro"] != False:
+            log_test("Subscription me - is_pro", False, f"Expected is_pro=false, got {data['is_pro']}")
+            return False
+            
+        log_test("Subscription me (new user)", True, "New user correctly shows is_pro=false")
+        return True, token  # Return token for next tests
+        
+    except Exception as e:
+        log_test("Subscription me", False, f"Exception: {str(e)}")
+        return False
+
+def test_subscription_checkout():
+    """Test POST /api/subscription/checkout - create checkout session"""
+    print("=== Testing POST /api/subscription/checkout ===")
+    
+    try:
+        # Register new user
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        user_data = {
+            "email": f"checkout_test_{timestamp}@codefuturo.com",
+            "password": "testpass123",
+            "name": f"Checkout Test {timestamp}"
+        }
+        
+        response = requests.post(f"{BASE_URL}/auth/register", json=user_data)
+        if response.status_code != 200:
+            log_test("Checkout - registration", False, f"Registration failed: {response.status_code}")
+            return False
+            
+        auth_data = response.json()
+        token = auth_data["token"]
+        headers = {"Authorization": f"Bearer {token}"}
+        
+        # Create checkout session
+        checkout_data = {
+            "plan_id": "pro_annual",
+            "origin_url": "https://web-replica-128.preview.emergentagent.com"
+        }
+        
+        response = requests.post(f"{BASE_URL}/subscription/checkout", json=checkout_data, headers=headers)
+        
+        if response.status_code != 200:
+            log_test("Checkout status", False, f"Expected 200, got {response.status_code}: {response.text}")
+            return False
+            
+        data = response.json()
+        
+        # Check response structure
+        if "url" not in data or "session_id" not in data:
+            log_test("Checkout response structure", False, "Missing 'url' or 'session_id'")
+            return False
+            
+        # Verify URL is a Stripe checkout URL
+        if not data["url"].startswith("https://checkout.stripe.com/"):
+            log_test("Checkout URL", False, f"URL doesn't start with https://checkout.stripe.com/: {data['url']}")
+            return False
+            
+        # Verify session_id format
+        if not data["session_id"].startswith("cs_"):
+            log_test("Checkout session_id", False, f"session_id doesn't start with 'cs_': {data['session_id']}")
+            return False
+            
+        log_test("Checkout session creation", True, f"Created session: {data['session_id']}")
+        
+        # Test invalid plan_id
+        invalid_checkout = {
+            "plan_id": "invalid_plan",
+            "origin_url": "https://web-replica-128.preview.emergentagent.com"
+        }
+        
+        response = requests.post(f"{BASE_URL}/subscription/checkout", json=invalid_checkout, headers=headers)
+        
+        if response.status_code != 400:
+            log_test("Checkout invalid plan", False, f"Expected 400 for invalid plan, got {response.status_code}")
+            return False
+            
+        log_test("Checkout invalid plan validation", True, "Correctly rejected invalid plan_id")
+        
+        return True, data["session_id"], token  # Return session_id and token for next tests
+        
+    except Exception as e:
+        log_test("Checkout", False, f"Exception: {str(e)}")
+        return False
+
+def test_subscription_status():
+    """Test GET /api/subscription/status/{session_id}"""
+    print("=== Testing GET /api/subscription/status/{session_id} ===")
+    
+    try:
+        # First create a checkout session
+        checkout_result = test_subscription_checkout()
+        if not checkout_result or len(checkout_result) < 3:
+            log_test("Status - setup", False, "Could not create checkout session")
+            return False
+            
+        _, session_id, token = checkout_result
+        headers = {"Authorization": f"Bearer {token}"}
+        
+        # Get session status
+        response = requests.get(f"{BASE_URL}/subscription/status/{session_id}", headers=headers)
+        
+        if response.status_code != 200:
+            log_test("Status endpoint", False, f"Expected 200, got {response.status_code}")
+            return False
+            
+        data = response.json()
+        
+        # Check response structure
+        required_fields = ["status", "payment_status", "amount_total", "currency"]
+        for field in required_fields:
+            if field not in data:
+                log_test("Status response structure", False, f"Missing field: {field}")
+                return False
+                
+        # For unpaid session, payment_status should be 'unpaid' or status should be 'open'
+        if data["payment_status"] not in ["unpaid", "paid"] and data["status"] not in ["open", "complete"]:
+            log_test("Status values", False, f"Unexpected status values: {data}")
+            return False
+            
+        log_test("Subscription status", True, f"Status: {data['status']}, Payment: {data['payment_status']}")
+        return True
+        
+    except Exception as e:
+        log_test("Subscription status", False, f"Exception: {str(e)}")
+        return False
+
+def test_webhook_stripe():
+    """Test POST /api/webhook/stripe - should validate signature"""
+    print("=== Testing POST /api/webhook/stripe ===")
+    
+    try:
+        # Test without stripe-signature header (should fail)
+        response = requests.post(f"{BASE_URL}/webhook/stripe", json={"test": "data"})
+        
+        if response.status_code != 400:
+            log_test("Webhook without signature", False, f"Expected 400, got {response.status_code}")
+            return False
+            
+        log_test("Webhook signature validation", True, "Correctly rejected request without stripe-signature header")
+        return True
+        
+    except Exception as e:
+        log_test("Webhook stripe", False, f"Exception: {str(e)}")
+        return False
+
+def test_subscription_portal():
+    """Test POST /api/subscription/portal"""
+    print("=== Testing POST /api/subscription/portal ===")
+    
+    try:
+        # Test with user who has no stripe_customer_id (should fail)
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        user_data = {
+            "email": f"portal_test_{timestamp}@codefuturo.com",
+            "password": "testpass123",
+            "name": f"Portal Test {timestamp}"
+        }
+        
+        response = requests.post(f"{BASE_URL}/auth/register", json=user_data)
+        if response.status_code != 200:
+            log_test("Portal - registration", False, f"Registration failed: {response.status_code}")
+            return False
+            
+        auth_data = response.json()
+        token = auth_data["token"]
+        headers = {"Authorization": f"Bearer {token}"}
+        
+        # Try to access portal without having a customer_id
+        response = requests.post(f"{BASE_URL}/subscription/portal", json={}, headers=headers)
+        
+        if response.status_code != 400:
+            log_test("Portal without customer", False, f"Expected 400, got {response.status_code}")
+            return False
+            
+        log_test("Portal validation", True, "Correctly rejected user without stripe_customer_id")
+        
+        # Now create a checkout session (which creates a customer)
+        checkout_data = {
+            "plan_id": "pro_annual",
+            "origin_url": "https://web-replica-128.preview.emergentagent.com"
+        }
+        
+        response = requests.post(f"{BASE_URL}/subscription/checkout", json=checkout_data, headers=headers)
+        
+        if response.status_code != 200:
+            log_test("Portal - checkout setup", False, f"Checkout failed: {response.status_code}")
+            return False
+            
+        # Now try portal again (should work)
+        portal_data = {
+            "origin_url": "https://web-replica-128.preview.emergentagent.com"
+        }
+        
+        response = requests.post(f"{BASE_URL}/subscription/portal", json=portal_data, headers=headers)
+        
+        if response.status_code != 200:
+            log_test("Portal after checkout", False, f"Expected 200, got {response.status_code}")
+            return False
+            
+        data = response.json()
+        
+        if "url" not in data:
+            log_test("Portal response", False, "Missing 'url' in response")
+            return False
+            
+        # Verify URL is a Stripe portal URL
+        if not data["url"].startswith("https://billing.stripe.com/"):
+            log_test("Portal URL", False, f"URL doesn't start with https://billing.stripe.com/: {data['url']}")
+            return False
+            
+        log_test("Subscription portal", True, "Portal URL created successfully")
+        return True
+        
+    except Exception as e:
+        log_test("Subscription portal", False, f"Exception: {str(e)}")
+        return False
+
+def test_stripe_integration_flow():
+    """Test complete Stripe integration flow"""
+    print("=== Testing Complete Stripe Integration Flow ===")
+    
+    try:
+        # 1. Register new user
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        user_data = {
+            "email": f"flow_test_{timestamp}@codefuturo.com",
+            "password": "testpass123",
+            "name": f"Flow Test {timestamp}"
+        }
+        
+        response = requests.post(f"{BASE_URL}/auth/register", json=user_data)
+        if response.status_code != 200:
+            log_test("Flow - registration", False, f"Registration failed: {response.status_code}")
+            return False
+            
+        auth_data = response.json()
+        token = auth_data["token"]
+        headers = {"Authorization": f"Bearer {token}"}
+        
+        log_test("Flow - User registration", True, "User registered")
+        
+        # 2. Check subscription status (should be is_pro=false)
+        response = requests.get(f"{BASE_URL}/subscription/me", headers=headers)
+        if response.status_code != 200:
+            log_test("Flow - subscription/me", False, f"Failed: {response.status_code}")
+            return False
+            
+        sub_data = response.json()
+        if sub_data["is_pro"] != False:
+            log_test("Flow - initial is_pro", False, f"Expected false, got {sub_data['is_pro']}")
+            return False
+            
+        log_test("Flow - Initial subscription status", True, "is_pro=false confirmed")
+        
+        # 3. Create checkout session
+        checkout_data = {
+            "plan_id": "pro_annual",
+            "origin_url": "https://web-replica-128.preview.emergentagent.com"
+        }
+        
+        response = requests.post(f"{BASE_URL}/subscription/checkout", json=checkout_data, headers=headers)
+        if response.status_code != 200:
+            log_test("Flow - checkout", False, f"Checkout failed: {response.status_code}")
+            return False
+            
+        checkout_result = response.json()
+        session_id = checkout_result["session_id"]
+        
+        if not checkout_result["url"].startswith("https://checkout.stripe.com/"):
+            log_test("Flow - checkout URL", False, "Invalid checkout URL")
+            return False
+            
+        log_test("Flow - Checkout session", True, f"Session created: {session_id}")
+        
+        # 4. Verify payment_transactions record was created
+        # We can't directly query the DB, but we can verify the session status endpoint works
+        response = requests.get(f"{BASE_URL}/subscription/status/{session_id}", headers=headers)
+        if response.status_code != 200:
+            log_test("Flow - session status", False, f"Status check failed: {response.status_code}")
+            return False
+            
+        status_data = response.json()
+        log_test("Flow - Session status check", True, f"Status: {status_data['status']}")
+        
+        # 5. Verify user now has stripe_customer_id
+        response = requests.get(f"{BASE_URL}/subscription/me", headers=headers)
+        if response.status_code != 200:
+            log_test("Flow - final subscription/me", False, f"Failed: {response.status_code}")
+            return False
+            
+        final_sub_data = response.json()
+        if not final_sub_data.get("stripe_customer_id"):
+            log_test("Flow - stripe_customer_id", False, "Customer ID not set after checkout")
+            return False
+            
+        log_test("Flow - Customer created", True, "stripe_customer_id set")
+        
+        log_test("Complete Stripe flow", True, "All steps completed successfully")
+        return True
+        
+    except Exception as e:
+        log_test("Stripe integration flow", False, f"Exception: {str(e)}")
+        return False
+
 def main():
-    print("CodeFuturo Backend Testing - New Tracks/Lessons Endpoints")
+    print("CodeFuturo Backend Testing - Stripe Integration + Legacy Endpoints")
     print("=" * 60)
     print(f"Testing against: {BASE_URL}")
     print()
     
-    tests = [
+    # Stripe integration tests
+    stripe_tests = [
+        test_subscription_plans,
+        test_subscription_me_new_user,
+        test_subscription_checkout,
+        test_subscription_status,
+        test_webhook_stripe,
+        test_subscription_portal,
+        test_stripe_integration_flow
+    ]
+    
+    # Legacy tests (regression check)
+    legacy_tests = [
         test_tracks_endpoint,
         test_python_zero_path,
         test_javascript_path,
@@ -379,21 +786,42 @@ def main():
         test_legacy_endpoints
     ]
     
-    passed = 0
-    total = len(tests)
+    print("\n" + "=" * 60)
+    print("STRIPE INTEGRATION TESTS")
+    print("=" * 60 + "\n")
     
-    for test_func in tests:
+    stripe_passed = 0
+    for test_func in stripe_tests:
+        try:
+            result = test_func()
+            # Handle tests that return tuples (with additional data)
+            if isinstance(result, tuple):
+                if result[0]:
+                    stripe_passed += 1
+            elif result:
+                stripe_passed += 1
+        except Exception as e:
+            print(f"❌ FAIL {test_func.__name__}: {str(e)}")
+    
+    print("\n" + "=" * 60)
+    print("LEGACY ENDPOINTS (REGRESSION CHECK)")
+    print("=" * 60 + "\n")
+    
+    legacy_passed = 0
+    for test_func in legacy_tests:
         try:
             if test_func():
-                passed += 1
+                legacy_passed += 1
         except Exception as e:
             print(f"❌ FAIL {test_func.__name__}: {str(e)}")
     
     print("=" * 60)
-    print(f"RESULTS: {passed}/{total} tests passed")
+    print(f"STRIPE TESTS: {stripe_passed}/{len(stripe_tests)} passed")
+    print(f"LEGACY TESTS: {legacy_passed}/{len(legacy_tests)} passed")
+    print(f"TOTAL: {stripe_passed + legacy_passed}/{len(stripe_tests) + len(legacy_tests)} passed")
     
-    if passed == total:
-        print("🎉 All tests passed! New tracks/lessons endpoints are working correctly.")
+    if stripe_passed == len(stripe_tests) and legacy_passed == len(legacy_tests):
+        print("🎉 All tests passed! Stripe integration working correctly, no regressions.")
         return 0
     else:
         print("⚠️  Some tests failed. Check the details above.")
