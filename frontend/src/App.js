@@ -16,6 +16,8 @@ import Plans from './pages/Plans';
 import PaymentSuccess from './pages/PaymentSuccess';
 import Certificates from './pages/Certificates';
 import VerifyCertificate from './pages/VerifyCertificate';
+import Schools from './pages/Schools';
+import ClassDetail from './pages/ClassDetail';
 
 function App() {
   return (
@@ -40,6 +42,8 @@ function App() {
             <Route path="/certificados" element={<Certificates />} />
             <Route path="/verificar" element={<VerifyCertificate />} />
             <Route path="/verificar/:certId" element={<VerifyCertificate />} />
+            <Route path="/escolas" element={<Schools />} />
+            <Route path="/escolas/:classId" element={<ClassDetail />} />
           </Routes>
         </BrowserRouter>
         <Toaster position="top-right" richColors />

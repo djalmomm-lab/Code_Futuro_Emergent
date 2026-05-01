@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Menu, X, Globe, ChevronDown, User as UserIcon, LogOut, Settings, LayoutDashboard, Crown, Award } from 'lucide-react';
+import { Menu, X, Globe, ChevronDown, User as UserIcon, LogOut, Settings, LayoutDashboard, Crown, Award, GraduationCap } from 'lucide-react';
 import { useLanguage, LANGUAGES } from '../context/LanguageContext';
 import { ByteLogo } from './ByteMascot';
 import { Button } from './ui/button';
@@ -135,6 +135,9 @@ export default function Navbar() {
                     <Link to="/certificados" onClick={() => setUserOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm text-slate-200 hover:bg-[#1C2235]" data-testid="nav-certificates">
                       <Award size={14} /> Certificados
                     </Link>
+                    <Link to="/escolas" onClick={() => setUserOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm text-slate-200 hover:bg-[#1C2235]" data-testid="nav-schools">
+                      <GraduationCap size={14} /> Escolas
+                    </Link>
                     {!isPro && (
                       <Link to="/planos" onClick={() => setUserOpen(false)} className="flex items-center gap-2 px-3 py-2 text-sm font-bold text-[#A3E635] hover:bg-[#1C2235]">
                         <Crown size={14} /> Fazer upgrade
@@ -175,6 +178,7 @@ export default function Navbar() {
                 <Link to="/dashboard" onClick={() => setOpen(false)} className="py-2 text-slate-200 font-semibold">{t('nav.dashboard')}</Link>
                 <Link to="/perfil" onClick={() => setOpen(false)} className="py-2 text-slate-200 font-semibold">Perfil</Link>
                 <Link to="/certificados" onClick={() => setOpen(false)} className="py-2 text-slate-200 font-semibold">Certificados</Link>
+                <Link to="/escolas" onClick={() => setOpen(false)} className="py-2 text-slate-200 font-semibold">Escolas</Link>
                 <button onClick={() => { setOpen(false); handleLogout(); }} className="py-2 text-left text-red-400 font-semibold">Sair</button>
               </>
             ) : (

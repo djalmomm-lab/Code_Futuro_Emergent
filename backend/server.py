@@ -424,6 +424,7 @@ async def delete_account(user=Depends(current_user)):
 
 
 # --- Certificates (Pro feature) ---
+import asyncio  # noqa: E402
 from fastapi.responses import Response  # noqa: E402
 from certificates import render_certificate, cert_filename  # noqa: E402
 import hashlib  # noqa: E402
@@ -487,6 +488,13 @@ async def list_certificates(user=Depends(current_user)):
     items = []
     for p in paths:
         st = await _track_completion_status(user["id"], p["slug"])
+        cert_id = None
+        if st["is_complete"]:
+            # Make sure cert is issued (Pro users will have a record);
+            # for non-Pro users we still compute the deterministic id but don't expose it.
+            existing_id = _compute_cert_id(user["id"], p["slug"])
+            rec = await db.certificates.find_one({"cert_id": existing_id}, {"_id": 0, "cert_id": 1})
+            cert_id = rec["cert_id"] if rec else None
         items.append({
             "path_slug": p["slug"],
             "path_name": p["name"],
@@ -494,6 +502,7 @@ async def list_certificates(user=Depends(current_user)):
             "total": st["total"],
             "completed": st["completed"],
             "is_complete": st["is_complete"],
+            "cert_id": cert_id,
         })
     return {"items": items, "is_pro": bool(user.get("is_pro"))}
 
@@ -517,7 +526,9 @@ async def download_certificate(path_slug: str, user=Depends(current_user)):
     cert_id = await _ensure_certificate_record(user, path_slug)
     rec = await db.certificates.find_one({"cert_id": cert_id}, {"_id": 0})
 
-    pdf_bytes = render_certificate(
+    # render PDF off the event loop to avoid blocking under load
+    pdf_bytes = await asyncio.to_thread(
+        render_certificate,
         student_name=rec["student_name"],
         track_name=rec["track_name"],
         completed_at=datetime.fromisoformat(rec["issued_at"]),
@@ -549,6 +560,10 @@ from subscription_routes import build_router as _sub_router, build_webhook_route
 app.include_router(_sub_router(db, current_user))
 app.include_router(_sub_webhook(db))
 
+# CodeFuturo Escolas (B2B classes)
+from classes_routes import build_router as _classes_router  # noqa: E402
+app.include_router(_classes_router(db, current_user))
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
@@ -567,6 +582,9 @@ async def startup():
     await db.profiles.create_index("user_id")
     await db.lesson_completions.create_index([("user_id", 1), ("lesson_slug", 1)], unique=True)
     await db.certificates.create_index("cert_id", unique=True)
+    await db.classes.create_index("invite_code", unique=True)
+    await db.class_memberships.create_index([("class_id", 1), ("user_id", 1)], unique=True)
+    await db.class_memberships.create_index("user_id")
 
 
 @app.on_event("shutdown")

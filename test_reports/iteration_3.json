@@ -1,0 +1,40 @@
+{
+  "summary": "Iteration 3 validation of CodeFuturo Escolas (B2B classes), LinkedIn share buttons and cert_id field in /api/certificates. Backend: 36/36 pytest cases green (17 new in test_classes.py + 19 regression across test_paywall_certs.py and test_verify_endpoint.py). Frontend: 4/4 critical flows verified — /escolas create+join(invalid toast)+copy, /escolas/{id} teacher dashboard (invite code, student row with progress, remove-student, delete-class confirm flow), /escolas/{id} student view (no students table, /catalogo CTA, invite_code hidden), /verificar/CF-FD26B52ECDE6 three share buttons with valid hrefs, /certificados Pro user has cert-linkedin-python-zero alongside cert-download-python-zero. All regression tests still green.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_classes.py",
+    "/app/backend/tests/test_paywall_certs.py",
+    "/app/backend/tests/test_verify_endpoint.py",
+    "/app/test_reports/pytest/pytest_classes.xml",
+    "/app/test_reports/pytest/pytest_regression.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "classes_routes.py GET /classes/mine N+1: per-membership sequential find + count_documents. Fine at current scale but consider $lookup aggregation when a user has many classes.",
+    "classes_routes.py _student_progress_summary is called once per student in class_detail — for a 30-student class this runs ~30 * (paths + per-path lesson fetches) queries. Still OK for typical classroom size, but a single aggregation keyed by user_ids would scale better.",
+    "No DB indexes declared on class_memberships.{user_id,class_id} or classes.invite_code (unique). invite_code uniqueness is enforced in Python loop only — add a unique index in startup_event to make it race-safe.",
+    "Schools.jsx: invalid-code flow surfaces toast correctly, but toast copy 'Código de convite inválido' currently uses backend detail text — good. Consider showing inline form error in addition to toast for accessibility.",
+    "server.py is ~593 lines and keeps growing. Consider splitting certificates/verify/paywall into their own routers now that classes_routes.py set the pattern."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_classes.py"
+  ],
+  "success_rate": {
+    "backend": "100% (36/36: 17 new classes tests + 19 regression)",
+    "frontend": "100% (4/4 critical flows)"
+  },
+  "test_credentials": "Pro teacher: cert.test@codefuturo.app / TestPro123! (owns 'Turma 8A' invite 8H4M5J). Dynamic student users registered as TEST_student_<hex>@codefuturo.app / StudPass123! and deleted via cascade.",
+  "seed_data_creation": "Tests self-seed per run: teacher creates a 'TEST Turma <hex>' class, registers a fresh TEST_student_<hex>@codefuturo.app account, joins, then deletes the class (cascades memberships). No persistent seed needed beyond the pre-existing Pro user and 'Turma 8A'.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Backend classes endpoints fully tested in /app/backend/tests/test_classes.py — reuse the fixtures (session/pro_token/pro_user_id/student_token/created_class) for regression. All required data-testids verified present: schools-btn-create/join, schools-modal-create/join, schools-input-name, schools-input-code, schools-submit-create/join, schools-card-{id}, schools-open-{id}, schools-copy-{id}, class-copy-code, class-student-{user_id}, class-remove-{user_id}, class-delete-btn, class-confirm-delete, verify-linkedin-add, verify-linkedin-share, verify-copy-link, cert-linkedin-python-zero, cert-download-python-zero. Browser copy-link click in headless mode shows fallback error toast 'Não foi possível copiar' — expected (no clipboard API permission in headless); not a product bug. /api/certificates items[python-zero].cert_id is populated only after the Pro user triggers /api/certificates/{path_slug} once (persistence happens on download); the list endpoint reads an existing record — worth noting if a Pro user has never downloaded.",
+  "rca of the issue": "N/A — no issues found."
+}

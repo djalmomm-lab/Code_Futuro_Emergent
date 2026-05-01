@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Award, Download, Lock, Loader2, Crown, ChevronRight, CheckCircle2 } from 'lucide-react';
+import { Award, Download, Lock, Loader2, Crown, ChevronRight, CheckCircle2, Linkedin } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { certificatesApi, isAuthed } from '../lib/api';
@@ -134,23 +134,46 @@ export default function Certificates() {
                     <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, background: item.color || '#A3E635' }} />
                   </div>
 
-                  <div className="mt-5 flex items-center justify-between gap-2">
+                  <div className="mt-5 flex items-center justify-between gap-2 flex-wrap">
                     <Link to={`/jornada/${item.path_slug}`} className="text-xs font-bold text-slate-400 hover:text-white inline-flex items-center gap-1">
                       Continuar trilha <ChevronRight size={12} />
                     </Link>
-                    <button
-                      onClick={() => handleDownload(item)}
-                      disabled={downloading}
-                      data-testid={`cert-download-${item.path_slug}`}
-                      className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition ${
-                        ready
-                          ? 'cf-btn-lime'
-                          : 'bg-[#1C2235] text-slate-400 hover:text-white'
-                      } disabled:opacity-50`}
-                    >
-                      {downloading ? <Loader2 size={14} className="animate-spin" /> : ready ? <Download size={14} /> : <Lock size={14} />}
-                      {downloading ? 'Gerando...' : ready ? 'Baixar PDF' : !isPro ? 'Pro' : 'Bloqueado'}
-                    </button>
+                    <div className="flex items-center gap-2">
+                      {ready && item.cert_id && (
+                        <a
+                          href={`https://www.linkedin.com/profile/add?${new URLSearchParams({
+                            startTask: 'CERTIFICATION_NAME',
+                            name: `Trilha ${item.path_name} — CodeFuturo`,
+                            organizationName: 'CodeFuturo',
+                            issueYear: String(new Date().getFullYear()),
+                            issueMonth: String(new Date().getMonth() + 1),
+                            certUrl: `${window.location.origin}/verificar/${item.cert_id}`,
+                            certId: item.cert_id,
+                          }).toString()}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          data-testid={`cert-linkedin-${item.path_slug}`}
+                          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold text-white"
+                          style={{ background: '#0A66C2' }}
+                          title="Adicionar este certificado ao seu LinkedIn"
+                        >
+                          <Linkedin size={12} /> LinkedIn
+                        </a>
+                      )}
+                      <button
+                        onClick={() => handleDownload(item)}
+                        disabled={downloading}
+                        data-testid={`cert-download-${item.path_slug}`}
+                        className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition ${
+                          ready
+                            ? 'cf-btn-lime'
+                            : 'bg-[#1C2235] text-slate-400 hover:text-white'
+                        } disabled:opacity-50`}
+                      >
+                        {downloading ? <Loader2 size={14} className="animate-spin" /> : ready ? <Download size={14} /> : <Lock size={14} />}
+                        {downloading ? 'Gerando...' : ready ? 'Baixar PDF' : !isPro ? 'Pro' : 'Bloqueado'}
+                      </button>
+                    </div>
                   </div>
                 </div>
               );

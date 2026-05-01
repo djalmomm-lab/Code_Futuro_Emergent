@@ -73,6 +73,16 @@ export const certificatesApi = {
   download: (pathSlug) => api.get(`/certificates/${pathSlug}`, { responseType: 'blob' }).then((r) => r),
 };
 
+// Schools / Classes (B2B)
+export const classesApi = {
+  list: () => api.get('/classes/mine').then((r) => r.data),
+  create: (payload) => api.post('/classes', payload).then((r) => r.data),
+  join: (inviteCode) => api.post('/classes/join', { invite_code: inviteCode }).then((r) => r.data),
+  detail: (classId) => api.get(`/classes/${classId}`).then((r) => r.data),
+  removeStudent: (classId, userId) => api.delete(`/classes/${classId}/students/${userId}`).then((r) => r.data),
+  remove: (classId) => api.delete(`/classes/${classId}`).then((r) => r.data),
+};
+
 // Subscription / Billing
 export const subscriptionApi = {
   plans: () => api.get('/subscription/plans').then((r) => r.data),

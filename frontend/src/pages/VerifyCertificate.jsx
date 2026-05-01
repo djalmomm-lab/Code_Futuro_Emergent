@@ -1,10 +1,32 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Award, CheckCircle2, XCircle, Loader2, Search, ArrowLeft } from 'lucide-react';
+import { Award, CheckCircle2, XCircle, Loader2, Search, ArrowLeft, Linkedin, Share2 } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { api } from '../lib/api';
 import { logError } from '../lib/logger';
+import { toast } from 'sonner';
+
+const buildLinkedInAddToProfileUrl = (cert) => {
+  if (!cert?.cert_id) return '#';
+  const issued = cert.issued_at ? new Date(cert.issued_at) : new Date();
+  const params = new URLSearchParams({
+    startTask: 'CERTIFICATION_NAME',
+    name: `Trilha ${cert.track_name} — CodeFuturo`,
+    organizationName: 'CodeFuturo',
+    issueYear: String(issued.getFullYear()),
+    issueMonth: String(issued.getMonth() + 1),
+    certUrl: `${window.location.origin}/verificar/${cert.cert_id}`,
+    certId: cert.cert_id,
+  });
+  return `https://www.linkedin.com/profile/add?${params.toString()}`;
+};
+
+const buildLinkedInSharePostUrl = (cert) => {
+  if (!cert?.cert_id) return '#';
+  const url = `${window.location.origin}/verificar/${cert.cert_id}`;
+  return `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
+};
 
 export default function VerifyCertificate() {
   const { certId: paramId } = useParams();
@@ -112,6 +134,42 @@ export default function VerifyCertificate() {
               <div className="mt-6 pt-5 border-t" style={{ borderColor: 'var(--cf-border)' }}>
                 <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400">ID do certificado</div>
                 <div className="mt-1 font-code text-sm text-slate-200">{result.cert_id}</div>
+              </div>
+
+              <div className="mt-6 pt-5 border-t flex flex-wrap gap-3" style={{ borderColor: 'var(--cf-border)' }}>
+                <a
+                  href={buildLinkedInAddToProfileUrl(result)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-testid="verify-linkedin-add"
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold text-white transition"
+                  style={{ background: '#0A66C2' }}
+                >
+                  <Linkedin size={16} /> Adicionar ao LinkedIn
+                </a>
+                <a
+                  href={buildLinkedInSharePostUrl(result)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-testid="verify-linkedin-share"
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold text-slate-200 hover:bg-[#1C2235] transition border"
+                  style={{ borderColor: 'var(--cf-border)' }}
+                >
+                  <Share2 size={16} /> Compartilhar post
+                </a>
+                <button
+                  onClick={async () => {
+                    try {
+                      await navigator.clipboard.writeText(`${window.location.origin}/verificar/${result.cert_id}`);
+                      toast.success('Link copiado!');
+                    } catch { toast.error('Não foi possível copiar.'); }
+                  }}
+                  data-testid="verify-copy-link"
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold text-slate-200 hover:bg-[#1C2235] transition border"
+                  style={{ borderColor: 'var(--cf-border)' }}
+                >
+                  Copiar link
+                </button>
               </div>
             </div>
           </div>
