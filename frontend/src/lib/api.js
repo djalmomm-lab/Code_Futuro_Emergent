@@ -66,6 +66,13 @@ export const lessonsApi = {
   get: (slug) => api.get(`/lessons/${slug}`).then((r) => r.data),
 };
 
+// Certificates (Pro feature)
+export const certificatesApi = {
+  list: () => api.get('/certificates').then((r) => r.data),
+  // Returns a Blob so we can trigger a browser download
+  download: (pathSlug) => api.get(`/certificates/${pathSlug}`, { responseType: 'blob' }).then((r) => r),
+};
+
 // Subscription / Billing
 export const subscriptionApi = {
   plans: () => api.get('/subscription/plans').then((r) => r.data),

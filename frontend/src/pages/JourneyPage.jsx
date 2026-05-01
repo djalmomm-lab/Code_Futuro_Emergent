@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Lock, Check, Play, Flame, Star, Zap } from 'lucide-react';
+import { ArrowLeft, Lock, Check, Play, Flame, Star, Zap, Crown } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { useLanguage } from '../context/LanguageContext';
-import { USER_MOCK } from '../data/mockData';
 import { pathsApi, authApi, isAuthed } from '../lib/api';
 import { logError } from '../lib/logger';
 
@@ -17,6 +16,8 @@ export default function JourneyPage() {
   const [lessons, setLessons] = useState([]);
   const [stats, setStats] = useState({ streak: 0, xp: 0, energy: 5 });
   const [completed, setCompleted] = useState(new Set());
+  const [isPro, setIsPro] = useState(false);
+  const [freeLimit, setFreeLimit] = useState(3);
 
   useEffect(() => {
     (async () => {
@@ -24,6 +25,8 @@ export default function JourneyPage() {
         const res = await pathsApi.get(slug);
         setPath(res.path);
         setLessons(res.lessons || []);
+        setIsPro(!!res.is_pro);
+        setFreeLimit(res.free_limit || 3);
       } catch (err) {
         logError('JourneyPage.loadPath', err, { slug });
       }
@@ -63,15 +66,14 @@ export default function JourneyPage() {
   });
   const chapterOrder = Object.keys(chapters);
 
-  // Figure out first incomplete = active
-  const firstIncompleteOrder = lessons.find((l) => !completed.has(l.slug))?.order;
+  // Figure out first incomplete = active (only among unlocked lessons)
+  const firstIncompleteOrder = lessons.find((l) => !completed.has(l.slug) && !l.requires_pro)?.order;
 
   const statusOf = (lesson) => {
     if (completed.has(lesson.slug)) return 'done';
+    if (lesson.requires_pro) return 'locked';
     if (lesson.order === firstIncompleteOrder) return 'active';
-    // Unlock logic: first 3 lessons unlocked by default; rest requires prior done
-    if (lesson.order <= 3) return 'active';
-    return 'locked';
+    return 'unlocked';
   };
 
   const done = completed.size;
@@ -117,6 +119,32 @@ export default function JourneyPage() {
           </div>
         </div>
 
+        {!isPro && lessons.some((l) => l.requires_pro) && (
+          <button
+            onClick={() => navigate('/planos')}
+            data-testid="journey-upgrade-banner"
+            className="mt-6 w-full text-left cf-card p-5 flex items-center gap-4 hover:scale-[1.01] transition group"
+            style={{
+              background: 'linear-gradient(90deg, rgba(163,230,53,0.08), rgba(124,58,237,0.08))',
+              border: '1px solid rgba(163,230,53,0.25)',
+            }}
+          >
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
+                 style={{ background: 'rgba(163,230,53,0.15)', border: '1px solid rgba(163,230,53,0.3)' }}>
+              <Crown size={22} className="text-[#A3E635]" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="font-display font-bold text-white text-base">Desbloqueie a trilha completa</div>
+              <div className="text-sm text-slate-400 mt-0.5">
+                As {freeLimit} primeiras lições são gratuitas. Ative o <span className="text-[#A3E635] font-semibold">Pro</span> para acessar tudo.
+              </div>
+            </div>
+            <span className="px-4 py-2 rounded-lg cf-btn-lime text-xs font-bold shrink-0 group-hover:translate-x-0.5 transition">
+              Ver planos
+            </span>
+          </button>
+        )}
+
         <div className="mt-8 space-y-10">
           {chapterOrder.map((chapKey, ci) => {
             const chapLessons = chapters[chapKey];
@@ -132,6 +160,7 @@ export default function JourneyPage() {
                     const status = statusOf(lesson);
                     const isDone = status === 'done';
                     const isActive = status === 'active';
+                    const isUnlocked = status === 'unlocked';
                     const isLocked = status === 'locked';
                     const offsetX = [0, -80, 80, -40, 40, 0, -60, 60][i % 8];
                     return (
@@ -140,29 +169,36 @@ export default function JourneyPage() {
                           <div className="w-1 h-8" style={{ background: isLocked ? 'var(--cf-border)' : path.color }} />
                         )}
                         <Link
-                          to={isLocked ? '#' : `/licao/${lesson.slug}`}
-                          className={`relative w-20 h-20 flex items-center justify-center transform transition hover:scale-110 ${isLocked ? 'cursor-not-allowed' : ''}`}
-                          onClick={(e) => { if (isLocked) e.preventDefault(); }}
-                          title={lesson.title}
+                          to={isLocked ? '/planos' : `/licao/${lesson.slug}`}
+                          data-testid={isLocked ? `lesson-locked-${lesson.slug}` : `lesson-node-${lesson.slug}`}
+                          className={`relative w-20 h-20 flex items-center justify-center transform transition hover:scale-110`}
+                          title={isLocked ? 'Lição Pro — clique para ver planos' : lesson.title}
                         >
                           <div
                             className="w-20 h-20 flex items-center justify-center"
                             style={{
                               clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
-                              background: isDone ? '#A3E635' : isActive ? path.color : '#1C2235',
-                              boxShadow: isDone ? '0 8px 0 #84CC16' : isActive ? `0 8px 0 ${path.color}99` : '0 8px 0 #0f1425',
+                              background: isDone ? '#A3E635' : isActive ? path.color : isUnlocked ? `${path.color}66` : '#1C2235',
+                              boxShadow: isDone ? '0 8px 0 #84CC16' : isActive ? `0 8px 0 ${path.color}99` : isUnlocked ? `0 8px 0 ${path.color}44` : '0 8px 0 #0f1425',
                             }}
                           >
-                            {isDone ? <Check size={28} className="text-[#0A0F1E]" strokeWidth={3} /> : isActive ? <Play size={24} className="text-white fill-white" /> : <Lock size={22} className="text-slate-500" />}
+                            {isDone ? <Check size={28} className="text-[#0A0F1E]" strokeWidth={3} /> : (isActive || isUnlocked) ? <Play size={24} className="text-white fill-white" /> : <Lock size={22} className="text-slate-500" />}
                           </div>
+                          {isLocked && (
+                            <span
+                              className="absolute -top-1 -right-1 px-1.5 py-0.5 rounded-md text-[9px] font-bold tracking-wider"
+                              style={{ background: '#A3E635', color: '#0A0F1E' }}
+                            >
+                              PRO
+                            </span>
+                          )}
                         </Link>
                         <span className={`mt-3 text-sm font-bold max-w-[220px] text-center ${isLocked ? 'text-slate-500' : 'text-white'}`}>{lesson.title}</span>
                         {isActive && (
                           <span className="mt-1.5 px-3 py-1 rounded-full text-[10px] font-bold tracking-wider text-white" style={{ background: path.color }}>
                             CONTINUAR
                           </span>
-                        )}
-                      </div>
+                        )}                      </div>
                     );
                   })}
                 </div>

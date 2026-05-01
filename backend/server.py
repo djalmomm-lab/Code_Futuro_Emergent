@@ -101,6 +101,22 @@ async def current_user(credentials: HTTPAuthorizationCredentials = Depends(secur
     return user
 
 
+async def optional_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Like current_user but returns None instead of raising for unauthenticated."""
+    if not credentials:
+        return None
+    try:
+        payload = jwt.decode(credentials.credentials, JWT_SECRET, algorithms=[JWT_ALGO])
+        user_id = payload.get("sub")
+    except JWTError:
+        return None
+    return await db.users.find_one({"id": user_id})
+
+
+# Paywall config: how many lessons per path are free
+FREE_LESSONS_PER_PATH = 3
+
+
 def calc_age(birth_date: str) -> int:
     bd = datetime.strptime(birth_date, "%Y-%m-%d").date()
     today = date.today()
@@ -235,6 +251,14 @@ async def get_progress(user=Depends(current_user)):
 
 @api.post("/progress/complete")
 async def complete_lesson(data: CompleteLessonIn, user=Depends(current_user)):
+    # Paywall enforcement: block server-side even if client bypasses UI
+    les = await db.lessons.find_one({"slug": data.lesson_slug}, {"_id": 0, "order": 1})
+    if les and les.get("order", 0) > FREE_LESSONS_PER_PATH and not user.get("is_pro"):
+        raise HTTPException(
+            status.HTTP_402_PAYMENT_REQUIRED,
+            "Esta lição requer assinatura Pro",
+        )
+
     # idempotent: if already completed, return current progress unchanged
     existing = await db.lesson_completions.find_one(
         {"user_id": user["id"], "lesson_slug": data.lesson_slug}
@@ -326,16 +350,20 @@ async def tracks():
 
 
 @api.get("/paths/{slug}")
-async def path_detail(slug: str):
+async def path_detail(slug: str, user=Depends(optional_user)):
     path = await db.paths.find_one({"slug": slug}, {"_id": 0})
     if not path:
         raise HTTPException(404, "Path not found")
     lessons = await db.lessons.find({"path_slug": slug}, {"_id": 0}).sort("order", 1).to_list(200)
-    return {"path": path, "lessons": lessons}
+    is_pro = bool(user and user.get("is_pro"))
+    # Mark which lessons are locked behind paywall for this user
+    for le in lessons:
+        le["requires_pro"] = le["order"] > FREE_LESSONS_PER_PATH and not is_pro
+    return {"path": path, "lessons": lessons, "free_limit": FREE_LESSONS_PER_PATH, "is_pro": is_pro}
 
 
 @api.get("/lessons/{lesson_slug}")
-async def lesson_detail(lesson_slug: str):
+async def lesson_detail(lesson_slug: str, user=Depends(optional_user)):
     les = await db.lessons.find_one({"slug": lesson_slug}, {"_id": 0})
     if not les:
         raise HTTPException(404, "Lesson not found")
@@ -345,6 +373,24 @@ async def lesson_detail(lesson_slug: str):
         {"_id": 0, "slug": 1, "title": 1},
     )
     les["next"] = nxt
+
+    # Paywall: lessons beyond the free tier require Pro subscription
+    is_pro = bool(user and user.get("is_pro"))
+    if les["order"] > FREE_LESSONS_PER_PATH and not is_pro:
+        # Return minimal metadata so UI can render the paywall with context
+        return {
+            "slug": les["slug"],
+            "path_slug": les["path_slug"],
+            "order": les["order"],
+            "title": les["title"],
+            "chapter": les.get("chapter"),
+            "language": les.get("language"),
+            "next": les.get("next"),
+            "requires_pro": True,
+            "free_limit": FREE_LESSONS_PER_PATH,
+        }
+
+    les["requires_pro"] = False
     return les
 
 
@@ -370,6 +416,87 @@ async def delete_account(user=Depends(current_user)):
     await db.progress.delete_many({"user_id": user_id})
     await db.lesson_completions.delete_many({"user_id": user_id})
     return {"ok": True, "deleted_user_id": user_id}
+
+
+# --- Certificates (Pro feature) ---
+from fastapi.responses import Response  # noqa: E402
+from certificates import render_certificate, cert_filename  # noqa: E402
+import hashlib  # noqa: E402
+
+
+async def _track_completion_status(user_id: str, path_slug: str) -> dict:
+    """Return completion stats for a path/user pair."""
+    path = await db.paths.find_one({"slug": path_slug}, {"_id": 0})
+    if not path:
+        raise HTTPException(404, "Path not found")
+    lessons = await db.lessons.find({"path_slug": path_slug}, {"_id": 0, "slug": 1}).to_list(500)
+    total = len(lessons)
+    if total == 0:
+        return {"path": path, "total": 0, "completed": 0, "is_complete": False}
+    slugs = [le["slug"] for le in lessons]
+    done = await db.lesson_completions.count_documents({
+        "user_id": user_id,
+        "lesson_slug": {"$in": slugs},
+    })
+    return {
+        "path": path,
+        "total": total,
+        "completed": done,
+        "is_complete": done >= total,
+    }
+
+
+@api.get("/certificates")
+async def list_certificates(user=Depends(current_user)):
+    """Return per-track completion status for the current user."""
+    paths = await db.paths.find({}, {"_id": 0}).to_list(100)
+    items = []
+    for p in paths:
+        st = await _track_completion_status(user["id"], p["slug"])
+        items.append({
+            "path_slug": p["slug"],
+            "path_name": p["name"],
+            "color": p.get("color"),
+            "total": st["total"],
+            "completed": st["completed"],
+            "is_complete": st["is_complete"],
+        })
+    return {"items": items, "is_pro": bool(user.get("is_pro"))}
+
+
+@api.get("/certificates/{path_slug}")
+async def download_certificate(path_slug: str, user=Depends(current_user)):
+    """Generate and return a PDF certificate for the user's completion of a path.
+
+    Requirements:
+      - User must be Pro.
+      - User must have completed every lesson in the path.
+    """
+    if not user.get("is_pro"):
+        raise HTTPException(status.HTTP_402_PAYMENT_REQUIRED, "Certificados são exclusivos para usuários Pro")
+
+    st = await _track_completion_status(user["id"], path_slug)
+    if not st["is_complete"]:
+        raise HTTPException(403, f"Trilha incompleta: {st['completed']}/{st['total']} lições concluídas")
+
+    # Stable cert id from (user_id + path_slug)
+    cert_id = "CF-" + hashlib.sha1(f"{user['id']}:{path_slug}".encode()).hexdigest()[:12].upper()
+
+    progress = await db.progress.find_one({"user_id": user["id"]}) or {}
+    pdf_bytes = render_certificate(
+        student_name=user.get("name") or user.get("email", "Aluno"),
+        track_name=st["path"]["name"],
+        completed_at=datetime.utcnow(),
+        cert_id=cert_id,
+        total_lessons=st["total"],
+        xp_earned=int(progress.get("xp_total", 0)),
+    )
+    filename = cert_filename(path_slug, user.get("name") or "aluno")
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
 
 
 app.include_router(api)

@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { progressApi, authApi, isAuthed, lessonsApi } from '../lib/api';
 import { usePyodide } from '../hooks/usePyodide';
 import { logError } from '../lib/logger';
+import Paywall from '../components/Paywall';
 
 export default function Lesson() {
   const { t, lang } = useLanguage();
@@ -66,6 +67,26 @@ export default function Lesson() {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--cf-space)' }}>
         <div className="text-slate-400 flex items-center gap-2"><Loader2 size={16} className="animate-spin" /> Carregando lição...</div>
+      </div>
+    );
+  }
+
+  // Paywall: backend returns minimal metadata with requires_pro=true for locked lessons.
+  if (lesson.requires_pro) {
+    return (
+      <div className="min-h-screen relative" style={{ background: 'var(--cf-space)' }}>
+        <header className="border-b sticky top-0 z-40 backdrop-blur-md" style={{ background: 'rgba(10,15,30,0.92)', borderColor: 'var(--cf-border)' }}>
+          <div className="max-w-7xl mx-auto px-4 h-14 flex items-center gap-4">
+            <button onClick={() => navigate(`/jornada/${lesson.path_slug}`)} className="text-slate-300 hover:text-white flex items-center gap-1 text-sm font-semibold" data-testid="paywall-back-trail">
+              <ArrowLeft size={16} /> Trilha
+            </button>
+            <div className="flex-1 min-w-0">
+              <div className="text-xs text-slate-400 truncate">{lesson.path_slug} · {lesson.chapter}</div>
+              <div className="font-display font-bold text-white truncate">{lesson.title}</div>
+            </div>
+          </div>
+        </header>
+        <Paywall lesson={lesson} freeLimit={lesson.free_limit || 3} />
       </div>
     );
   }

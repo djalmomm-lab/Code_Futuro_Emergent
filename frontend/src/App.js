@@ -14,6 +14,7 @@ import Catalog from './pages/Catalog';
 import Profile from './pages/Profile';
 import Plans from './pages/Plans';
 import PaymentSuccess from './pages/PaymentSuccess';
+import Certificates from './pages/Certificates';
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
             <Route path="/configuracoes" element={<Profile />} />
             <Route path="/planos" element={<Plans />} />
             <Route path="/pagamento/sucesso" element={<PaymentSuccess />} />
+            <Route path="/certificados" element={<Certificates />} />
           </Routes>
         </BrowserRouter>
         <Toaster position="top-right" richColors />
