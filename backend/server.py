@@ -483,20 +483,49 @@ async def download_certificate(path_slug: str, user=Depends(current_user)):
     cert_id = "CF-" + hashlib.sha1(f"{user['id']}:{path_slug}".encode()).hexdigest()[:12].upper()
 
     progress = await db.progress.find_one({"user_id": user["id"]}) or {}
+    student_name = user.get("name") or user.get("email", "Aluno")
+    issued_at = datetime.utcnow()
+    track_name = st["path"]["name"]
+
+    # Persist certificate record (idempotent on cert_id) so it can be publicly verified.
+    await db.certificates.update_one(
+        {"cert_id": cert_id},
+        {"$setOnInsert": {
+            "cert_id": cert_id,
+            "user_id": user["id"],
+            "path_slug": path_slug,
+            "track_name": track_name,
+            "student_name": student_name,
+            "total_lessons": st["total"],
+            "xp_earned": int(progress.get("xp_total", 0)),
+            "issued_at": issued_at.isoformat(),
+        }},
+        upsert=True,
+    )
+
     pdf_bytes = render_certificate(
-        student_name=user.get("name") or user.get("email", "Aluno"),
-        track_name=st["path"]["name"],
-        completed_at=datetime.utcnow(),
+        student_name=student_name,
+        track_name=track_name,
+        completed_at=issued_at,
         cert_id=cert_id,
         total_lessons=st["total"],
         xp_earned=int(progress.get("xp_total", 0)),
     )
-    filename = cert_filename(path_slug, user.get("name") or "aluno")
+    filename = cert_filename(path_slug, student_name)
     return Response(
         content=pdf_bytes,
         media_type="application/pdf",
         headers={"Content-Disposition": f'attachment; filename="{filename}"'},
     )
+
+
+@api.get("/verify/{cert_id}")
+async def verify_certificate(cert_id: str):
+    """Public certificate verification endpoint (no auth)."""
+    rec = await db.certificates.find_one({"cert_id": cert_id}, {"_id": 0, "user_id": 0})
+    if not rec:
+        raise HTTPException(404, "Certificado não encontrado ou inválido")
+    return {"valid": True, **rec}
 
 
 app.include_router(api)
@@ -523,6 +552,7 @@ async def startup():
     await db.progress.create_index("user_id", unique=True)
     await db.profiles.create_index("user_id")
     await db.lesson_completions.create_index([("user_id", 1), ("lesson_slug", 1)], unique=True)
+    await db.certificates.create_index("cert_id", unique=True)
 
 
 @app.on_event("shutdown")

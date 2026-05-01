@@ -1,13 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Play, RotateCcw, ChevronRight, CheckCircle2, XCircle, Flame, Zap, Star, Lightbulb, ArrowLeft, Loader2, Code2 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
-import { Button } from '../components/ui/button';
 import { toast } from 'sonner';
-import { progressApi, authApi, isAuthed, lessonsApi } from '../lib/api';
+import { progressApi, authApi, isAuthed, lessonsApi, pathsApi } from '../lib/api';
 import { usePyodide } from '../hooks/usePyodide';
 import { logError } from '../lib/logger';
 import Paywall from '../components/Paywall';
+import UpgradeCelebration from '../components/UpgradeCelebration';
+import { runJavaScript, mountHTMLPreview, normalizeHTML } from '../lib/runners';
+
+const FREE_LESSONS_PER_PATH = 3;
 
 export default function Lesson() {
   const { t, lang } = useLanguage();
@@ -23,6 +26,11 @@ export default function Lesson() {
   const [running, setRunning] = useState(false);
   const [showHint, setShowHint] = useState(false);
   const [stats, setStats] = useState({ streak: 0, xp: 0, energy: 5, maxEnergy: 5 });
+  const [isPro, setIsPro] = useState(false);
+  const [celebrationOpen, setCelebrationOpen] = useState(false);
+  const [upcomingLessons, setUpcomingLessons] = useState([]);
+  const [totalRemaining, setTotalRemaining] = useState(0);
+  const previewRef = useRef(null);
 
   const py = usePyodide();
 
@@ -49,6 +57,7 @@ export default function Lesson() {
     (async () => {
       try {
         const me = await authApi.me();
+        setIsPro(!!me.user?.is_pro);
         if (me.progress) {
           setStats({
             streak: me.progress.streak,
@@ -92,17 +101,42 @@ export default function Lesson() {
   }
 
   const isPython = lesson.language === 'python';
-  const canExecute = isPython; // Real execution via Pyodide
+  const isJS = lesson.language === 'javascript';
+  const isHTML = lesson.language === 'html';
   const instruction = lesson[`instruction_${lang}`] || lesson.instruction_pt || '';
   const expected = tests[0]?.expected_stdout || tests[0]?.expected || '';
 
   const doValidate = (out, error) => {
     const newTests = tests.map((t) => {
       const exp = (t.expected_stdout || t.expected || '').trim();
-      return { ...t, passed: !error && out.trim() === exp };
+      const actual = (out || '').trim();
+      let passed = false;
+      if (!error) {
+        if (isHTML) {
+          passed = normalizeHTML(actual) === normalizeHTML(exp);
+        } else {
+          passed = actual === exp;
+        }
+      }
+      return { ...t, passed };
     });
     setTests(newTests);
     return newTests.every((t) => t.passed);
+  };
+
+  const triggerCelebrationIfMilestone = async () => {
+    if (isPro) return;
+    if (!lesson || lesson.order !== FREE_LESSONS_PER_PATH) return;
+    try {
+      const res = await pathsApi.get(lesson.path_slug);
+      const upcoming = (res.lessons || []).filter((le) => le.order > FREE_LESSONS_PER_PATH);
+      setUpcomingLessons(upcoming);
+      setTotalRemaining(upcoming.length);
+      setCelebrationOpen(true);
+    } catch (err) {
+      logError('Lesson.celebration', err);
+      setCelebrationOpen(true);
+    }
   };
 
   const run = async () => {
@@ -140,12 +174,20 @@ export default function Lesson() {
       out = result.stdout;
       error = result.error;
       setOutput(error ? `${out}\n${error}`.trim() : out || '(sem saída)');
+    } else if (isJS) {
+      setOutput('Executando...');
+      const result = await runJavaScript(code);
+      out = result.stdout;
+      error = result.error;
+      setOutput(error ? `${out}\n${error}`.trim() : out || '(sem saída)');
+    } else if (isHTML) {
+      // Render preview + validate by comparing normalized HTML
+      mountHTMLPreview(previewRef.current, code);
+      out = code;
+      setOutput('Pré-visualização atualizada — confira ao lado.');
     } else {
-      // Validation mode: compare code content or user-provided text directly with expected
-      // Accept if the expected string appears in code OR matches (trim)
+      // Fallback validation mode for other languages (SQL, etc.)
       setOutput(code.trim() || '(sem saída)');
-      // Compare the 'last non-empty line' of code against expected — useful for short answers.
-      // Also accept if expected is literally a substring of code.
       const target = (tests[0]?.expected_stdout || '').trim();
       const codeHas = code.includes(target);
       out = codeHas ? target : code.trim();
@@ -162,6 +204,8 @@ export default function Lesson() {
           else {
             toast.success(`🎉 Lição concluída! +${res.xp_earned} XP`);
             setStats((s) => ({ ...s, xp: res.progress.xp_total, streak: res.progress.streak }));
+            // Trigger celebration if this was the last free lesson
+            if (!res.already_completed) await triggerCelebrationIfMilestone();
           }
         } catch { toast.success('🎉 Lição concluída! +50 XP'); }
       } else {
@@ -209,7 +253,23 @@ export default function Lesson() {
             </div>
           </div>
         )}
-        {!isPython && (
+        {isJS && (
+          <div className="bg-[#1C2235] border-t" style={{ borderColor: 'var(--cf-border)' }}>
+            <div className="max-w-7xl mx-auto px-4 py-1.5 text-[11px] text-slate-300 flex items-center gap-2">
+              <Code2 size={12} className="text-[#A3E635]" />
+              Execução real de JavaScript no navegador (sandbox).
+            </div>
+          </div>
+        )}
+        {isHTML && (
+          <div className="bg-[#1C2235] border-t" style={{ borderColor: 'var(--cf-border)' }}>
+            <div className="max-w-7xl mx-auto px-4 py-1.5 text-[11px] text-slate-300 flex items-center gap-2">
+              <Code2 size={12} className="text-[#A3E635]" />
+              Pré-visualização ao vivo do HTML — clique em Executar para renderizar.
+            </div>
+          </div>
+        )}
+        {!isPython && !isJS && !isHTML && (
           <div className="bg-[#1C2235] border-t" style={{ borderColor: 'var(--cf-border)' }}>
             <div className="max-w-7xl mx-auto px-4 py-1.5 text-[11px] text-slate-300 flex items-center gap-2">
               <Code2 size={12} className="text-[#A3E635]" />
@@ -259,7 +319,7 @@ export default function Lesson() {
                 <button onClick={reset} className="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-[#1C2235]" title={t('lesson.reset')}>
                   <RotateCcw size={14} />
                 </button>
-                <button onClick={run} disabled={running || (isPython && !py.ready)} className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg cf-btn-lime text-xs disabled:opacity-50">
+                <button onClick={run} disabled={running || (isPython && !py.ready)} className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg cf-btn-lime text-xs disabled:opacity-50" data-testid="lesson-run-btn">
                   {running ? <Loader2 size={14} className="animate-spin" /> : <Play size={14} />}
                   {running ? 'Executando' : isPython && !py.ready ? 'Carregando' : t('lesson.run')}
                 </button>
@@ -283,6 +343,11 @@ export default function Lesson() {
               <button onClick={() => setTab('console')} className={`px-4 py-2.5 text-xs font-bold ${tab === 'console' ? 'text-[#A3E635] border-b-2 border-[#A3E635]' : 'text-slate-400'}`}>
                 CONSOLE
               </button>
+              {isHTML && (
+                <button onClick={() => setTab('preview')} className={`px-4 py-2.5 text-xs font-bold ${tab === 'preview' ? 'text-[#A3E635] border-b-2 border-[#A3E635]' : 'text-slate-400'}`} data-testid="lesson-tab-preview">
+                  PREVIEW
+                </button>
+              )}
               {passedCount === tests.length && nextSlug && (
                 <Link to={`/licao/${nextSlug}`} className="ml-auto px-4 py-2 mr-2 text-xs font-bold rounded-full cf-btn-lime inline-flex items-center gap-1">
                   {t('lesson.nextLesson')} <ChevronRight size={14} />
@@ -290,7 +355,7 @@ export default function Lesson() {
               )}
             </div>
             <div className="p-4 space-y-2 min-h-[140px] bg-[#0A0F1E] max-h-[280px] overflow-auto">
-              {tab === 'tests' ? (
+              {tab === 'tests' && (
                 tests.map((test, i) => (
                   <div key={`test-${test.id ?? i}`} className="flex items-start gap-3 text-sm">
                     {test.passed ? <CheckCircle2 size={16} className="text-[#A3E635] mt-0.5" /> : <XCircle size={16} className="text-slate-500 mt-0.5" />}
@@ -300,16 +365,27 @@ export default function Lesson() {
                     </div>
                   </div>
                 ))
-              ) : (
+              )}
+              {tab === 'console' && (
                 <div className="font-code text-xs text-slate-300 whitespace-pre-wrap">
                   <div className="text-slate-500">$ run</div>
                   {output}
                 </div>
               )}
+              {tab === 'preview' && (
+                <div ref={previewRef} className="bg-white rounded-lg min-h-[200px]" data-testid="lesson-preview-pane" />
+              )}
             </div>
           </div>
         </div>
       </main>
+      <UpgradeCelebration
+        open={celebrationOpen}
+        onClose={() => setCelebrationOpen(false)}
+        trackName={lesson.path_slug}
+        upcomingLessons={upcomingLessons}
+        totalRemaining={totalRemaining}
+      />
     </div>
   );
 }

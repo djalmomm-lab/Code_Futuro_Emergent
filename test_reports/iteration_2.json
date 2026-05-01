@@ -1,0 +1,37 @@
+{
+  "summary": "Validated 3 new features on top of iteration_1: public certificate verification (/api/verify/{cert_id} + /verificar page), JS live execution + HTML preview pane on Lesson page, and UpgradeCelebration popup when free user completes 3rd lesson of a track. Backend: 19/19 pytest cases passed (16 regression + 3 new verify tests). Frontend: all 4 requested flows verified via Playwright — (1) /verificar form submit, valid card, invalid card, (2) JS lesson banner + execution + console output + test pass, (3) HTML lesson banner + preview tab + normalized HTML comparison + preview pane, (4) Upgrade celebration modal appears for free user on 3rd completion with working CTAs, suppressed for Pro per code inspection.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_paywall_certs.py",
+    "/app/backend/tests/test_verify_endpoint.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "server.py is now ~561 lines; as previously noted, consider splitting routers (auth/paths/progress/certificates/verify) — not blocking.",
+    "Public /api/verify properly strips _id and user_id via projection — good. Response returns all required fields (valid, cert_id, student_name, track_name, total_lessons, xp_earned, issued_at, path_slug). Consider also excluding any future PII fields by switching to an explicit allow-list instead of exclude-list.",
+    "Cert persistence is tied to a download call (upsert inside GET /api/certificates/{path_slug}). If a Pro user never downloads, their cert cannot be publicly verified. Consider upserting on track completion instead (inside POST /api/progress/complete when completion == total).",
+    "runJavaScript sandbox iframe uses postMessage '*' with a 4s fallback — acceptable for preview environment; in production consider a fixed origin or structured clone token to prevent cross-frame spoof."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_verify_endpoint.py"
+  ],
+  "success_rate": {
+    "backend": "100% (19/19)",
+    "frontend": "100% (4/4 critical flows)"
+  },
+  "test_credentials": "Pro: cert.test@codefuturo.app / TestPro123!. Valid cert_id for Pro user on python-zero: CF-FD26B52ECDE6 (deterministic via sha1(user_id+':'+path_slug)[:12].upper()). Free celebration user: registered dynamically TEST_celeb_<ts>@cf.app with 2 lessons pre-completed via API.",
+  "seed_data_creation": "No persistent seed needed. Each celebration test run registers a free user and pre-completes lessons 1 & 2 of python-zero via /api/progress/complete so the UI run of lesson 3 triggers the popup.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "All required data-testids present and verified: verify-form, verify-input, verify-submit, verify-loading, verify-valid, verify-invalid, lesson-run-btn, lesson-tab-preview, lesson-preview-pane, upgrade-celebration, upgrade-celebration-cta (button -> navigate /planos, no href attr), upgrade-celebration-later, upgrade-celebration-close. Celebration is gated by (isPro===false) && (lesson.order===3) && (!already_completed), so Pro users are correctly suppressed. To reproduce the celebration test deterministically: register free user, POST /api/progress/complete for python-zero-01-seu-primeiro-ol-mundo and python-zero-02-imprimindo-duas-linhas, seed localStorage.cf_token, load /licao/python-zero-03-usando-vari-veis-simples, wait for Pyodide ready, submit print('Ana tem 25 anos'), click lesson-run-btn, the upgrade-celebration modal appears within ~15s.",
+  "rca of the issue": "N/A — no issues found. All 3 new features (verify endpoint + UI, JS/HTML runners + preview tab, UpgradeCelebration modal) working end-to-end and regression 16/16 still green."
+}

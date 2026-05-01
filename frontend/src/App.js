@@ -15,6 +15,7 @@ import Profile from './pages/Profile';
 import Plans from './pages/Plans';
 import PaymentSuccess from './pages/PaymentSuccess';
 import Certificates from './pages/Certificates';
+import VerifyCertificate from './pages/VerifyCertificate';
 
 function App() {
   return (
@@ -37,6 +38,8 @@ function App() {
             <Route path="/planos" element={<Plans />} />
             <Route path="/pagamento/sucesso" element={<PaymentSuccess />} />
             <Route path="/certificados" element={<Certificates />} />
+            <Route path="/verificar" element={<VerifyCertificate />} />
+            <Route path="/verificar/:certId" element={<VerifyCertificate />} />
           </Routes>
         </BrowserRouter>
         <Toaster position="top-right" richColors />

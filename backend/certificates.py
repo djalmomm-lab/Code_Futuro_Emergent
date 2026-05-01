@@ -155,7 +155,7 @@ def render_certificate(
     # Verify hint
     c.setFillColor(CF_MUTED)
     c.setFont("Helvetica", 8)
-    c.drawCentredString(page_w / 2, margin + 20, "Verifique a autenticidade em codefuturo.app/verificar")
+    c.drawCentredString(page_w / 2, margin + 20, f"Verifique a autenticidade em /verificar/{cert_id}")
 
     c.showPage()
     c.save()
