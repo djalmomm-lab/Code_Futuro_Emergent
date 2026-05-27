@@ -37,6 +37,21 @@ security = HTTPBearer(auto_error=False)
 app = FastAPI(title="CodeFuturo API")
 api = APIRouter(prefix="/api")
 
+_cors_origins = [
+    FRONTEND_URL,
+    "https://codefuturo.com",
+    "https://www.codefuturo.com",
+    "http://localhost:3000",
+    "http://localhost:5173",
+]
+app.add_middleware(
+    CORSMiddleware,
+    allow_credentials=True,
+    allow_origins=_cors_origins,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 # --- Models ---
 class RegisterIn(BaseModel):
@@ -627,21 +642,6 @@ app.include_router(_sub_webhook(db))
 # CodeFuturo Escolas (B2B classes)
 from classes_routes import build_router as _classes_router  # noqa: E402
 app.include_router(_classes_router(db, current_user))
-
-_cors_origins = [
-    FRONTEND_URL,
-    "https://codefuturo.com",
-    "https://www.codefuturo.com",
-    "http://localhost:3000",
-    "http://localhost:5173",
-]
-app.add_middleware(
-    CORSMiddleware,
-    allow_credentials=True,
-    allow_origins=_cors_origins,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 logging.basicConfig(level=logging.INFO)
 
