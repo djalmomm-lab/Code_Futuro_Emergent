@@ -87,10 +87,12 @@ export const classesApi = {
 
 // Push Notifications
 export const pushApi = {
-  vapidKey: () => api.get('/push/vapid-public-key').then((r) => r.data),
-  subscribe: (payload) => api.post('/push/subscribe', payload).then((r) => r.data),
-  unsubscribe: (payload) => api.delete('/push/subscribe', { data: payload }).then((r) => r.data),
-  test: () => api.post('/push/test').then((r) => r.data),
+  vapidKey:       () => api.get('/push/vapid-public-key').then((r) => r.data),
+  subscribe:      (payload) => api.post('/push/subscribe', payload).then((r) => r.data),
+  unsubscribe:    (payload) => api.delete('/push/subscribe', { data: payload }).then((r) => r.data),
+  test:           () => api.post('/push/test').then((r) => r.data),
+  getPreferences: () => api.get('/push/preferences').then((r) => r.data),
+  setPreferences: (hour) => api.put('/push/preferences', { notification_hour: hour }).then((r) => r.data),
 };
 
 // Subscription / Billing

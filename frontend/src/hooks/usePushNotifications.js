@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { api } from '../lib/api';
+import { toast } from 'sonner';
 
 function urlBase64ToUint8Array(base64String) {
   const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
@@ -8,28 +9,40 @@ function urlBase64ToUint8Array(base64String) {
   return Uint8Array.from([...raw].map((c) => c.charCodeAt(0)));
 }
 
-const supported = typeof window !== 'undefined'
-  && 'serviceWorker' in navigator
-  && 'PushManager' in window
-  && 'Notification' in window;
+const supported =
+  typeof window !== 'undefined' &&
+  'serviceWorker' in navigator &&
+  'PushManager' in window &&
+  'Notification' in window;
 
 export function usePushNotifications() {
   const [permission, setPermission] = useState(
     supported ? Notification.permission : 'unsupported'
   );
   const [subscribed, setSubscribed] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading]       = useState(false);
+  const [notifHour, setNotifHourState] = useState(19); // horário preferido
 
-  /* ─── Verificar se já inscrito ao montar ──────────────────────────────── */
+  /* ─── Ao montar: verificar se já inscrito + buscar preferência ──────────── */
   useEffect(() => {
     if (!supported || Notification.permission !== 'granted') return;
+
     navigator.serviceWorker.ready.then(async (reg) => {
       const existing = await reg.pushManager.getSubscription();
-      if (existing) setSubscribed(true);
+      if (existing) {
+        setSubscribed(true);
+        // Buscar horário preferido do backend
+        try {
+          const { notification_hour } = await api
+            .get('/push/preferences')
+            .then((r) => r.data);
+          setNotifHourState(notification_hour ?? 19);
+        } catch {}
+      }
     }).catch(() => {});
   }, []);
 
-  /* ─── Inscrever ───────────────────────────────────────────────────────── */
+  /* ─── Inscrever ────────────────────────────────────────────────────────── */
   const subscribe = useCallback(async () => {
     if (!supported) return;
     setLoading(true);
@@ -38,7 +51,9 @@ export function usePushNotifications() {
       setPermission(perm);
       if (perm !== 'granted') return;
 
-      const { publicKey } = await api.get('/push/vapid-public-key').then((r) => r.data);
+      const { publicKey } = await api
+        .get('/push/vapid-public-key')
+        .then((r) => r.data);
       if (!publicKey) return;
 
       const reg = await navigator.serviceWorker.ready;
@@ -57,6 +72,14 @@ export function usePushNotifications() {
         keys: subJson.keys,
       });
 
+      // Buscar preferência salva (ou usar padrão 19)
+      try {
+        const { notification_hour } = await api
+          .get('/push/preferences')
+          .then((r) => r.data);
+        setNotifHourState(notification_hour ?? 19);
+      } catch {}
+
       setSubscribed(true);
     } catch (err) {
       console.warn('push_subscribe_error', err);
@@ -65,23 +88,22 @@ export function usePushNotifications() {
     }
   }, []);
 
-  /* ─── Cancelar inscrição ──────────────────────────────────────────────── */
+  /* ─── Cancelar inscrição ───────────────────────────────────────────────── */
   const unsubscribe = useCallback(async () => {
     if (!supported) return;
     setLoading(true);
     try {
       const reg = await navigator.serviceWorker.ready;
       const sub = await reg.pushManager.getSubscription();
-
       if (sub) {
         const subJson = sub.toJSON();
-        // Avisar backend para remover do banco
-        await api.delete('/push/subscribe', {
-          data: { endpoint: subJson.endpoint, keys: subJson.keys },
-        }).catch(() => {});
+        await api
+          .delete('/push/subscribe', {
+            data: { endpoint: subJson.endpoint, keys: subJson.keys },
+          })
+          .catch(() => {});
         await sub.unsubscribe();
       }
-
       setSubscribed(false);
     } catch (err) {
       console.warn('push_unsubscribe_error', err);
@@ -90,5 +112,26 @@ export function usePushNotifications() {
     }
   }, []);
 
-  return { permission, subscribed, loading, subscribe, unsubscribe, supported };
+  /* ─── Alterar horário preferido ────────────────────────────────────────── */
+  const setNotifHour = useCallback(async (hour) => {
+    const h = Number(hour);
+    setNotifHourState(h); // optimistic update
+    try {
+      await api.put('/push/preferences', { notification_hour: h });
+      toast.success(`Lembrete configurado para ${String(h).padStart(2, '0')}:00 🔔`);
+    } catch {
+      toast.error('Não foi possível salvar o horário.');
+    }
+  }, []);
+
+  return {
+    permission,
+    subscribed,
+    loading,
+    supported,
+    notifHour,
+    subscribe,
+    unsubscribe,
+    setNotifHour,
+  };
 }

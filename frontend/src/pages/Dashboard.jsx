@@ -15,7 +15,10 @@ export default function Dashboard() {
   const { t } = useLanguage();
   const navigate = useNavigate();
   const [user, setUser] = useState({ name: 'Você' });
-  const { permission, subscribed, loading: notifLoading, subscribe, unsubscribe, supported: notifSupported } = usePushNotifications();
+  const {
+    permission, subscribed, loading: notifLoading, supported: notifSupported,
+    notifHour, subscribe, unsubscribe, setNotifHour,
+  } = usePushNotifications();
   const [notifDismissed, setNotifDismissed] = useState(() => localStorage.getItem('cf_notif_dismissed') === '1');
   const [paths, setPaths] = useState([]);
   const [progress, setProgress] = useState({ streak: 0, xpToday: 0, dailyGoal: 200, energy: 5, maxEnergy: 5, level: 1, xpTotal: 0 });
@@ -88,23 +91,47 @@ export default function Dashboard() {
 
         {/* Banner: notificações ativas */}
         {notifSupported && permission === 'granted' && subscribed && (
-          <div className="mb-6 flex items-center gap-3 rounded-xl border border-slate-700 bg-slate-800/50 px-4 py-2.5">
+          <div className="mb-6 flex flex-wrap items-center gap-3 rounded-xl border border-slate-700 bg-slate-800/50 px-4 py-3">
             <Bell size={15} className="text-[#A3E635] shrink-0" />
-            <p className="flex-1 text-xs text-slate-400">Notificações ativas — você receberá um lembrete às 19h se não praticar no dia.</p>
+            <span className="text-xs text-slate-400 flex-1 min-w-[160px]">
+              Lembrete diário ativo — receba um aviso se não praticar no dia.
+            </span>
+
+            {/* Selector de horário */}
+            <div className="flex items-center gap-1.5 shrink-0">
+              <span className="text-xs text-slate-500">Horário:</span>
+              <select
+                value={notifHour}
+                onChange={(e) => setNotifHour(Number(e.target.value))}
+                disabled={notifLoading}
+                className="text-xs font-bold text-white bg-[#1C2235] border border-slate-600 rounded-lg px-2 py-1 cursor-pointer focus:outline-none focus:border-[#A3E635] transition disabled:opacity-50"
+              >
+                {[6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22].map((h) => (
+                  <option key={h} value={h}>
+                    {String(h).padStart(2, '0')}:00
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <span className="text-slate-700 hidden sm:inline">|</span>
+
             <button
               onClick={async () => {
                 try {
                   await api.post('/push/test');
                   toast.success('Notificação de teste enviada!');
                 } catch {
-                  toast.error('Erro ao enviar teste. Verifique se o backend está online.');
+                  toast.error('Erro ao enviar. Backend online?');
                 }
               }}
               className="text-xs text-slate-400 hover:text-[#A3E635] transition shrink-0"
             >
               Testar
             </button>
+
             <span className="text-slate-700">|</span>
+
             <button
               onClick={unsubscribe}
               disabled={notifLoading}
