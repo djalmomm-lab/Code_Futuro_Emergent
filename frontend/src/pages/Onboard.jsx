@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, Check, ShieldCheck, Calendar, User, Mail, Lock, Sparkles } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
-import { ByteLogo } from '../components/ByteMascot';
+import { ByteNavbar } from '../components/ByteMascot';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
@@ -111,7 +111,7 @@ export default function Onboard() {
 
       <div className="relative w-full max-w-2xl">
         <div className="flex items-center justify-center gap-2 mb-6">
-          <ByteLogo size={40} />
+          <ByteNavbar size={52} />
           <span className="font-display text-xl font-bold text-white">CodeFuturo</span>
         </div>
 

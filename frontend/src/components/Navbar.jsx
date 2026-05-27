@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Menu, X, Globe, ChevronDown, User as UserIcon, LogOut, Settings, LayoutDashboard, Crown, Award, GraduationCap } from 'lucide-react';
 import { useLanguage, LANGUAGES } from '../context/LanguageContext';
-import { ByteLogo } from './ByteMascot';
+import { ByteNavbar } from './ByteMascot';
 import { Button } from './ui/button';
 import { isAuthed, getStoredUser, logout as doLogout, authApi } from '../lib/api';
 
@@ -47,7 +47,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <Link to="/" className="flex items-center gap-2" aria-label="CodeFuturo">
-            <ByteLogo size={36} />
+            <ByteNavbar size={38} />
             <div className="hidden sm:block leading-none">
               <div className="font-display text-[19px] font-bold text-white">CodeFuturo</div>
               <div className="text-[10px] text-slate-400 tracking-wider uppercase">{t('footer.tagline')}</div>

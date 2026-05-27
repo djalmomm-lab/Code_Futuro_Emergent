@@ -1,7 +1,7 @@
 import React from 'react';
 import { CheckCircle2, Smartphone, Star, Linkedin } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
-import { ByteLogo } from './ByteMascot';
+import { ByteNavbar } from './ByteMascot';
 
 export function AnywhereSection() {
   const { t } = useLanguage();
@@ -107,7 +107,7 @@ export function CertificateSection() {
             <div className="relative">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <ByteLogo size={32} />
+                  <ByteNavbar size={32} />
                   <span className="font-display font-bold text-white">CodeFuturo</span>
                 </div>
                 <span className="text-[10px] uppercase tracking-widest text-slate-400 font-bold">{t('cert.certOf')}</span>

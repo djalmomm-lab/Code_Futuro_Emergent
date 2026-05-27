@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Mail, Lock, User } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
-import { ByteLogo } from '../components/ByteMascot';
+import { ByteNavbar } from '../components/ByteMascot';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
@@ -45,7 +45,7 @@ export default function Register() {
 
       <div className="relative w-full max-w-md">
         <Link to="/" className="flex items-center justify-center gap-2 mb-8">
-          <ByteLogo size={48} />
+          <ByteNavbar size={64} />
           <div className="leading-none">
             <div className="font-display text-2xl font-bold text-white">CodeFuturo</div>
             <div className="text-[11px] text-slate-400 tracking-wider uppercase">Do zero ao deploy</div>

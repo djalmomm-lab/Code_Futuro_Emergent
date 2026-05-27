@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Github, Twitter, Instagram, Youtube } from 'lucide-react';
-import { ByteLogo } from './ByteMascot';
+import { ByteNavbar } from './ByteMascot';
 import { useLanguage } from '../context/LanguageContext';
 
 export default function Footer() {
@@ -20,7 +20,7 @@ export default function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-6 gap-8">
           <div className="col-span-2">
             <Link to="/" className="flex items-center gap-2">
-              <ByteLogo size={40} />
+              <ByteNavbar size={40} />
               <div className="leading-none">
                 <div className="font-display text-[20px] font-bold text-white">CodeFuturo</div>
                 <div className="text-[11px] text-slate-400 tracking-wider uppercase">{t('footer.tagline')}</div>
