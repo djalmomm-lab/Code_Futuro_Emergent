@@ -242,4 +242,47 @@ def build_router(db, current_user_dep):
         await db.class_memberships.delete_many({"class_id": class_id})
         return {"ok": True}
 
+    @router.get("/{class_id}/leaderboard")
+    async def class_leaderboard(class_id: str, user=Depends(current_user_dep)):
+        """Return a ranked list of members of the class.
+
+        Accessible to any member (teacher or student). Emails are NOT exposed —
+        only display name, is_pro flag, progress stats, and an is_me marker.
+        """
+        c = await db.classes.find_one({"id": class_id}, {"_id": 0, "id": 1})
+        if not c:
+            raise HTTPException(404, "Turma não encontrada")
+        me_m = await db.class_memberships.find_one(
+            {"class_id": class_id, "user_id": user["id"]}, {"_id": 0}
+        )
+        if not me_m:
+            raise HTTPException(403, "Você não faz parte desta turma")
+
+        members = await db.class_memberships.find(
+            {"class_id": class_id}, {"_id": 0}
+        ).to_list(500)
+        rows = []
+        for m in members:
+            u = await db.users.find_one({"id": m["user_id"]}, {"_id": 0})
+            if not u:
+                continue
+            summary = await _student_progress_summary(u["id"])
+            rows.append({
+                "user_id": u["id"],
+                "name": u.get("name") or "Aluno",
+                "is_pro": bool(u.get("is_pro")),
+                "role": m["role"],
+                "xp_total": summary["xp_total"],
+                "streak": summary["streak"],
+                "completed": summary["completed"],
+                "total": summary["total"],
+                "is_me": u["id"] == user["id"],
+            })
+        # Sort by xp desc, tie-break by streak, then completed
+        rows.sort(key=lambda r: (-r["xp_total"], -r["streak"], -r["completed"]))
+        # Assign ranks
+        for i, r in enumerate(rows):
+            r["rank"] = i + 1
+        return {"items": rows}
+
     return router

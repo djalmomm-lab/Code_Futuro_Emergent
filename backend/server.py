@@ -546,8 +546,24 @@ async def download_certificate(path_slug: str, user=Depends(current_user)):
 
 @api.get("/verify/{cert_id}")
 async def verify_certificate(cert_id: str):
-    """Public certificate verification endpoint (no auth)."""
-    rec = await db.certificates.find_one({"cert_id": cert_id}, {"_id": 0, "user_id": 0})
+    """Public certificate verification endpoint (no auth).
+
+    Returns only the fields the UI renders — never leak internal fields
+    such as _id or user_id. Uses an explicit allow-list projection.
+    """
+    rec = await db.certificates.find_one(
+        {"cert_id": cert_id},
+        {
+            "_id": 0,
+            "cert_id": 1,
+            "student_name": 1,
+            "track_name": 1,
+            "path_slug": 1,
+            "total_lessons": 1,
+            "xp_earned": 1,
+            "issued_at": 1,
+        },
+    )
     if not rec:
         raise HTTPException(404, "Certificado não encontrado ou inválido")
     return {"valid": True, **rec}

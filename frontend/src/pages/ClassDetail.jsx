@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Users, Crown, Trash2, Loader2, GraduationCap, Star, Flame, Copy, Check, AlertTriangle } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import ClassLeaderboard from '../components/ClassLeaderboard';
 import { classesApi, isAuthed, getErrorMessage } from '../lib/api';
 import { logError } from '../lib/logger';
 import { toast } from 'sonner';
@@ -130,8 +131,9 @@ export default function ClassDetail() {
         </div>
 
         {isTeacher ? (
-          <div className="mt-8">
-            <h2 className="font-display text-xl font-bold text-white mb-4">Alunos ({data.students.length})</h2>
+          <div className="mt-8 grid lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2">
+              <h2 className="font-display text-xl font-bold text-white mb-4">Alunos ({data.students.length})</h2>
             {data.students.length === 0 ? (
               <div className="cf-card p-8 text-center text-slate-400">
                 Nenhum aluno entrou ainda. Compartilhe o código <span className="font-code text-[#A3E635]">{klass.invite_code}</span> com a turma.
@@ -213,14 +215,25 @@ export default function ClassDetail() {
                 </button>
               )}
             </div>
+            </div>
+            <aside className="lg:col-span-1">
+              <ClassLeaderboard classId={classId} />
+            </aside>
           </div>
         ) : (
-          <div className="mt-8 cf-card p-6">
-            <h2 className="font-display text-lg font-bold text-white">Você está nesta turma</h2>
-            <p className="mt-1 text-sm text-slate-400">Continue suas trilhas — seu professor acompanha o progresso aqui.</p>
-            <button onClick={() => navigate('/catalogo')} className="mt-4 cf-btn-lime px-5 py-2.5 rounded-xl text-sm font-bold inline-flex items-center gap-2">
-              Ir para as trilhas
-            </button>
+          <div className="mt-8 grid lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2">
+              <div className="cf-card p-6">
+                <h2 className="font-display text-lg font-bold text-white">Você está nesta turma</h2>
+                <p className="mt-1 text-sm text-slate-400">Continue suas trilhas — seu professor acompanha o progresso aqui, e você pode ver como está indo no ranking ao lado.</p>
+                <button onClick={() => navigate('/catalogo')} className="mt-4 cf-btn-lime px-5 py-2.5 rounded-xl text-sm font-bold inline-flex items-center gap-2">
+                  Ir para as trilhas
+                </button>
+              </div>
+            </div>
+            <aside className="lg:col-span-1">
+              <ClassLeaderboard classId={classId} />
+            </aside>
           </div>
         )}
       </main>

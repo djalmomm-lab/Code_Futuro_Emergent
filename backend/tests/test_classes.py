@@ -251,6 +251,62 @@ class TestRemoveStudent:
         assert student_user_id not in ids
 
 
+# ---------- Leaderboard (must run before TestDeleteClass deletes the class) ----------
+class TestLeaderboard:
+    def test_member_can_see_leaderboard_sorted(self, session, pro_token, created_class, pro_user_id, student_token, student_user_id):
+        # Ensure student joined this fresh class
+        session.post(
+            f"{API}/classes/join",
+            headers=_auth(student_token),
+            json={"invite_code": created_class["invite_code"]},
+        )
+        r = session.get(f"{API}/classes/{created_class['id']}/leaderboard", headers=_auth(pro_token))
+        assert r.status_code == 200, r.text
+        body = r.json()
+        assert "items" in body and isinstance(body["items"], list)
+        items = body["items"]
+        assert len(items) >= 2
+        # Required keys / no email leak
+        required = {"user_id", "name", "is_pro", "role", "xp_total", "streak", "completed", "total", "is_me", "rank"}
+        for it in items:
+            assert required.issubset(set(it.keys())), f"missing keys: {required - set(it.keys())}"
+            assert "email" not in it, "email must not be exposed in leaderboard"
+            assert "password_hash" not in it
+            assert "_id" not in it
+        # Ranks sequential 1..N
+        ranks = [it["rank"] for it in items]
+        assert ranks == list(range(1, len(items) + 1))
+        # Sort: xp_total DESC, then streak DESC, then completed DESC
+        for a, b in zip(items, items[1:]):
+            assert (a["xp_total"], a["streak"], a["completed"]) >= (b["xp_total"], b["streak"], b["completed"])
+        # is_me True for caller (teacher) exactly once
+        me_rows = [it for it in items if it["is_me"]]
+        assert len(me_rows) == 1
+        assert me_rows[0]["user_id"] == pro_user_id
+        assert me_rows[0]["role"] == "teacher"
+
+    def test_student_caller_sees_is_me_true_for_self(self, session, student_token, created_class, student_user_id):
+        r = session.get(f"{API}/classes/{created_class['id']}/leaderboard", headers=_auth(student_token))
+        assert r.status_code == 200, r.text
+        items = r.json()["items"]
+        me = [it for it in items if it["is_me"]]
+        assert len(me) == 1
+        assert me[0]["user_id"] == student_user_id
+        assert me[0]["role"] == "student"
+
+    def test_non_member_forbidden(self, session, other_token, created_class):
+        r = session.get(f"{API}/classes/{created_class['id']}/leaderboard", headers=_auth(other_token))
+        assert r.status_code == 403, r.text
+
+    def test_unknown_class_returns_404(self, session, pro_token):
+        r = session.get(f"{API}/classes/{uuid.uuid4()}/leaderboard", headers=_auth(pro_token))
+        assert r.status_code == 404, r.text
+
+    def test_requires_auth(self, session, created_class):
+        r = session.get(f"{API}/classes/{created_class['id']}/leaderboard")
+        assert r.status_code in (401, 403)
+
+
 # ---------- Delete class ----------
 class TestDeleteClass:
     def test_non_owner_forbidden(self, session, other_token, created_class):

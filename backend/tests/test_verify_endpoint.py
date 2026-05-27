@@ -74,6 +74,15 @@ class TestVerifyEndpoint:
         assert "_id" not in data
         assert "user_id" not in data
 
+    def test_response_keys_are_strict_allow_list(self, session, persisted_cert_id):
+        """Allow-list projection: response keys must be EXACTLY this set."""
+        r = session.get(f"{API}/verify/{persisted_cert_id}")
+        assert r.status_code == 200, r.text
+        data = r.json()
+        expected = {"valid", "cert_id", "student_name", "track_name", "path_slug", "total_lessons", "xp_earned", "issued_at"}
+        actual = set(data.keys())
+        assert actual == expected, f"expected exactly {expected}, got {actual} (extras={actual - expected}, missing={expected - actual})"
+
     def test_invalid_cert_returns_404(self, session):
         r = session.get(f"{API}/verify/CF-DEADBEEF1234")
         assert r.status_code == 404, f"expected 404, got {r.status_code}: {r.text}"

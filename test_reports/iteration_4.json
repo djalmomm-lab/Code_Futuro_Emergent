@@ -1,0 +1,38 @@
+{
+  "summary": "Iteration 4 validated the new per-class leaderboard endpoint and the tightened /verify allow-list projection. Backend: 42/42 pytest cases green = 36 prior regression + 5 new TestLeaderboard tests + 1 new strict allow-list test on /verify. Frontend: both teacher (cert.test@codefuturo.app) and student (aluno.teste@cf.app) views verified on /escolas/49deaa85-f52c-476f-9e78-04bb55792454: class-leaderboard component + leaderboard-row-<user_id> testids render correctly; Maria Silva is #1 with gold medal + VOCÊ + PROF + PRO badges; Pedro Aluno is #2; student view hides the Excluir turma card and the students table while still rendering the leaderboard with Pedro Aluno's VOCÊ badge.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_classes.py",
+    "/app/backend/tests/test_verify_endpoint.py",
+    "/app/backend/tests/test_paywall_certs.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "classes_routes.py leaderboard endpoint calls _student_progress_summary per member sequentially — for a class with N members this fans out into N * (#paths + #lessons-per-path) Mongo round-trips. Fine for ~30 students but worth a single aggregation when class sizes grow.",
+    "Ranking does not implement dense ranking — tied scores still get sequential ranks (1,2,3,...) rather than (1,1,3). Acceptable per spec which doesn't require dense ranks, but UI shows distinct medals for ties, which may surprise users with identical XP.",
+    "ClassLeaderboard.jsx renders all members in one list with no pagination/virtualization. With seats up to 500 this could be heavy; consider top-N + 'mostrar mais' if seats limit is raised."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_classes.py",
+    "/app/backend/tests/test_verify_endpoint.py"
+  ],
+  "success_rate": {
+    "backend": "100% (42/42 pytest — 36 regression + 5 leaderboard + 1 strict verify allow-list)",
+    "frontend": "100% (2/2 critical flows — teacher + student leaderboard views on /escolas/49deaa85-...)"
+  },
+  "test_credentials": "Teacher Pro: cert.test@codefuturo.app / TestPro123! (owns Turma 8A, class id 49deaa85-f52c-476f-9e78-04bb55792454, invite 8H4M5J). Student: aluno.teste@cf.app / Aluno12345! (Pedro Aluno).",
+  "seed_data_creation": "None added. Tests self-seed an isolated TEST class + ephemeral student, asserts leaderboard, then cascades delete (existing fixture). Existing seeded users (Maria Silva, Pedro Aluno) were only used read-only for the live UI test.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "TestLeaderboard was placed BEFORE TestDeleteClass in test_classes.py because created_class is module-scoped and TestDeleteClass deletes it; respect that ordering when appending new tests. The /verify response is now strictly enumerated: {valid, cert_id, student_name, track_name, path_slug, total_lessons, xp_earned, issued_at} — any future field additions must update test_response_keys_are_strict_allow_list. ClassLeaderboard data-testids: class-leaderboard (root) and leaderboard-row-<user_id> per row; row text contains the visible badges (VOCÊ / PROF / PRO) so substring assertions are reliable. lucide-react Medal icon color is set via inline style; browsers normalize hex to rgb(), so prefer asserting on visual presence or on getComputedStyle rather than literal substring of the hex in the style attribute.",
+  "rca of the issue": "N/A — no defects found. New leaderboard endpoint, strict /verify projection, and ClassDetail role-based UI all behave as specified."
+}
