@@ -37,17 +37,10 @@ security = HTTPBearer(auto_error=False)
 app = FastAPI(title="CodeFuturo API")
 api = APIRouter(prefix="/api")
 
-_cors_origins = [
-    FRONTEND_URL,
-    "https://codefuturo.com",
-    "https://www.codefuturo.com",
-    "http://localhost:3000",
-    "http://localhost:5173",
-]
 app.add_middleware(
     CORSMiddleware,
-    allow_credentials=True,
-    allow_origins=_cors_origins,
+    allow_credentials=False,
+    allow_origins=["*"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
