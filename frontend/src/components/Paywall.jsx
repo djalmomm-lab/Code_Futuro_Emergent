@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Lock, Sparkles, Check, Crown, Zap, Award, Code2, ArrowRight } from 'lucide-react';
+import { ByteNavbar } from './ByteMascot';
 
 /**
  * Paywall overlay shown when a free user tries to access a Pro lesson.
@@ -34,9 +35,12 @@ export default function Paywall({ lesson, freeLimit = 3, variant = 'modal' }) {
       <div className="absolute -bottom-32 -left-24 w-72 h-72 rounded-full blur-3xl opacity-20" style={{ background: '#7C3AED' }} />
 
       <div className="relative">
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[11px] font-bold tracking-wider uppercase"
-             style={{ background: 'rgba(163,230,53,0.12)', color: '#A3E635', border: '1px solid rgba(163,230,53,0.3)' }}>
-          <Crown size={12} /> CodeFuturo Pro
+        <div className="flex items-center gap-3 mb-2">
+          <ByteNavbar size={48} />
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[11px] font-bold tracking-wider uppercase"
+               style={{ background: 'rgba(163,230,53,0.12)', color: '#A3E635', border: '1px solid rgba(163,230,53,0.3)' }}>
+            <Crown size={12} /> CodeFuturo Pro
+          </div>
         </div>
 
         <h2 className="mt-4 font-display text-3xl md:text-4xl font-bold text-white leading-tight">

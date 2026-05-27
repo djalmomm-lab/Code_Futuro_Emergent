@@ -9,6 +9,7 @@ import { logError } from '../lib/logger';
 import Paywall from '../components/Paywall';
 import UpgradeCelebration from '../components/UpgradeCelebration';
 import { runJavaScript, mountHTMLPreview, normalizeHTML } from '../lib/runners';
+import { ByteNavbar } from '../components/ByteMascot';
 
 const FREE_LESSONS_PER_PATH = 3;
 
@@ -85,8 +86,11 @@ export default function Lesson() {
     return (
       <div className="min-h-screen relative" style={{ background: 'var(--cf-space)' }}>
         <header className="border-b sticky top-0 z-40 backdrop-blur-md" style={{ background: 'rgba(10,15,30,0.92)', borderColor: 'var(--cf-border)' }}>
-          <div className="max-w-7xl mx-auto px-4 h-14 flex items-center gap-4">
-            <button onClick={() => navigate(`/jornada/${lesson.path_slug}`)} className="text-slate-300 hover:text-white flex items-center gap-1 text-sm font-semibold" data-testid="paywall-back-trail">
+          <div className="max-w-7xl mx-auto px-4 h-14 flex items-center gap-3">
+            <Link to="/" className="shrink-0" title="CodeFuturo — início">
+              <ByteNavbar size={36} />
+            </Link>
+            <button onClick={() => navigate(`/jornada/${lesson.path_slug}`)} className="text-slate-300 hover:text-white flex items-center gap-1 text-sm font-semibold shrink-0" data-testid="paywall-back-trail">
               <ArrowLeft size={16} /> Trilha
             </button>
             <div className="flex-1 min-w-0">
@@ -231,8 +235,11 @@ export default function Lesson() {
   return (
     <div className="min-h-screen flex flex-col" style={{ background: 'var(--cf-space)' }}>
       <header className="border-b sticky top-0 z-40 backdrop-blur-md" style={{ background: 'rgba(10,15,30,0.92)', borderColor: 'var(--cf-border)' }}>
-        <div className="max-w-7xl mx-auto px-4 h-14 flex items-center gap-4">
-          <button onClick={() => navigate(`/jornada/${lesson.path_slug}`)} className="text-slate-300 hover:text-white flex items-center gap-1 text-sm font-semibold">
+        <div className="max-w-7xl mx-auto px-4 h-14 flex items-center gap-3">
+          <Link to="/" className="shrink-0" title="CodeFuturo — início">
+            <ByteNavbar size={36} />
+          </Link>
+          <button onClick={() => navigate(`/jornada/${lesson.path_slug}`)} className="text-slate-300 hover:text-white flex items-center gap-1 text-sm font-semibold shrink-0">
             <ArrowLeft size={16} /> Trilha
           </button>
           <div className="flex-1 min-w-0">
@@ -281,8 +288,11 @@ export default function Lesson() {
 
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 grid md:grid-cols-2 gap-4">
         <div className="cf-card p-6 overflow-auto">
-          <div className="text-xs font-bold uppercase tracking-wider text-[#A3E635]">{t('lesson.instruction')}</div>
-          <h2 className="mt-2 font-display text-2xl font-bold text-white">{lesson.title}</h2>
+          <div className="flex items-center gap-2 mb-1">
+            <ByteNavbar size={28} />
+            <div className="text-xs font-bold uppercase tracking-wider text-[#A3E635]">{t('lesson.instruction')}</div>
+          </div>
+          <h2 className="mt-1 font-display text-2xl font-bold text-white">{lesson.title}</h2>
           <p className="mt-4 text-slate-300 leading-relaxed whitespace-pre-line">{instruction}</p>
 
           {expected && (
