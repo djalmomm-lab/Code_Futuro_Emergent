@@ -37,10 +37,17 @@ security = HTTPBearer(auto_error=False)
 app = FastAPI(title="CodeFuturo API")
 api = APIRouter(prefix="/api")
 
+_cors_origins = [
+    FRONTEND_URL,
+    "https://codefuturo.com",
+    "https://www.codefuturo.com",
+    "http://localhost:3000",
+    "http://localhost:5173",
+]
 app.add_middleware(
     CORSMiddleware,
-    allow_credentials=False,
-    allow_origins=["*"],
+    allow_credentials=True,
+    allow_origins=_cors_origins,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -204,7 +211,9 @@ async def register(data: RegisterIn):
 @api.post("/auth/login")
 async def login(data: LoginIn):
     user = await db.users.find_one({"email": data.email.lower()})
-    if not user or not verify_password(data.password, user.get("password_hash") or ""):
+    if not user or not user.get("password_hash"):
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid credentials")
+    if not verify_password(data.password, user["password_hash"]):
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid credentials")
     token = make_token(user["id"])
     return {"token": token, "user": public_user(user)}
