@@ -645,16 +645,26 @@ app.include_router(_sub_webhook(db))
 from classes_routes import build_router as _classes_router  # noqa: E402
 app.include_router(_classes_router(db, current_user))
 
-# Push Notifications
-from push_routes import build_router as _push_router, build_scheduler as _build_scheduler  # noqa: E402
-app.include_router(_push_router(db, current_user))
+# Push Notifications (graceful — não derruba o servidor se pywebpush não instalado)
+_push_available = False
+try:
+    from push_routes import build_router as _push_router, build_scheduler as _build_scheduler  # noqa: E402
+    app.include_router(_push_router(db, current_user))
+    _push_available = True
+except Exception as _push_err:  # noqa: BLE001
+    logging.warning("push_routes indisponível: %s", _push_err)
 
 logging.basicConfig(level=logging.INFO)
 
 @app.on_event("startup")
 async def _start_scheduler():
-    scheduler = _build_scheduler(db)
-    scheduler.start()
+    if not _push_available:
+        return
+    try:
+        scheduler = _build_scheduler(db)
+        scheduler.start()
+    except Exception as e:  # noqa: BLE001
+        logging.warning("scheduler não iniciou: %s", e)
 
 
 @app.on_event("startup")
