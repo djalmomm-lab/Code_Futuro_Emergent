@@ -27,6 +27,7 @@ DB_NAME = os.environ.get("DB_NAME", "codefuturo")
 JWT_SECRET = os.environ.get("JWT_SECRET", "cf-dev-secret-change-me")
 JWT_ALGO = "HS256"
 JWT_EXPIRE_DAYS = 7
+FRONTEND_URL = os.environ.get("FRONTEND_URL", "http://localhost:3000")
 
 client = AsyncIOMotorClient(MONGO_URL)
 db = client[DB_NAME]
@@ -580,10 +581,11 @@ app.include_router(_sub_webhook(db))
 from classes_routes import build_router as _classes_router  # noqa: E402
 app.include_router(_classes_router(db, current_user))
 
+_cors_origins = [FRONTEND_URL, "http://localhost:3000", "http://localhost:5173"]
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=["*"],
+    allow_origins=_cors_origins,
     allow_methods=["*"],
     allow_headers=["*"],
 )

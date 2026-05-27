@@ -1,0 +1,18 @@
+# Dev only — não vai para produção
+-r requirements.txt
+
+# Seed com LLM (requer emergentintegrations via CDN especial)
+# pip install emergentintegrations --extra-index-url https://d33sy5i8bnduqm.cloudfront.net/simple/
+motor==3.3.1
+
+# Testes
+pytest==9.0.3
+requests==2.33.1
+
+# Linting
+black==26.3.1
+flake8==7.3.0
+isort==8.0.1
+
+# Recarga automática em dev
+watchfiles==1.1.1
