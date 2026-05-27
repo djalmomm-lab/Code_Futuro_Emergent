@@ -628,7 +628,13 @@ app.include_router(_sub_webhook(db))
 from classes_routes import build_router as _classes_router  # noqa: E402
 app.include_router(_classes_router(db, current_user))
 
-_cors_origins = [FRONTEND_URL, "http://localhost:3000", "http://localhost:5173"]
+_cors_origins = [
+    FRONTEND_URL,
+    "https://codefuturo.com",
+    "https://www.codefuturo.com",
+    "http://localhost:3000",
+    "http://localhost:5173",
+]
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
