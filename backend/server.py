@@ -645,7 +645,16 @@ app.include_router(_sub_webhook(db))
 from classes_routes import build_router as _classes_router  # noqa: E402
 app.include_router(_classes_router(db, current_user))
 
+# Push Notifications
+from push_routes import build_router as _push_router, build_scheduler as _build_scheduler  # noqa: E402
+app.include_router(_push_router(db, current_user))
+
 logging.basicConfig(level=logging.INFO)
+
+@app.on_event("startup")
+async def _start_scheduler():
+    scheduler = _build_scheduler(db)
+    scheduler.start()
 
 
 @app.on_event("startup")

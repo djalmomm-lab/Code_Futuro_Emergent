@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Flame, Zap, Star, Trophy, Play, BookOpen, Target, ChevronRight, ArrowRight } from 'lucide-react';
+import { Flame, Zap, Star, Trophy, Play, BookOpen, Target, ChevronRight, ArrowRight, Bell, BellOff } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { useLanguage } from '../context/LanguageContext';
@@ -8,11 +8,14 @@ import { LEADERBOARD } from '../data/mockData';
 import { Button } from '../components/ui/button';
 import { authApi, leaderboardApi, pathsApi, isAuthed } from '../lib/api';
 import { logError } from '../lib/logger';
+import { usePushNotifications } from '../hooks/usePushNotifications';
 
 export default function Dashboard() {
   const { t } = useLanguage();
   const navigate = useNavigate();
   const [user, setUser] = useState({ name: 'Você' });
+  const { permission, subscribe } = usePushNotifications();
+  const [notifDismissed, setNotifDismissed] = useState(() => localStorage.getItem('cf_notif_dismissed') === '1');
   const [paths, setPaths] = useState([]);
   const [progress, setProgress] = useState({ streak: 0, xpToday: 0, dailyGoal: 200, energy: 5, maxEnergy: 5, level: 1, xpTotal: 0 });
   const [board, setBoard] = useState(LEADERBOARD);
@@ -59,6 +62,17 @@ export default function Dashboard() {
     <div className="min-h-screen" style={{ background: 'var(--cf-space)' }}>
       <Navbar />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        {/* Banner de notificações push */}
+        {permission === 'default' && !notifDismissed && (
+          <div className="mb-6 flex items-center gap-3 rounded-xl border border-[#A3E635]/30 bg-[#A3E635]/10 px-4 py-3">
+            <Bell size={18} className="text-[#A3E635] shrink-0" />
+            <p className="flex-1 text-sm text-slate-300">
+              Ative as notificações para não perder sua sequência de estudos!
+            </p>
+            <button onClick={subscribe} className="text-xs font-bold text-[#A3E635] hover:underline shrink-0">Ativar</button>
+            <button onClick={() => { setNotifDismissed(true); localStorage.setItem('cf_notif_dismissed', '1'); }} className="text-slate-500 hover:text-white shrink-0"><BellOff size={14} /></button>
+          </div>
+        )}
         <div className="flex items-end justify-between flex-wrap gap-4">
           <div>
             <div className="text-sm text-slate-400 font-semibold">{t('dashboard.today')}</div>

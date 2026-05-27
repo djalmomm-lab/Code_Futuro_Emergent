@@ -45,6 +45,10 @@ python-dotenv==1.2.2
 reportlab==4.5.0
 pillow==12.2.0
 
+# Push Notifications
+pywebpush==2.0.0
+apscheduler==3.10.4
+
 # Payments
 stripe==15.0.1
 requests==2.33.1
