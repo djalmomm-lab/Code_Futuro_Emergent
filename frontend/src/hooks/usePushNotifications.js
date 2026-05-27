@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { api } from '../lib/api';
 
 function urlBase64ToUint8Array(base64String) {
@@ -8,31 +8,48 @@ function urlBase64ToUint8Array(base64String) {
   return Uint8Array.from([...raw].map((c) => c.charCodeAt(0)));
 }
 
+const supported = typeof window !== 'undefined'
+  && 'serviceWorker' in navigator
+  && 'PushManager' in window
+  && 'Notification' in window;
+
 export function usePushNotifications() {
-  const [permission, setPermission] = useState(Notification.permission);
+  const [permission, setPermission] = useState(
+    supported ? Notification.permission : 'unsupported'
+  );
   const [subscribed, setSubscribed] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const subscribe = async () => {
-    if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+  /* ─── Verificar se já inscrito ao montar ──────────────────────────────── */
+  useEffect(() => {
+    if (!supported || Notification.permission !== 'granted') return;
+    navigator.serviceWorker.ready.then(async (reg) => {
+      const existing = await reg.pushManager.getSubscription();
+      if (existing) setSubscribed(true);
+    }).catch(() => {});
+  }, []);
 
+  /* ─── Inscrever ───────────────────────────────────────────────────────── */
+  const subscribe = useCallback(async () => {
+    if (!supported) return;
+    setLoading(true);
     try {
-      // Pedir permissão
       const perm = await Notification.requestPermission();
       setPermission(perm);
       if (perm !== 'granted') return;
 
-      // Buscar chave pública VAPID do backend
       const { publicKey } = await api.get('/push/vapid-public-key').then((r) => r.data);
       if (!publicKey) return;
 
       const reg = await navigator.serviceWorker.ready;
-      const existing = await reg.pushManager.getSubscription();
-      if (existing) { setSubscribed(true); return; }
+      let sub = await reg.pushManager.getSubscription();
 
-      const sub = await reg.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(publicKey),
-      });
+      if (!sub) {
+        sub = await reg.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(publicKey),
+        });
+      }
 
       const subJson = sub.toJSON();
       await api.post('/push/subscribe', {
@@ -43,15 +60,35 @@ export function usePushNotifications() {
       setSubscribed(true);
     } catch (err) {
       console.warn('push_subscribe_error', err);
+    } finally {
+      setLoading(false);
     }
-  };
+  }, []);
 
-  // Tentar se inscrever silenciosamente se já tiver permissão
-  useEffect(() => {
-    if (permission === 'granted' && !subscribed) {
-      subscribe();
+  /* ─── Cancelar inscrição ──────────────────────────────────────────────── */
+  const unsubscribe = useCallback(async () => {
+    if (!supported) return;
+    setLoading(true);
+    try {
+      const reg = await navigator.serviceWorker.ready;
+      const sub = await reg.pushManager.getSubscription();
+
+      if (sub) {
+        const subJson = sub.toJSON();
+        // Avisar backend para remover do banco
+        await api.delete('/push/subscribe', {
+          data: { endpoint: subJson.endpoint, keys: subJson.keys },
+        }).catch(() => {});
+        await sub.unsubscribe();
+      }
+
+      setSubscribed(false);
+    } catch (err) {
+      console.warn('push_unsubscribe_error', err);
+    } finally {
+      setLoading(false);
     }
-  }, []); // eslint-disable-line
+  }, []);
 
-  return { permission, subscribed, subscribe };
+  return { permission, subscribed, loading, subscribe, unsubscribe, supported };
 }

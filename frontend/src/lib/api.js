@@ -85,6 +85,14 @@ export const classesApi = {
   remove: (classId) => api.delete(`/classes/${classId}`).then((r) => r.data),
 };
 
+// Push Notifications
+export const pushApi = {
+  vapidKey: () => api.get('/push/vapid-public-key').then((r) => r.data),
+  subscribe: (payload) => api.post('/push/subscribe', payload).then((r) => r.data),
+  unsubscribe: (payload) => api.delete('/push/subscribe', { data: payload }).then((r) => r.data),
+  test: () => api.post('/push/test').then((r) => r.data),
+};
+
 // Subscription / Billing
 export const subscriptionApi = {
   plans: () => api.get('/subscription/plans').then((r) => r.data),

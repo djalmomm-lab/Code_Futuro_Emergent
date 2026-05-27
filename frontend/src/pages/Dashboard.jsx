@@ -6,15 +6,16 @@ import Footer from '../components/Footer';
 import { useLanguage } from '../context/LanguageContext';
 import { LEADERBOARD } from '../data/mockData';
 import { Button } from '../components/ui/button';
-import { authApi, leaderboardApi, pathsApi, isAuthed } from '../lib/api';
+import { authApi, leaderboardApi, pathsApi, isAuthed, api } from '../lib/api';
 import { logError } from '../lib/logger';
 import { usePushNotifications } from '../hooks/usePushNotifications';
+import { toast } from 'sonner';
 
 export default function Dashboard() {
   const { t } = useLanguage();
   const navigate = useNavigate();
   const [user, setUser] = useState({ name: 'Você' });
-  const { permission, subscribe } = usePushNotifications();
+  const { permission, subscribed, loading: notifLoading, subscribe, unsubscribe, supported: notifSupported } = usePushNotifications();
   const [notifDismissed, setNotifDismissed] = useState(() => localStorage.getItem('cf_notif_dismissed') === '1');
   const [paths, setPaths] = useState([]);
   const [progress, setProgress] = useState({ streak: 0, xpToday: 0, dailyGoal: 200, energy: 5, maxEnergy: 5, level: 1, xpTotal: 0 });
@@ -62,15 +63,63 @@ export default function Dashboard() {
     <div className="min-h-screen" style={{ background: 'var(--cf-space)' }}>
       <Navbar />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        {/* Banner de notificações push */}
-        {permission === 'default' && !notifDismissed && (
+        {/* Banner: pedir permissão */}
+        {notifSupported && permission === 'default' && !notifDismissed && (
           <div className="mb-6 flex items-center gap-3 rounded-xl border border-[#A3E635]/30 bg-[#A3E635]/10 px-4 py-3">
             <Bell size={18} className="text-[#A3E635] shrink-0" />
             <p className="flex-1 text-sm text-slate-300">
               Ative as notificações para não perder sua sequência de estudos!
             </p>
-            <button onClick={subscribe} className="text-xs font-bold text-[#A3E635] hover:underline shrink-0">Ativar</button>
-            <button onClick={() => { setNotifDismissed(true); localStorage.setItem('cf_notif_dismissed', '1'); }} className="text-slate-500 hover:text-white shrink-0"><BellOff size={14} /></button>
+            <button
+              onClick={subscribe}
+              disabled={notifLoading}
+              className="text-xs font-bold text-[#A3E635] hover:underline shrink-0 disabled:opacity-50"
+            >
+              {notifLoading ? 'Ativando…' : 'Ativar'}
+            </button>
+            <button
+              onClick={() => { setNotifDismissed(true); localStorage.setItem('cf_notif_dismissed', '1'); }}
+              className="text-slate-500 hover:text-white shrink-0"
+            >
+              <BellOff size={14} />
+            </button>
+          </div>
+        )}
+
+        {/* Banner: notificações ativas */}
+        {notifSupported && permission === 'granted' && subscribed && (
+          <div className="mb-6 flex items-center gap-3 rounded-xl border border-slate-700 bg-slate-800/50 px-4 py-2.5">
+            <Bell size={15} className="text-[#A3E635] shrink-0" />
+            <p className="flex-1 text-xs text-slate-400">Notificações ativas — você receberá um lembrete às 19h se não praticar no dia.</p>
+            <button
+              onClick={async () => {
+                try {
+                  await api.post('/push/test');
+                  toast.success('Notificação de teste enviada!');
+                } catch {
+                  toast.error('Erro ao enviar teste. Verifique se o backend está online.');
+                }
+              }}
+              className="text-xs text-slate-400 hover:text-[#A3E635] transition shrink-0"
+            >
+              Testar
+            </button>
+            <span className="text-slate-700">|</span>
+            <button
+              onClick={unsubscribe}
+              disabled={notifLoading}
+              className="text-xs text-slate-500 hover:text-red-400 transition shrink-0 disabled:opacity-50"
+            >
+              {notifLoading ? '…' : 'Desativar'}
+            </button>
+          </div>
+        )}
+
+        {/* Banner: permissão bloqueada pelo navegador */}
+        {notifSupported && permission === 'denied' && (
+          <div className="mb-6 flex items-center gap-3 rounded-xl border border-slate-700 bg-slate-800/30 px-4 py-2.5">
+            <BellOff size={15} className="text-slate-500 shrink-0" />
+            <p className="flex-1 text-xs text-slate-500">Notificações bloqueadas pelo navegador. Para ativar, acesse as configurações do site no cadeado da barra de endereço.</p>
           </div>
         )}
         <div className="flex items-end justify-between flex-wrap gap-4">

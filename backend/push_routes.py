@@ -79,6 +79,41 @@ def build_router(db, current_user):
         )
         return {"ok": True}
 
+    @router.post("/test")
+    async def test_push(user=Depends(current_user)):
+        """Envia um push de teste imediatamente para o usuário autenticado."""
+        subs = await db.push_subscriptions.find(
+            {"user_id": user["id"]}
+        ).to_list(length=10)
+
+        if not subs:
+            return {"ok": False, "reason": "Nenhuma inscrição encontrada para este usuário"}
+
+        name = (user.get("name") or "").split()[0] or "Dev"
+        payload = {
+            "title": f"🧪 Teste — CodeFuturo",
+            "body": f"Ei, {name}! Suas notificações estão funcionando perfeitamente 🚀",
+            "icon": "/icons/icon-192.png",
+            "badge": "/icons/icon-192.png",
+            "url": "/dashboard",
+        }
+
+        sent = 0
+        dead = []
+        for sub in subs:
+            ok = _send_push({"endpoint": sub["endpoint"], "keys": sub["keys"]}, payload)
+            if ok:
+                sent += 1
+            else:
+                dead.append(sub["endpoint"])
+
+        if dead:
+            await db.push_subscriptions.delete_many(
+                {"user_id": user["id"], "endpoint": {"$in": dead}}
+            )
+
+        return {"ok": sent > 0, "sent": sent, "removed_dead": len(dead)}
+
     return router
 
 
