@@ -1,5 +1,6 @@
 import './App.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 import { LanguageProvider } from './context/LanguageContext';
 import { Toaster } from './components/ui/sonner';
 import Home from './pages/Home';
@@ -21,6 +22,7 @@ import ClassDetail from './pages/ClassDetail';
 
 function App() {
   return (
+    <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID || ''}>
     <div className="App">
       <LanguageProvider>
         <BrowserRouter>
@@ -49,6 +51,7 @@ function App() {
         <Toaster position="top-right" richColors />
       </LanguageProvider>
     </div>
+    </GoogleOAuthProvider>
   );
 }
 

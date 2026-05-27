@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import { GoogleLogin } from '@react-oauth/google';
 import { useLanguage } from '../context/LanguageContext';
 import { ByteLogo } from '../components/ByteMascot';
 import { Button } from '../components/ui/button';
@@ -81,6 +82,32 @@ export default function Login() {
               {loading ? 'Entrando...' : t('auth.login')}
             </Button>
           </form>
+
+          <div className="my-6 flex items-center gap-3">
+            <div className="flex-1 h-px bg-[#1E293B]" />
+            <span className="text-xs text-slate-500 uppercase font-bold">{t('auth.or')}</span>
+            <div className="flex-1 h-px bg-[#1E293B]" />
+          </div>
+
+          <div className="flex justify-center">
+            <GoogleLogin
+              onSuccess={async (res) => {
+                try {
+                  const data = await authApi.googleLogin(res.credential);
+                  saveAuth(data);
+                  toast.success('Bem-vindo!');
+                  setTimeout(() => navigate('/dashboard'), 400);
+                } catch (err) {
+                  toast.error(getErrorMessage(err));
+                }
+              }}
+              onError={() => toast.error('Falha ao entrar com Google')}
+              theme="filled_black"
+              shape="pill"
+              text="continue_with"
+              locale="pt-BR"
+            />
+          </div>
 
           <p className="mt-6 text-center text-sm text-slate-400">
             {t('auth.noAccount')} <Link to="/register" className="text-[#A3E635] font-bold hover:underline">{t('auth.createOne')}</Link>

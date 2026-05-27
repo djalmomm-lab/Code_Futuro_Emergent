@@ -196,8 +196,55 @@ async def register(data: RegisterIn):
 @api.post("/auth/login")
 async def login(data: LoginIn):
     user = await db.users.find_one({"email": data.email.lower()})
-    if not user or not verify_password(data.password, user["password_hash"]):
+    if not user or not verify_password(data.password, user.get("password_hash") or ""):
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid credentials")
+    token = make_token(user["id"])
+    return {"token": token, "user": public_user(user)}
+
+
+class GoogleLoginIn(BaseModel):
+    credential: str
+
+
+@api.post("/auth/google")
+async def google_login(data: GoogleLoginIn):
+    import requests as _req
+    GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID", "")
+
+    resp = _req.get(
+        "https://oauth2.googleapis.com/tokeninfo",
+        params={"id_token": data.credential},
+        timeout=5,
+    )
+    if resp.status_code != 200:
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Token Google inválido")
+
+    info = resp.json()
+    if GOOGLE_CLIENT_ID and info.get("aud") != GOOGLE_CLIENT_ID:
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Token não pertence a este app")
+
+    email = info.get("email", "").lower()
+    name = info.get("name") or info.get("given_name") or "Usuário Google"
+    google_id = info.get("sub", "")
+
+    if not email:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Google não forneceu e-mail")
+
+    user = await db.users.find_one({"email": email})
+    if not user:
+        user = {
+            "id": new_id(),
+            "email": email,
+            "password_hash": None,
+            "name": name,
+            "google_id": google_id,
+            "created_at": datetime.utcnow().isoformat(),
+        }
+        await db.users.insert_one(user)
+        await ensure_progress(user["id"])
+    elif not user.get("google_id"):
+        await db.users.update_one({"id": user["id"]}, {"$set": {"google_id": google_id}})
+
     token = make_token(user["id"])
     return {"token": token, "user": public_user(user)}
 
