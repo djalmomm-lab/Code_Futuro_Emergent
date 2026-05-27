@@ -417,12 +417,54 @@ async def leaderboard(period: str = "week", limit: int = 20):
 
 ADMIN_SECRET = os.environ.get("ADMIN_SECRET", "")
 
-@api.post("/admin/reseed")
-async def admin_reseed(request: Request):
-    """Re-executa o seed estático para atualizar lições e trilhas no MongoDB."""
+
+def _check_admin(request: Request):
     secret = request.headers.get("x-admin-secret", "")
     if not ADMIN_SECRET or secret != ADMIN_SECRET:
         raise HTTPException(status.HTTP_403_FORBIDDEN, "Acesso negado")
+
+
+class AdminSetProIn(BaseModel):
+    email: EmailStr
+    is_pro: bool = True
+
+
+@api.post("/admin/set-pro")
+async def admin_set_pro(data: AdminSetProIn, request: Request):
+    """Promove (ou rebaixa) um usuário para Pro/free. Requer x-admin-secret."""
+    _check_admin(request)
+    user = await db.users.find_one({"email": data.email.lower()})
+    if not user:
+        raise HTTPException(404, f"Usuário não encontrado: {data.email}")
+
+    update = {
+        "is_pro": data.is_pro,
+        "tier": "pro" if data.is_pro else "free",
+        "plan": "admin" if data.is_pro else None,
+        "subscription_ends_at": None,  # sem vencimento para conta admin
+    }
+    await db.users.update_one({"email": data.email.lower()}, {"$set": update})
+    return {
+        "ok": True,
+        "email": data.email.lower(),
+        "is_pro": data.is_pro,
+        "message": f"Usuário {'promovido a Pro' if data.is_pro else 'revertido para free'} com sucesso.",
+    }
+
+
+@api.get("/admin/users")
+async def admin_list_users(request: Request, limit: int = 50):
+    """Lista usuários (email, nome, is_pro). Requer x-admin-secret."""
+    _check_admin(request)
+    cursor = db.users.find({}, {"_id": 0, "id": 1, "email": 1, "name": 1, "is_pro": 1, "plan": 1, "created_at": 1})
+    users = await cursor.sort("created_at", -1).to_list(limit)
+    return {"users": users, "total": len(users)}
+
+
+@api.post("/admin/reseed")
+async def admin_reseed(request: Request):
+    """Re-executa o seed estático para atualizar lições e trilhas no MongoDB."""
+    _check_admin(request)
     try:
         import sys, importlib
         sys.path.insert(0, str(ROOT_DIR))
