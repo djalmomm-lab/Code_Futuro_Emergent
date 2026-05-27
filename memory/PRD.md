@@ -45,7 +45,8 @@ Any authenticated user can create a class (becomes teacher). Students join via 6
 - 2026-04: CodeFuturo identity, multi-language UI, LGPD onboarding, Stripe subscriptions, 76 lessons via LLM, Pyodide Python execution, paywall backend.
 - 2026-05-01 (am): Paywall frontend, PDF certificates backend + `/certificados` page.
 - 2026-05-01 (pm-1): UpgradeCelebration popup, JS live exec + HTML preview, public `/api/verify/{cert_id}` + `/verificar` page, cert auto-issuance on track completion.
-- **2026-05-01 (pm-2): CodeFuturo Escolas (full B2B classroom layer). LinkedIn add-to-profile + share-post + copy-link buttons on verified cert + cert list. `cert_id` exposed in `/api/certificates`. PDF rendering wrapped in `asyncio.to_thread`.**
+- 2026-05-01 (pm-2): CodeFuturo Escolas (full B2B classroom layer). LinkedIn add-to-profile + share-post + copy-link buttons on verified cert + cert list. `cert_id` exposed in `/api/certificates`. PDF rendering wrapped in `asyncio.to_thread`.
+- **2026-05-27: Per-class Leaderboard (`GET /api/classes/{id}/leaderboard`) + `ClassLeaderboard` sidebar component (visible to teacher and student, with medals, "VOCÊ" / "PROF" / "PRO" badges). Tightened `/api/verify` to an explicit allow-list projection — emails/user_id never leak.**
 
 ## Test Coverage
 - Backend regression: 36/36 (17 classes + 16 paywall/cert + 3 verify).
