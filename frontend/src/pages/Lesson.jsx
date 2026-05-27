@@ -144,7 +144,7 @@ export default function Lesson() {
   };
 
   const run = async () => {
-    if (stats.energy <= 0) { toast.error('Sem energia! Aguarde o reset ou faça upgrade Pro.'); return; }
+    if (stats.energy <= 0) { toast.error('⚡ Sem energia! Ela recarrega 1 por hora automaticamente.'); return; }
     setRunning(true);
     setTab('console');
 

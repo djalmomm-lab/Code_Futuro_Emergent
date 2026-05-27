@@ -372,14 +372,21 @@ async def complete_lesson(data: CompleteLessonIn, user=Depends(current_user)):
 @api.post("/energy/consume")
 async def consume_energy(user=Depends(current_user)):
     prog = await ensure_progress(user["id"])
-    # Reset if >24h
+
+    # Recarga gradual: +1 energia por hora completa desde o último uso
     try:
         last_reset = datetime.fromisoformat(prog.get("last_energy_reset"))
     except Exception:
-        last_reset = datetime.utcnow() - timedelta(hours=25)
-    if datetime.utcnow() - last_reset > timedelta(hours=24):
-        prog["energy"] = prog["max_energy"]
-        prog["last_energy_reset"] = datetime.utcnow().isoformat()
+        last_reset = datetime.utcnow() - timedelta(hours=prog["max_energy"])
+
+    elapsed_hours = int((datetime.utcnow() - last_reset).total_seconds() / 3600)
+    if elapsed_hours > 0 and prog["energy"] < prog["max_energy"]:
+        refill = min(elapsed_hours, prog["max_energy"] - prog["energy"])
+        prog["energy"] = min(prog["max_energy"], prog["energy"] + refill)
+        # Avança o timestamp pelo número exato de horas recarregadas
+        prog["last_energy_reset"] = (
+            last_reset + timedelta(hours=refill)
+        ).isoformat()
 
     if prog["energy"] <= 0:
         raise HTTPException(429, "No energy left. Upgrade to Pro or wait for reset.")
@@ -406,6 +413,25 @@ async def leaderboard(period: str = "week", limit: int = 20):
             "level": p["level"],
         })
     return {"period": period, "rows": rows}
+
+
+ADMIN_SECRET = os.environ.get("ADMIN_SECRET", "")
+
+@api.post("/admin/reseed")
+async def admin_reseed(request: Request):
+    """Re-executa o seed estático para atualizar lições e trilhas no MongoDB."""
+    secret = request.headers.get("x-admin-secret", "")
+    if not ADMIN_SECRET or secret != ADMIN_SECRET:
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Acesso negado")
+    try:
+        import sys, importlib
+        sys.path.insert(0, str(ROOT_DIR))
+        import seed_static as _seed
+        importlib.reload(_seed)
+        await _seed.main()
+        return {"ok": True, "message": "Seed executado com sucesso"}
+    except Exception as e:
+        raise HTTPException(500, f"Erro no seed: {e}")
 
 
 @api.get("/tracks")
