@@ -26,7 +26,7 @@ export default function Footer() {
                 <div className="text-[11px] text-slate-400 tracking-wider uppercase">{t('footer.tagline')}</div>
               </div>
             </Link>
-            <p className="mt-4 text-sm text-slate-400 max-w-xs">Plataforma gratuita de programação para crianças e jovens. Do primeiro clique ao deploy.</p>
+            <p className="mt-4 text-sm text-slate-400 max-w-xs">Plataforma gratuita de programação para todas as idades. Do primeiro clique ao deploy.</p>
             <div className="flex gap-3 mt-5">
               {[
                 { Icon: Github, name: 'github' },
