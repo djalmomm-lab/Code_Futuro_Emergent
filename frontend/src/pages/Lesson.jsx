@@ -26,7 +26,8 @@ export default function Lesson() {
   const [tab, setTab] = useState('tests');
   const [tests, setTests] = useState([]);
   const [running, setRunning] = useState(false);
-  const [showHint, setShowHint] = useState(false);
+  const [byteOpen, setByteOpen] = useState(false);
+  const [hintIndex, setHintIndex] = useState(0);
   const [stats, setStats] = useState({ streak: 0, xp: 0, energy: 5, maxEnergy: 5 });
   const [isPro, setIsPro] = useState(false);
   const [celebrationOpen, setCelebrationOpen] = useState(false);
@@ -49,6 +50,8 @@ export default function Lesson() {
         setTests((les.tests || []).map((t) => ({ ...t, passed: false })));
         setQuizAnswers({});
         setQuizSubmitted(false);
+        setByteOpen(false);
+        setHintIndex(0);
       } catch (err) {
         logError('Lesson.load', err, { slug });
         toast.error('Lição não encontrada');
@@ -114,6 +117,7 @@ export default function Lesson() {
   const isHTML = lesson.language === 'html';
   const instruction = lesson[`instruction_${lang}`] || lesson.instruction_pt || '';
   const expected = tests[0]?.expected_stdout || tests[0]?.expected || '';
+  const hints = lesson.hints?.length > 0 ? lesson.hints : (lesson.hint ? [lesson.hint] : []);
 
   const doValidate = (out, error) => {
     const newTests = tests.map((t) => {
@@ -333,17 +337,18 @@ export default function Lesson() {
             </div>
           )}
 
-          {lesson.hint && (
-            <>
-              <button onClick={() => setShowHint((v) => !v)} className="mt-4 inline-flex items-center gap-2 text-sm font-bold text-[#A3E635] hover:underline">
-                <Lightbulb size={16} /> {t('lesson.hint')}
-              </button>
-              {showHint && (
-                <div className="mt-3 p-3 rounded-lg text-sm text-slate-300" style={{ background: 'rgba(163,230,53,0.08)', border: '1px solid rgba(163,230,53,0.2)' }}>
-                  💡 {lesson.hint}
-                </div>
-              )}
-            </>
+          {/* Byte hint button — aparece dentro do card como ponto de entrada */}
+          {hints.length > 0 && (
+            <button
+              onClick={() => { setByteOpen(v => !v); setHintIndex(0); }}
+              className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-slate-400 hover:text-[#A3E635] transition-colors"
+            >
+              <ByteNavbar size={22} />
+              {byteOpen ? 'Fechar dicas do Byte' : `Ver dicas do Byte`}
+              <span className="ml-1 px-1.5 py-0.5 rounded-full text-[10px] font-black" style={{ background: 'rgba(163,230,53,0.15)', color: '#A3E635' }}>
+                {hints.length}
+              </span>
+            </button>
           )}
 
           {lesson.quiz && lesson.quiz.length > 0 && (
@@ -474,6 +479,113 @@ export default function Lesson() {
           </div>
         </div>
       </main>
+      {/* ─── Byte Instrutor flutuante ─────────────────────────────────────────── */}
+      {hints.length > 0 && (
+        <>
+          {/* Balão de diálogo */}
+          {byteOpen && (
+            <div
+              className="fixed bottom-[5.5rem] right-5 z-50 w-72 rounded-2xl shadow-2xl"
+              style={{ background: '#141824', border: '1.5px solid rgba(163,230,53,0.3)' }}
+            >
+              {/* Cauda do balão apontando para o Byte abaixo */}
+              <div className="absolute bottom-[-9px] right-11 w-0 h-0"
+                style={{ borderLeft: '9px solid transparent', borderRight: '9px solid transparent', borderTop: '9px solid rgba(163,230,53,0.3)' }} />
+              <div className="absolute bottom-[-7px] right-[45px] w-0 h-0"
+                style={{ borderLeft: '8px solid transparent', borderRight: '8px solid transparent', borderTop: '8px solid #141824' }} />
+
+              {/* Header */}
+              <div className="flex items-center justify-between px-4 pt-3 pb-2">
+                <div className="flex items-center gap-2">
+                  <ByteNavbar size={26} />
+                  <span className="font-bold text-sm text-white">Byte diz...</span>
+                </div>
+                <button
+                  onClick={() => setByteOpen(false)}
+                  className="text-slate-500 hover:text-white transition-colors text-2xl leading-none w-6 h-6 flex items-center justify-center"
+                >
+                  ×
+                </button>
+              </div>
+
+              {/* Dots de progresso */}
+              <div className="flex items-center gap-1.5 px-4 pb-2">
+                {hints.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setHintIndex(i)}
+                    className="rounded-full transition-all duration-200"
+                    style={{
+                      width: i === hintIndex ? 20 : 8,
+                      height: 8,
+                      background: i === hintIndex ? '#A3E635' : '#334155',
+                    }}
+                  />
+                ))}
+                <span className="ml-auto text-[11px] text-slate-500 font-mono">
+                  {hintIndex + 1}/{hints.length}
+                </span>
+              </div>
+
+              {/* Conteúdo da dica */}
+              <div className="px-4 pb-3 text-sm text-slate-200 leading-relaxed min-h-[56px]">
+                {hints[hintIndex]}
+              </div>
+
+              {/* Navegação */}
+              {hints.length > 1 && (
+                <div
+                  className="flex items-center justify-between px-4 py-2.5 border-t"
+                  style={{ borderColor: 'rgba(163,230,53,0.12)' }}
+                >
+                  <button
+                    onClick={() => setHintIndex(i => Math.max(0, i - 1))}
+                    disabled={hintIndex === 0}
+                    className="text-xs text-slate-400 hover:text-[#A3E635] disabled:opacity-30 transition-colors"
+                  >
+                    ← Anterior
+                  </button>
+                  <button
+                    onClick={() => setHintIndex(i => Math.min(hints.length - 1, i + 1))}
+                    disabled={hintIndex === hints.length - 1}
+                    className="text-xs text-slate-400 hover:text-[#A3E635] disabled:opacity-30 transition-colors"
+                  >
+                    Próxima →
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Botão flutuante do Byte */}
+          <button
+            onClick={() => { setByteOpen(v => !v); if (!byteOpen) setHintIndex(0); }}
+            className="fixed bottom-5 right-5 z-50 group relative"
+            title={`${hints.length} dica${hints.length > 1 ? 's' : ''} do Byte`}
+          >
+            {/* Badge contador */}
+            <span
+              className="absolute -top-1.5 -right-1.5 z-10 flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-black shadow-md"
+              style={{ background: '#A3E635', color: '#0A0F1E' }}
+            >
+              {hints.length}
+            </span>
+            <div
+              className="rounded-2xl p-2 transition-all duration-200 group-hover:scale-110 group-active:scale-95"
+              style={{
+                background: byteOpen ? 'rgba(163,230,53,0.12)' : 'rgba(14,18,36,0.97)',
+                border: `1.5px solid ${byteOpen ? 'rgba(163,230,53,0.5)' : 'rgba(163,230,53,0.2)'}`,
+                boxShadow: byteOpen
+                  ? '0 0 0 3px rgba(163,230,53,0.15), 0 8px 32px rgba(0,0,0,0.6)'
+                  : '0 4px 24px rgba(0,0,0,0.5)',
+              }}
+            >
+              <ByteNavbar size={52} />
+            </div>
+          </button>
+        </>
+      )}
+
       <UpgradeCelebration
         open={celebrationOpen}
         onClose={() => setCelebrationOpen(false)}
