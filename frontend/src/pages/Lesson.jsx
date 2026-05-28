@@ -208,8 +208,7 @@ export default function Lesson() {
             try {
               const res = await progressApi.completeLesson({ lesson_slug: lesson.slug, path_slug: lesson.path_slug });
               setLessonDone(true);
-              if (res.already_completed) toast.success('✅ Lição já concluída anteriormente.');
-              else { toast.success(`🎉 Lição concluída! +${res.xp_earned} XP`); setStats((s) => ({ ...s, xp: res.progress.xp_total, streak: res.progress.streak })); await triggerCelebrationIfMilestone(); }
+              if (!res.already_completed) { toast.success(`🎉 Lição concluída! +${res.xp_earned} XP`); setStats((s) => ({ ...s, xp: res.progress.xp_total, streak: res.progress.streak })); await triggerCelebrationIfMilestone(); }
             } catch { toast.success('🎉 Lição concluída! +50 XP'); setLessonDone(true); }
             setTab('tests');
           } else { setLessonDone(true); toast.success('🎉 Lição concluída! Faça login para salvar.'); setTab('tests'); }
@@ -254,10 +253,7 @@ export default function Lesson() {
         try {
           const res = await progressApi.completeLesson({ lesson_slug: lesson.slug, path_slug: lesson.path_slug });
           setLessonDone(true);
-          if (res.already_completed) {
-            // Already completed in a previous session — quiet confirmation, no XP fanfare
-            toast.success('✅ Lição já concluída anteriormente.');
-          } else {
+          if (!res.already_completed) {
             toast.success(`🎉 Lição concluída! +${res.xp_earned} XP`);
             setStats((s) => ({ ...s, xp: res.progress.xp_total, streak: res.progress.streak }));
             await triggerCelebrationIfMilestone();
