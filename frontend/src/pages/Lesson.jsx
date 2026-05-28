@@ -117,8 +117,8 @@ export default function Lesson() {
       let passed = false;
       if (!error) {
         if (isHTML) {
-          // HTML: normalize whitespace + case + both quote styles accepted
-          passed = normalizeHTML(actual) === normalizeHTML(exp);
+          // HTML: check if user's code contains the expected snippet (normalized)
+          passed = normalizeHTML(actual).includes(normalizeHTML(exp));
         } else if (isPython || isJS) {
           // Executed languages: output is plain text, no quotes in syntax
           passed = actual === exp;
