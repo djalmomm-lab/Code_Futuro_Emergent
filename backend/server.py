@@ -582,12 +582,17 @@ async def lesson_detail(lesson_slug: str, user=Depends(optional_user)):
     les = await db.lessons.find_one({"slug": lesson_slug}, {"_id": 0})
     if not les:
         raise HTTPException(404, "Lesson not found")
-    # Also return next lesson for chaining
+    # Also return next and previous lessons for chaining
     nxt = await db.lessons.find_one(
         {"path_slug": les["path_slug"], "order": les["order"] + 1},
         {"_id": 0, "slug": 1, "title": 1},
     )
     les["next"] = nxt
+    prev = await db.lessons.find_one(
+        {"path_slug": les["path_slug"], "order": les["order"] - 1},
+        {"_id": 0, "slug": 1, "title": 1},
+    )
+    les["previous"] = prev
 
     # Paywall: lessons beyond the free tier require Pro subscription
     is_pro = bool(user and user.get("is_pro"))
@@ -601,6 +606,7 @@ async def lesson_detail(lesson_slug: str, user=Depends(optional_user)):
             "chapter": les.get("chapter"),
             "language": les.get("language"),
             "next": les.get("next"),
+            "previous": les.get("previous"),
             "requires_pro": True,
             "free_limit": FREE_LESSONS_PER_PATH,
         }
