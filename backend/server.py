@@ -154,24 +154,52 @@ def public_user(u: dict) -> dict:
 
 async def ensure_progress(user_id: str) -> dict:
     prog = await db.progress.find_one({"user_id": user_id})
-    if prog:
+    if not prog:
+        prog = {
+            "id": new_id(),
+            "user_id": user_id,
+            "xp_total": 0,
+            "xp_today": 0,
+            "daily_goal": 200,
+            "level": 1,
+            "streak": 0,
+            "last_streak_date": None,
+            "energy": 5,
+            "max_energy": 5,
+            "last_energy_reset": datetime.utcnow().isoformat(),
+            "tokens": 10,
+            "updated_at": datetime.utcnow().isoformat(),
+        }
+        await db.progress.insert_one(prog)
         return prog
-    prog = {
-        "id": new_id(),
-        "user_id": user_id,
-        "xp_total": 0,
-        "xp_today": 0,
-        "daily_goal": 200,
-        "level": 1,
-        "streak": 0,
-        "last_streak_date": None,
-        "energy": 5,
-        "max_energy": 5,
-        "last_energy_reset": datetime.utcnow().isoformat(),
-        "tokens": 10,
-        "updated_at": datetime.utcnow().isoformat(),
-    }
-    await db.progress.insert_one(prog)
+
+    # ── Recarga gradual de energia: +1 por hora completa desde o último uso ──
+    changed = {}
+    max_e = prog.get("max_energy", 5)
+    cur_e = prog.get("energy", max_e)
+    try:
+        last_reset = datetime.fromisoformat(prog.get("last_energy_reset") or "")
+    except Exception:
+        last_reset = datetime.utcnow() - timedelta(hours=max_e)
+
+    if cur_e < max_e:
+        elapsed_hours = int((datetime.utcnow() - last_reset).total_seconds() / 3600)
+        if elapsed_hours > 0:
+            refill = min(elapsed_hours, max_e - cur_e)
+            prog["energy"] = min(max_e, cur_e + refill)
+            prog["last_energy_reset"] = (last_reset + timedelta(hours=refill)).isoformat()
+            changed["energy"] = prog["energy"]
+            changed["last_energy_reset"] = prog["last_energy_reset"]
+
+    # ── Zera xp_today se mudou o dia ────────────────────────────────────────
+    today = date.today().isoformat()
+    if prog.get("last_streak_date") and prog.get("last_streak_date") != today and prog.get("xp_today", 0) > 0:
+        prog["xp_today"] = 0
+        changed["xp_today"] = 0
+
+    if changed:
+        await db.progress.update_one({"user_id": user_id}, {"$set": changed})
+
     return prog
 
 
@@ -450,6 +478,31 @@ async def admin_set_pro(data: AdminSetProIn, request: Request):
         "is_pro": data.is_pro,
         "message": f"Usuário {'promovido a Pro' if data.is_pro else 'revertido para free'} com sucesso.",
     }
+
+
+class AdminResetEnergyIn(BaseModel):
+    email: EmailStr
+    energy: int = Field(default=5, ge=0, le=10)
+
+
+@api.post("/admin/reset-energy")
+async def admin_reset_energy(data: AdminResetEnergyIn, request: Request):
+    """Redefine a energia de um usuário. Requer x-admin-secret."""
+    _check_admin(request)
+    user = await db.users.find_one({"email": data.email.lower()})
+    if not user:
+        raise HTTPException(404, f"Usuário não encontrado: {data.email}")
+    prog = await db.progress.find_one({"user_id": user["id"]})
+    if not prog:
+        raise HTTPException(404, "Progresso não encontrado")
+    await db.progress.update_one(
+        {"user_id": user["id"]},
+        {"$set": {
+            "energy": data.energy,
+            "last_energy_reset": datetime.utcnow().isoformat(),
+        }},
+    )
+    return {"ok": True, "email": data.email.lower(), "energy": data.energy}
 
 
 @api.get("/admin/users")
