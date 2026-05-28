@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { Play, RotateCcw, ChevronRight, CheckCircle2, XCircle, Flame, Zap, Star, Lightbulb, ArrowLeft, Loader2, Code2 } from 'lucide-react';
+import { Play, RotateCcw, ChevronRight, CheckCircle2, XCircle, Flame, Zap, Star, Lightbulb, ArrowLeft, Loader2, Code2, HelpCircle } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { toast } from 'sonner';
 import { progressApi, authApi, isAuthed, lessonsApi, pathsApi } from '../lib/api';
@@ -32,6 +32,8 @@ export default function Lesson() {
   const [celebrationOpen, setCelebrationOpen] = useState(false);
   const [upcomingLessons, setUpcomingLessons] = useState([]);
   const [totalRemaining, setTotalRemaining] = useState(0);
+  const [quizAnswers, setQuizAnswers] = useState({});
+  const [quizSubmitted, setQuizSubmitted] = useState(false);
   const previewRef = useRef(null);
 
   const py = usePyodide();
@@ -45,6 +47,8 @@ export default function Lesson() {
         setLesson(les);
         setCode(les.starter_code || '');
         setTests((les.tests || []).map((t) => ({ ...t, passed: false })));
+        setQuizAnswers({});
+        setQuizSubmitted(false);
       } catch (err) {
         logError('Lesson.load', err, { slug });
         toast.error('Lição não encontrada');
@@ -340,6 +344,60 @@ export default function Lesson() {
                 </div>
               )}
             </>
+          )}
+
+          {lesson.quiz && lesson.quiz.length > 0 && (
+            <div className="mt-6 border-t pt-5" style={{ borderColor: 'var(--cf-border)' }}>
+              <div className="flex items-center gap-2 mb-4">
+                <HelpCircle size={15} className="text-[#A3E635]" />
+                <span className="text-xs font-bold uppercase tracking-wider text-[#A3E635]">Verificação do Aprendizado</span>
+              </div>
+              <div className="space-y-5">
+                {lesson.quiz.map((q, qi) => (
+                  <div key={qi}>
+                    <p className="text-sm font-semibold text-white mb-2">{qi + 1}. {q.question}</p>
+                    <div className="space-y-1.5">
+                      {q.options.map((opt, oi) => {
+                        let cls = 'w-full text-left text-sm px-3 py-2 rounded-lg border transition-all ';
+                        if (quizSubmitted) {
+                          if (oi === q.correct) cls += 'bg-green-900/30 border-green-500/60 text-green-300';
+                          else if (oi === quizAnswers[qi]) cls += 'bg-red-900/30 border-red-500/60 text-red-300 line-through opacity-70';
+                          else cls += 'border-slate-700/30 text-slate-600';
+                        } else if (quizAnswers[qi] === oi) {
+                          cls += 'bg-[#1a2540] border-[#A3E635]/70 text-white';
+                        } else {
+                          cls += 'bg-[#0d1425] border-slate-700 text-slate-300 hover:border-slate-500 hover:text-white';
+                        }
+                        return (
+                          <button key={oi} disabled={quizSubmitted} onClick={() => setQuizAnswers(a => ({ ...a, [qi]: oi }))} className={cls}>
+                            <span className="font-mono text-[#A3E635] mr-2 text-xs opacity-80">{String.fromCharCode(65 + oi)}.</span>
+                            {opt}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              {!quizSubmitted ? (
+                <button
+                  onClick={() => setQuizSubmitted(true)}
+                  disabled={Object.keys(quizAnswers).length < lesson.quiz.length}
+                  className="mt-5 px-4 py-2 rounded-lg cf-btn-lime text-sm font-bold disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  Verificar Respostas
+                </button>
+              ) : (
+                <div className="mt-4 flex items-center gap-4">
+                  <span className="text-sm font-semibold text-slate-200">
+                    {lesson.quiz.filter((q, qi) => quizAnswers[qi] === q.correct).length}/{lesson.quiz.length} corretas ✓
+                  </span>
+                  <button onClick={() => { setQuizAnswers({}); setQuizSubmitted(false); }} className="text-sm text-[#A3E635] hover:underline">
+                    Tentar novamente
+                  </button>
+                </div>
+              )}
+            </div>
           )}
         </div>
 

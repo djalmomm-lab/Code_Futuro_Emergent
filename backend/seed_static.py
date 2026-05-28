@@ -60,6 +60,11 @@ LESSONS = {
     "starter_code": '# Substitua "texto exemplo" pela mensagem correta e execute\nprint("texto exemplo")\n',
     "hint": 'Troque "texto exemplo" por Olá, Mundo! — use print("Olá, Mundo!") ou print(\'Olá, Mundo!\')',
     "tests": [{"stdin": "", "expected_stdout": "Olá, Mundo!"}],
+    "quiz": [
+      {"question": "Qual função exibe texto na tela em Python?", "options": ["echo()", "print()", "show()", "write()"], "correct": 1},
+      {"question": "Qual é a saída de print(\"Olá, Mundo!\")?", "options": ["\"Olá, Mundo!\"", "Olá, Mundo!", "print(Olá, Mundo!)", "Erro de sintaxe"], "correct": 1},
+      {"question": "O que acontece se você esquecer as aspas em print(Olá)?", "options": ["Exibe Olá normalmente", "Ocorre erro — Python trata Olá como variável", "Exibe (Olá)", "Nada acontece"], "correct": 1},
+    ],
   },
   {
     "order": 2,
@@ -71,6 +76,11 @@ LESSONS = {
     "starter_code": '# As variáveis abaixo estão fixas — não precisa alterar\nnome = "Ana"\nidade = 16\n# Imprima exatamente: Olá! Meu nome é Ana e tenho 16 anos.\nprint(f"Olá! Meu nome é {nome} e tenho {idade} anos.")\n',
     "hint": "Use f\"...\" com chaves ao redor das variáveis: f\"Olá! Meu nome é {nome}...\"",
     "tests": [{"stdin": "", "expected_stdout": "Olá! Meu nome é Ana e tenho 16 anos."}],
+    "quiz": [
+      {"question": "Como atribuir o valor 'Ana' à variável nome em Python?", "options": ["var nome = 'Ana'", "nome = 'Ana'", "let nome = 'Ana'", "string nome = 'Ana'"], "correct": 1},
+      {"question": "O que é uma f-string em Python?", "options": ["Uma string de formato fixo", "Uma string que permite inserir variáveis com {}", "Uma string de arquivo", "Uma string numérica"], "correct": 1},
+      {"question": "Qual é a saída de print(f\"Tenho {2 + 3} anos\")?", "options": ["Tenho {2 + 3} anos", "Tenho 5 anos", "Tenho 23 anos", "Erro"], "correct": 1},
+    ],
   },
   {
     "order": 3,
@@ -82,6 +92,11 @@ LESSONS = {
     "starter_code": '# Leia o nome do usuário e cumprimente-o\nnome = input()\n# Imprima: Bem-vindo, <nome>!\n# escreva aqui\n',
     "hint": "Use print(f\"Bem-vindo, {nome}!\") após ler o nome com input().",
     "tests": [{"stdin": "Carlos", "expected_stdout": "Bem-vindo, Carlos!"}],
+    "quiz": [
+      {"question": "Qual função lê texto digitado pelo usuário em Python?", "options": ["read()", "scan()", "input()", "get()"], "correct": 2},
+      {"question": "Qual tipo de dado input() retorna?", "options": ["int", "float", "str", "bool"], "correct": 2},
+      {"question": "Como converter a entrada do usuário para número inteiro?", "options": ["integer(input())", "int(input())", "input().toInt()", "parseint(input())"], "correct": 1},
+    ],
   },
   {
     "order": 4,
@@ -97,6 +112,11 @@ LESSONS = {
       {"stdin": "-3", "expected_stdout": "negativo"},
       {"stdin": "0",  "expected_stdout": "zero"},
     ],
+    "quiz": [
+      {"question": "Qual palavra-chave inicia uma condição em Python?", "options": ["when", "if", "check", "case"], "correct": 1},
+      {"question": "O que elif significa em Python?", "options": ["else if — nova condição quando a anterior é falsa", "end if — encerra o bloco", "error if — condição de erro", "eval if — avalia a condição"], "correct": 0},
+      {"question": "Qual operador verifica igualdade em Python?", "options": ["=", "==", "===", "eq"], "correct": 1},
+    ],
   },
   {
     "order": 5,
@@ -108,6 +128,11 @@ LESSONS = {
     "starter_code": '# Imprima os números de 1 a 5, um por linha\n# escreva aqui\n',
     "hint": "Use: for i in range(1, 6): / print(i)",
     "tests": [{"stdin": "", "expected_stdout": "1\n2\n3\n4\n5"}],
+    "quiz": [
+      {"question": "O que range(1, 6) gera em Python?", "options": ["1, 2, 3, 4, 5, 6", "1, 2, 3, 4, 5", "0, 1, 2, 3, 4, 5", "2, 3, 4, 5, 6"], "correct": 1},
+      {"question": "Como percorrer a lista frutas com for?", "options": ["for each item in frutas", "foreach(frutas)", "for item in frutas", "loop(frutas)"], "correct": 2},
+      {"question": "Quantas vezes 'for i in range(4)' executa?", "options": ["5 vezes", "3 vezes", "4 vezes", "1 vez"], "correct": 2},
+    ],
   },
   {
     "order": 6,
@@ -119,6 +144,11 @@ LESSONS = {
     "starter_code": '# Crie uma função que recebe dois números e retorna a soma\ndef somar(a, b):\n    # escreva aqui\n\nprint(somar(3, 7))\n',
     "hint": "Dentro da função, use: return a + b",
     "tests": [{"stdin": "", "expected_stdout": "10"}],
+    "quiz": [
+      {"question": "Qual palavra-chave define uma função em Python?", "options": ["function", "def", "func", "fn"], "correct": 1},
+      {"question": "O que return faz dentro de uma função?", "options": ["Imprime o resultado", "Devolve um valor e encerra a função", "Chama outra função", "Reinicia a função"], "correct": 1},
+      {"question": "O que uma função retorna se não tiver return?", "options": ["0", "False", "None", "Erro"], "correct": 2},
+    ],
   },
   {
     "order": 7,
@@ -130,6 +160,11 @@ LESSONS = {
     "starter_code": 'numeros = [10, 20, 30, 40, 50]\n# Imprima o terceiro elemento da lista\n# escreva aqui\n',
     "hint": "Índices começam em 0: numeros[0]=10, numeros[1]=20, numeros[2]=30...",
     "tests": [{"stdin": "", "expected_stdout": "30"}],
+    "quiz": [
+      {"question": "Qual é o índice do primeiro elemento de uma lista Python?", "options": ["1", "0", "-1", "Depende da lista"], "correct": 1},
+      {"question": "Qual método adiciona um elemento ao final de uma lista?", "options": ["add()", "insert()", "push()", "append()"], "correct": 3},
+      {"question": "Dado numeros = [10, 20, 30], qual é numeros[2]?", "options": ["10", "20", "30", "Erro"], "correct": 2},
+    ],
   },
   {
     "order": 8,
@@ -141,6 +176,11 @@ LESSONS = {
     "starter_code": 'aluno = {"nome": "Carlos", "nota": 9.5, "aprovado": True}\n# Imprima o nome do aluno\n# escreva aqui\n',
     "hint": "Use: print(aluno[\"nome\"])",
     "tests": [{"stdin": "", "expected_stdout": "Carlos"}],
+    "quiz": [
+      {"question": "Como acessar o valor de 'nome' em d = {'nome': 'Ana'}?", "options": ["d.nome", "d['nome']", "d->nome", "d.get_nome()"], "correct": 1},
+      {"question": "O que um dicionário Python armazena?", "options": ["Apenas valores numéricos", "Pares de chave: valor", "Listas ordenadas", "Apenas strings"], "correct": 1},
+      {"question": "Como verificar se 'idade' é uma chave no dicionário d?", "options": ["'idade' in d", "d.has('idade')", "d.exists('idade')", "check(d, 'idade')"], "correct": 0},
+    ],
   },
   {
     "order": 9,
@@ -152,6 +192,11 @@ LESSONS = {
     "starter_code": 'palavra = "banana"\n# Conte quantas vezes a letra "a" aparece\n# escreva aqui\n',
     "hint": "Use: print(palavra.count(\"a\"))",
     "tests": [{"stdin": "", "expected_stdout": "3"}],
+    "quiz": [
+      {"question": "Qual método converte uma string para maiúsculas?", "options": ["capitalize()", "toUpperCase()", "upper()", "uppercase()"], "correct": 2},
+      {"question": "O que 'banana'.count('a') retorna?", "options": ["2", "3", "4", "1"], "correct": 1},
+      {"question": "Qual método remove espaços do início e fim de uma string?", "options": ["trim()", "strip()", "clean()", "remove()"], "correct": 1},
+    ],
   },
   {
     "order": 10,
@@ -163,6 +208,11 @@ LESSONS = {
     "starter_code": '# Use while para imprimir os números de 1 a 5\ni = 1\n# escreva aqui (lembre de incrementar i)\n',
     "hint": "while i <= 5: / print(i) / i += 1",
     "tests": [{"stdin": "", "expected_stdout": "1\n2\n3\n4\n5"}],
+    "quiz": [
+      {"question": "Quando um loop while para de executar?", "options": ["Após 100 iterações", "Quando a condição se torna False", "Após 1 segundo", "Quando return é chamado"], "correct": 1},
+      {"question": "O que é um loop infinito?", "options": ["Um loop que executa 1000 vezes", "Um loop cuja condição nunca se torna False", "Um loop com range(infinity)", "Um loop aninhado"], "correct": 1},
+      {"question": "Qual palavra-chave sai de um loop imediatamente?", "options": ["stop", "exit", "break", "return"], "correct": 2},
+    ],
   },
   {
     "order": 11,
@@ -174,6 +224,11 @@ LESSONS = {
     "starter_code": '# Crie uma lista com os números pares de 1 a 10\n# Dica: x % 2 == 0 é verdadeiro quando x é par\npares = [x for x in range(1, 11) if x % 2 == 0]\nprint(pares)\n',
     "hint": "[x for x in range(1, 11) if x % 2 == 0]",
     "tests": [{"stdin": "", "expected_stdout": "[2, 4, 6, 8, 10]"}],
+    "quiz": [
+      {"question": "O que [x*2 for x in range(3)] produz?", "options": ["[0, 2, 4]", "[2, 4, 6]", "[1, 2, 3]", "[0, 1, 2]"], "correct": 0},
+      {"question": "Como filtrar apenas pares em list comprehension?", "options": ["if x % 2 == 0", "x.isEven()", "filter(x, 'even')", "x % 2"], "correct": 0},
+      {"question": "List comprehension é equivalente a qual estrutura clássica?", "options": ["if/else", "try/except", "for + append", "while + add"], "correct": 2},
+    ],
   },
   {
     "order": 12,
@@ -185,6 +240,11 @@ LESSONS = {
     "starter_code": '# Capture o erro de divisão por zero\ntry:\n    resultado = 10 / 0\nexcept ZeroDivisionError:\n    # escreva aqui o que imprimir\n',
     "hint": "print(\"Não é possível dividir por zero!\")",
     "tests": [{"stdin": "", "expected_stdout": "Não é possível dividir por zero!"}],
+    "quiz": [
+      {"question": "Qual bloco captura erros em Python?", "options": ["catch", "error", "except", "handle"], "correct": 2},
+      {"question": "Qual erro ocorre ao dividir por zero?", "options": ["ValueError", "TypeError", "ZeroDivisionError", "MathError"], "correct": 2},
+      {"question": "O bloco else do try/except executa quando:", "options": ["Ocorre um erro", "Nenhum erro ocorre", "Sempre executa", "O programa termina"], "correct": 1},
+    ],
   },
   {
     "order": 13,
@@ -196,6 +256,11 @@ LESSONS = {
     "starter_code": 'class Carro:\n    def __init__(self, marca):\n        self.marca = marca\n\n    def apresentar(self):\n        return f"Este carro é um {self.marca}"\n\nmeu_carro = Carro("Toyota")\nprint(meu_carro.apresentar())\n',
     "hint": "O código já está quase completo — a classe Carro tem __init__ e apresentar(). Execute e veja o resultado!",
     "tests": [{"stdin": "", "expected_stdout": "Este carro é um Toyota"}],
+    "quiz": [
+      {"question": "Qual método especial é chamado ao criar um objeto Python?", "options": ["__create__", "__init__", "__new__", "__constructor__"], "correct": 1},
+      {"question": "O que 'self' representa em um método de classe?", "options": ["O nome da classe", "O módulo atual", "A instância atual do objeto", "O construtor"], "correct": 2},
+      {"question": "Como criar um objeto da classe Carro?", "options": ["Carro.new()", "new Carro()", "create Carro()", "Carro()"], "correct": 3},
+    ],
   },
   {
     "order": 14,
@@ -207,6 +272,11 @@ LESSONS = {
     "starter_code": 'class Animal:\n    def __init__(self, nome):\n        self.nome = nome\n\nclass Cachorro(Animal):\n    def latir(self):\n        return f"{self.nome} diz: Au!"\n\nrex = Cachorro("Rex")\nprint(rex.latir())\n',
     "hint": "O código já está pronto — execute para ver a herança em ação!",
     "tests": [{"stdin": "", "expected_stdout": "Rex diz: Au!"}],
+    "quiz": [
+      {"question": "Como uma classe Filho herda de Pai em Python?", "options": ["class Filho extends Pai", "class Filho(Pai)", "class Filho: inherits Pai", "class Filho implements Pai"], "correct": 1},
+      {"question": "Para que serve super().__init__()?", "options": ["Criar nova instância", "Chamar o construtor da classe pai", "Deletar a instância", "Copiar atributos da classe pai"], "correct": 1},
+      {"question": "Uma classe filha pode sobrescrever métodos da classe pai?", "options": ["Não, nunca", "Sim — isso se chama override", "Só com permissão especial", "Apenas __init__"], "correct": 1},
+    ],
   },
   {
     "order": 15,
@@ -218,6 +288,11 @@ LESSONS = {
     "starter_code": 'numeros = [1, 2, 3, 4, 5]\n# Use map e lambda para triplicar cada número\ntriplicados = list(map(lambda x: x * 3, numeros))\nprint(triplicados)\n',
     "hint": "list(map(lambda x: x * 3, numeros))",
     "tests": [{"stdin": "", "expected_stdout": "[3, 6, 9, 12, 15]"}],
+    "quiz": [
+      {"question": "O que é uma função lambda em Python?", "options": ["Uma função com vários retornos", "Uma função anônima de uma linha", "Uma função recursiva", "Uma função de classe"], "correct": 1},
+      {"question": "O que list(map(lambda x: x*2, [1,2,3])) produz?", "options": ["[1, 2, 3]", "[2, 4, 6]", "6", "[0, 2, 4]"], "correct": 1},
+      {"question": "Como escrever uma lambda que recebe x e retorna x+1?", "options": ["lambda(x): x+1", "lambda x: x+1", "def lambda(x): x+1", "func x: x+1"], "correct": 1},
+    ],
   },
   {
     "order": 16,
@@ -232,6 +307,11 @@ LESSONS = {
       {"stdin": "5",  "expected_stdout": "120"},
       {"stdin": "0",  "expected_stdout": "1"},
       {"stdin": "10", "expected_stdout": "3628800"},
+    ],
+    "quiz": [
+      {"question": "Qual é o valor de 5! (fatorial de 5)?", "options": ["25", "15", "100", "120"], "correct": 3},
+      {"question": "Qual é o valor de 0! (fatorial de zero)?", "options": ["0", "1", "Indefinido", "Erro"], "correct": 1},
+      {"question": "Qual operador multiplica e atribui em Python?", "options": ["*=", "**=", "x = x *", "mul="], "correct": 0},
     ],
   },
 ],
@@ -248,6 +328,10 @@ LESSONS = {
     "starter_code": '// Exiba "Olá, JavaScript!" no console\n// escreva aqui\n',
     "hint": "Use: console.log(\"Olá, JavaScript!\")",
     "tests": [{"stdin": "", "expected_stdout": "Olá, JavaScript!"}],
+    "quiz": [
+      {"question": "Como exibir texto no console em JavaScript?", "options": ["print('texto')", "echo('texto')", "console.log('texto')", "log('texto')"], "correct": 2},
+      {"question": "console.log() é útil principalmente para:", "options": ["Criar interfaces gráficas", "Depurar código e exibir resultados", "Enviar emails", "Salvar arquivos"], "correct": 1},
+    ],
   },
   {
     "order": 2,
@@ -259,6 +343,11 @@ LESSONS = {
     "starter_code": 'const linguagem = "JavaScript";\nlet versao = 2024;\n// Exiba: Aprendendo JavaScript versão 2024\nconsole.log(`Aprendendo ${linguagem} versão ${versao}`);\n',
     "hint": "O código já está quase pronto — o console.log usa template literal corretamente.",
     "tests": [{"stdin": "", "expected_stdout": "Aprendendo JavaScript versão 2024"}],
+    "quiz": [
+      {"question": "Qual palavra-chave usar para uma variável que nunca muda em JS?", "options": ["let", "var", "const", "static"], "correct": 2},
+      {"question": "O que são template literals em JavaScript?", "options": ["Strings com crase que permitem ${variável}", "Modelos HTML", "Funções especiais", "Arrays de texto"], "correct": 0},
+      {"question": "Qual símbolo interpola variáveis em template literals?", "options": ["#{}", "${}", "{{}}", "()"], "correct": 1},
+    ],
   },
   {
     "order": 3,
@@ -270,6 +359,10 @@ LESSONS = {
     "starter_code": '// Complete a função que recebe um nome e retorna uma saudação\nfunction saudar(nome) {\n    // escreva aqui (return "Olá, " + nome + "!")\n}\nconsole.log(saudar("Mundo"));\n',
     "hint": "Dentro da função: return \"Olá, \" + nome + \"!\"",
     "tests": [{"stdin": "", "expected_stdout": "Olá, Mundo!"}],
+    "quiz": [
+      {"question": "Como declarar uma função chamada somar em JavaScript?", "options": ["def somar() {}", "func somar() {}", "function somar() {}", "fn somar() {}"], "correct": 2},
+      {"question": "Qual palavra-chave retorna um valor de uma função JS?", "options": ["give", "output", "result", "return"], "correct": 3},
+    ],
   },
   {
     "order": 4,
@@ -281,6 +374,11 @@ LESSONS = {
     "starter_code": 'const frutas = ["maçã", "banana", "laranja"];\n// Exiba o segundo elemento do array\n// escreva aqui\n',
     "hint": "Índices começam em 0: frutas[0] é \"maçã\", frutas[1] é \"banana\"",
     "tests": [{"stdin": "", "expected_stdout": "banana"}],
+    "quiz": [
+      {"question": "Os índices de um array em JavaScript começam em:", "options": ["1", "0", "-1", "Depende"], "correct": 1},
+      {"question": "Como obter o tamanho de um array em JS?", "options": ["array.size()", "array.count", "array.length", "len(array)"], "correct": 2},
+      {"question": "Qual é frutas[1] para ['maçã', 'banana', 'laranja']?", "options": ["'maçã'", "'banana'", "'laranja'", "Erro"], "correct": 1},
+    ],
   },
   {
     "order": 5,
@@ -292,6 +390,10 @@ LESSONS = {
     "starter_code": 'const produto = { nome: "Notebook", preco: 2999, disponivel: true };\n// Imprima o nome do produto\n// escreva aqui\n',
     "hint": "Use: console.log(produto.nome)",
     "tests": [{"stdin": "", "expected_stdout": "Notebook"}],
+    "quiz": [
+      {"question": "Como acessar a propriedade 'nome' de um objeto pessoa em JS?", "options": ["pessoa->nome", "pessoa[nome]", "pessoa.nome", "get(pessoa, 'nome')"], "correct": 2},
+      {"question": "Qual é outra forma de acessar pessoa.nome?", "options": ["pessoa('nome')", "pessoa[\"nome\"]", "pessoa::nome", "pessoa{nome}"], "correct": 1},
+    ],
   },
   {
     "order": 6,
@@ -303,6 +405,10 @@ LESSONS = {
     "starter_code": 'const temperatura = 35;\n// Se temperatura > 30, imprima "calor"\n// Senão, imprima "agradável"\n// Use if/else ou ternário\n// escreva aqui\n',
     "hint": "if (temperatura > 30) { console.log(\"calor\"); } else { console.log(\"agradável\"); }",
     "tests": [{"stdin": "", "expected_stdout": "calor"}],
+    "quiz": [
+      {"question": "O que o operador ternário faz em JavaScript?", "options": ["Executa 3 condições", "Condição compacta: cond ? valor1 : valor2", "Multiplica por 3", "Cria 3 variáveis"], "correct": 1},
+      {"question": "Como verificar igualdade estrita (tipo e valor) em JavaScript?", "options": ["==", "===", "=", "eq"], "correct": 1},
+    ],
   },
   {
     "order": 7,
@@ -314,6 +420,10 @@ LESSONS = {
     "starter_code": 'const linguagens = ["Python", "JavaScript", "Go"];\n// Use for...of para imprimir cada linguagem\n// escreva aqui\n',
     "hint": "for (const lang of linguagens) { console.log(lang); }",
     "tests": [{"stdin": "", "expected_stdout": "Python\nJavaScript\nGo"}],
+    "quiz": [
+      {"question": "Como iterar sobre cada item de um array em JavaScript?", "options": ["for item in array", "foreach(array)", "for (const item of array)", "array.loop()"], "correct": 2},
+      {"question": "O for tradicional em JavaScript tem quantas partes?", "options": ["1", "2", "3", "4"], "correct": 2},
+    ],
   },
   {
     "order": 8,
@@ -325,6 +435,11 @@ LESSONS = {
     "starter_code": '// Crie uma arrow function "area" que recebe largura e altura\nconst area = (largura, altura) => largura * altura;\nconsole.log(area(6, 4));\n',
     "hint": "const area = (largura, altura) => largura * altura;",
     "tests": [{"stdin": "", "expected_stdout": "24"}],
+    "quiz": [
+      {"question": "Qual é a arrow function equivalente a function dobrar(n) { return n*2; }?", "options": ["fn dobrar = n => n*2", "const dobrar = (n) => n*2", "dobrar = n -> n*2", "arrow dobrar(n) => n*2"], "correct": 1},
+      {"question": "Uma arrow function de uma linha sem chaves {}:", "options": ["Exige return explícito", "Retorna a expressão implicitamente", "Não pode ter parâmetros", "Sempre retorna undefined"], "correct": 1},
+      {"question": "Arrow functions foram introduzidas em:", "options": ["ES3", "ES5", "ES6 (2015)", "ES2020"], "correct": 2},
+    ],
   },
   {
     "order": 9,
@@ -336,6 +451,11 @@ LESSONS = {
     "starter_code": 'const numeros = [5, 12, 3, 18, 7, 25, 1];\n// Filtre os números maiores que 10 e imprima a quantidade\nconst maiores = numeros.filter(n => n > 10);\nconsole.log(maiores.length);\n',
     "hint": "filter retorna um novo array — use .length para contar os elementos",
     "tests": [{"stdin": "", "expected_stdout": "3"}],
+    "quiz": [
+      {"question": "O que .map() faz com um array?", "options": ["Filtra elementos", "Transforma cada elemento e retorna novo array", "Conta elementos", "Ordena o array"], "correct": 1},
+      {"question": "O que .filter() retorna?", "options": ["O elemento encontrado", "Novo array com elementos que satisfazem a condição", "true ou false", "O índice do elemento"], "correct": 1},
+      {"question": "Qual é a saída de [1,2,3,4].filter(x => x > 2)?", "options": ["[1, 2]", "[3, 4]", "[2, 3, 4]", "[1, 2, 3]"], "correct": 1},
+    ],
   },
   {
     "order": 10,
@@ -347,6 +467,10 @@ LESSONS = {
     "starter_code": 'const dev = { nome: "Ana", cidade: "São Paulo", nivel: "Sênior" };\n// Desestruture nome e cidade, depois imprima\nconst { nome, cidade } = dev;\nconsole.log(`${nome} mora em ${cidade}`);\n',
     "hint": "const { nome, cidade } = dev; depois: console.log(`${nome} mora em ${cidade}`)",
     "tests": [{"stdin": "", "expected_stdout": "Ana mora em São Paulo"}],
+    "quiz": [
+      {"question": "O que faz const { nome } = usuario em JS?", "options": ["Deleta nome do objeto", "Extrai a propriedade nome em uma variável local", "Copia o objeto inteiro", "Renomeia o objeto"], "correct": 1},
+      {"question": "Como fazer destructuring de array em JS?", "options": ["const { a, b } = array", "const [a, b] = array", "const (a, b) = array", "let a, b = array"], "correct": 1},
+    ],
   },
   {
     "order": 11,
@@ -358,6 +482,11 @@ LESSONS = {
     "starter_code": 'class Circulo {\n  constructor(raio) {\n    this.raio = raio;\n  }\n  area() {\n    // Área = PI × raio²  (use Math.PI e Math.pow ou **)\n    return Math.round(Math.PI * this.raio ** 2);\n  }\n}\nconst c = new Circulo(5);\nconsole.log(c.area());\n',
     "hint": "Math.round(Math.PI * 5 ** 2) = 79",
     "tests": [{"stdin": "", "expected_stdout": "79"}],
+    "quiz": [
+      {"question": "Qual método inicializa uma classe em JavaScript?", "options": ["__init__", "init()", "constructor()", "create()"], "correct": 2},
+      {"question": "Como criar uma instância da classe Circulo em JS?", "options": ["Circulo.create()", "new Circulo()", "Circulo.new()", "make Circulo()"], "correct": 1},
+      {"question": "O que 'this' representa dentro de um método de classe JS?", "options": ["O nome da classe", "A instância atual do objeto", "O módulo", "O construtor"], "correct": 1},
+    ],
   },
   {
     "order": 12,
@@ -369,6 +498,10 @@ LESSONS = {
     "starter_code": '// Tente parsear uma string inválida e capture o erro\ntry {\n  const dados = JSON.parse("isso não é json válido");\n} catch (e) {\n  console.log("Erro: JSON inválido");\n}\n',
     "hint": "O catch recebe o erro — dentro dele use console.log(\"Erro: JSON inválido\")",
     "tests": [{"stdin": "", "expected_stdout": "Erro: JSON inválido"}],
+    "quiz": [
+      {"question": "Qual bloco captura erros em JavaScript?", "options": ["except", "error", "catch", "handle"], "correct": 2},
+      {"question": "O que JSON.parse() faz com texto inválido?", "options": ["Retorna null", "Lança uma exceção (SyntaxError)", "Retorna string vazia", "Retorna undefined"], "correct": 1},
+    ],
   },
 ],
 
@@ -384,6 +517,10 @@ LESSONS = {
     "starter_code": '<!DOCTYPE html>\n<html>\n  <body>\n    <!-- Adicione um título h1 com o texto: Olá, Web! -->\n    <!-- escreva aqui -->\n  </body>\n</html>\n',
     "hint": "Estrutura: <h1>texto aqui</h1>",
     "tests": [{"stdin": "", "expected_stdout": "<h1>Olá, Web!</h1>"}],
+    "quiz": [
+      {"question": "Qual tag HTML cria o título principal de uma página?", "options": ["<title>", "<heading>", "<h1>", "<header>"], "correct": 2},
+      {"question": "Como é a estrutura de uma tag HTML com conteúdo?", "options": ["<tag>conteúdo</tag>", "{tag}conteúdo{/tag}", "[tag]conteúdo[/tag]", "tag(conteúdo)"], "correct": 0},
+    ],
   },
   {
     "order": 2,
@@ -395,6 +532,10 @@ LESSONS = {
     "starter_code": '<body>\n  <h1>Meu Site</h1>\n  <!-- Adicione um parágrafo com: Bem-vindo ao HTML! -->\n  <!-- escreva aqui -->\n</body>\n',
     "hint": "Use <p>texto aqui</p>",
     "tests": [{"stdin": "", "expected_stdout": "<p>Bem-vindo ao HTML!</p>"}],
+    "quiz": [
+      {"question": "Qual tag HTML cria parágrafos de texto?", "options": ["<text>", "<para>", "<p>", "<txt>"], "correct": 2},
+      {"question": "Qual tag é mais usada para conteúdo textual em páginas?", "options": ["<span>", "<div>", "<p>", "<text>"], "correct": 2},
+    ],
   },
   {
     "order": 3,
@@ -406,6 +547,11 @@ LESSONS = {
     "starter_code": '<!-- Crie um link para https://codefuturo.com.br com o texto "Acessar" -->\n<!-- escreva aqui -->\n',
     "hint": "Estrutura: <a href=\"https://...\">texto</a> — aspas simples ou duplas são aceitas.",
     "tests": [{"stdin": "", "expected_stdout": '<a href="https://codefuturo.com.br">Acessar</a>'}],
+    "quiz": [
+      {"question": "Qual atributo HTML define o destino de um link?", "options": ["src", "href", "link", "url"], "correct": 1},
+      {"question": "Qual tag HTML cria links clicáveis?", "options": ["<link>", "<url>", "<a>", "<goto>"], "correct": 2},
+      {"question": "Como abrir um link em nova aba com HTML?", "options": ["target='_blank'", "href='new'", "open='tab'", "new='true'"], "correct": 0},
+    ],
   },
   {
     "order": 4,
@@ -417,6 +563,10 @@ LESSONS = {
     "starter_code": '<style>\n  h1 {\n    /* Deixe o texto azul */\n    /* escreva aqui */\n  }\n</style>\n',
     "hint": "Propriedade: color: blue;",
     "tests": [{"stdin": "", "expected_stdout": "color: blue;"}],
+    "quiz": [
+      {"question": "Qual propriedade CSS define a cor do texto?", "options": ["text-color", "font-color", "color", "foreground"], "correct": 2},
+      {"question": "Onde fica o CSS embutido em uma página HTML?", "options": ["Na tag <script>", "Na tag <style>", "Na tag <meta>", "Na tag <head>"], "correct": 1},
+    ],
   },
   {
     "order": 5,
@@ -428,6 +578,11 @@ LESSONS = {
     "starter_code": '<!-- Adicione uma imagem com src="logo.png" e alt="Logo CodeFuturo" -->\n<!-- escreva aqui -->\n',
     "hint": "Estrutura: <img src=\"logo.png\" alt=\"Logo CodeFuturo\">",
     "tests": [{"stdin": "", "expected_stdout": '<img src="logo.png" alt="Logo CodeFuturo">'}],
+    "quiz": [
+      {"question": "Qual atributo HTML define o caminho da imagem em <img>?", "options": ["href", "link", "src", "path"], "correct": 2},
+      {"question": "Para que serve o atributo alt em <img>?", "options": ["Altera o tamanho", "Descrição alternativa para acessibilidade", "Alinha a imagem", "Define o formato"], "correct": 1},
+      {"question": "A tag <img> precisa de tag de fechamento?", "options": ["Sim, </img>", "Não, é auto-fechante", "Sim, <img/>", "Depende do navegador"], "correct": 1},
+    ],
   },
   {
     "order": 6,
@@ -439,6 +594,11 @@ LESSONS = {
     "starter_code": '<!-- Crie uma lista não ordenada com 3 linguagens: Python, JavaScript, Go -->\n<!-- escreva aqui -->\n',
     "hint": "<ul><li>Python</li><li>JavaScript</li><li>Go</li></ul>",
     "tests": [{"stdin": "", "expected_stdout": "<li>Python</li>"}],
+    "quiz": [
+      {"question": "Qual tag HTML cria uma lista não ordenada (com bolinhas)?", "options": ["<ol>", "<list>", "<ul>", "<dl>"], "correct": 2},
+      {"question": "Qual tag representa cada item de uma lista HTML?", "options": ["<item>", "<li>", "<dt>", "<point>"], "correct": 1},
+      {"question": "Qual tag HTML cria uma lista numerada?", "options": ["<nl>", "<ul>", "<il>", "<ol>"], "correct": 3},
+    ],
   },
   {
     "order": 7,
@@ -450,6 +610,10 @@ LESSONS = {
     "starter_code": '<!-- Crie uma tabela com cabeçalhos "Nome" e "Idade" -->\n<table>\n  <tr>\n    <!-- escreva os cabeçalhos aqui -->\n  </tr>\n</table>\n',
     "hint": "<th>Nome</th><th>Idade</th>",
     "tests": [{"stdin": "", "expected_stdout": "<th>Nome</th>"}],
+    "quiz": [
+      {"question": "Qual tag HTML define uma linha em uma tabela?", "options": ["<td>", "<row>", "<tr>", "<line>"], "correct": 2},
+      {"question": "Qual tag HTML cria uma célula de cabeçalho em tabela?", "options": ["<td>", "<th>", "<head>", "<header>"], "correct": 1},
+    ],
   },
   {
     "order": 8,
@@ -461,6 +625,11 @@ LESSONS = {
     "starter_code": '<form>\n  <!-- Adicione um input do tipo "text" com name="usuario" -->\n  <!-- escreva aqui -->\n  <button type="submit">Enviar</button>\n</form>\n',
     "hint": "<input type=\"text\" name=\"usuario\">",
     "tests": [{"stdin": "", "expected_stdout": '<input type="text" name="usuario">'}],
+    "quiz": [
+      {"question": "Qual tag HTML agrupa campos de um formulário?", "options": ["<input>", "<group>", "<fieldset>", "<form>"], "correct": 3},
+      {"question": "Qual atributo define o tipo de campo <input>?", "options": ["kind", "style", "type", "mode"], "correct": 2},
+      {"question": "Qual type de input cria um botão de envio?", "options": ["type='button'", "type='submit'", "type='send'", "type='action'"], "correct": 1},
+    ],
   },
   {
     "order": 9,
@@ -472,6 +641,10 @@ LESSONS = {
     "starter_code": '<style>\n  /* Crie uma classe "destaque" com color: orange */\n  /* escreva aqui */\n</style>\n<p class="destaque">Texto importante</p>\n',
     "hint": ".destaque { color: orange; }",
     "tests": [{"stdin": "", "expected_stdout": ".destaque"}],
+    "quiz": [
+      {"question": "Como referenciar uma classe CSS no HTML?", "options": ["id='nome'", "class='nome'", "style='nome'", "css='nome'"], "correct": 1},
+      {"question": "Como definir uma classe CSS chamada 'destaque'?", "options": ["#destaque { }", ".destaque { }", "destaque { }", "@destaque { }"], "correct": 1},
+    ],
   },
   {
     "order": 10,
@@ -483,6 +656,11 @@ LESSONS = {
     "starter_code": '<style>\n  h1 {\n    /* Tamanho 32px e centralizado */\n    /* escreva aqui */\n  }\n</style>\n<h1>Título</h1>\n',
     "hint": "font-size: 32px; text-align: center;",
     "tests": [{"stdin": "", "expected_stdout": "font-size: 32px;"}],
+    "quiz": [
+      {"question": "Qual propriedade CSS define o tamanho da fonte?", "options": ["text-size", "font-size", "size", "font"], "correct": 1},
+      {"question": "Como centralizar texto com CSS?", "options": ["align: center", "text-align: center", "center: true", "text: center"], "correct": 1},
+      {"question": "Qual valor de font-weight deixa o texto em negrito?", "options": ["heavy", "strong", "bold", "700px"], "correct": 2},
+    ],
   },
   {
     "order": 11,
@@ -494,6 +672,10 @@ LESSONS = {
     "starter_code": '<style>\n  .container {\n    /* Ative flexbox e centralize horizontalmente */\n    /* escreva aqui */\n  }\n</style>\n<div class="container">\n  <p>Item 1</p><p>Item 2</p><p>Item 3</p>\n</div>\n',
     "hint": "display: flex; justify-content: center;",
     "tests": [{"stdin": "", "expected_stdout": "display: flex;"}],
+    "quiz": [
+      {"question": "Como ativar o Flexbox em um container CSS?", "options": ["flex: true", "layout: flex", "display: flex", "box: flex"], "correct": 2},
+      {"question": "Qual propriedade alinha itens horizontalmente no Flexbox?", "options": ["align-items", "justify-content", "flex-direction", "align-content"], "correct": 1},
+    ],
   },
   {
     "order": 12,
@@ -505,6 +687,11 @@ LESSONS = {
     "starter_code": '<style>\n  .caixa {\n    width: 400px;\n    background: lightblue;\n    /* Centralize horizontalmente com margin */\n    /* escreva aqui */\n  }\n</style>\n<div class="caixa">Conteúdo centralizado</div>\n',
     "hint": "margin: 0 auto;",
     "tests": [{"stdin": "", "expected_stdout": "margin: 0 auto;"}],
+    "quiz": [
+      {"question": "Qual é a ordem do Box Model de dentro para fora?", "options": ["margin > border > padding > content", "content > padding > border > margin", "padding > content > border > margin", "border > content > padding > margin"], "correct": 1},
+      {"question": "Como centralizar um div horizontalmente com CSS?", "options": ["align: center", "margin: auto", "margin: 0 auto", "text-align: center"], "correct": 2},
+      {"question": "O que é padding?", "options": ["Espaço externo entre elementos", "Espaço interno entre o conteúdo e a borda", "A borda do elemento", "A largura do elemento"], "correct": 1},
+    ],
   },
 ],
 
@@ -520,6 +707,10 @@ LESSONS = {
     "starter_code": '-- Selecione todos os dados da tabela "usuarios"\n-- escreva aqui\n',
     "hint": "SELECT * FROM nome_da_tabela;",
     "tests": [{"stdin": "", "expected_stdout": "SELECT * FROM usuarios;"}],
+    "quiz": [
+      {"question": "Qual cláusula SQL recupera dados de uma tabela?", "options": ["GET", "FETCH", "SELECT", "READ"], "correct": 2},
+      {"question": "O que SELECT * faz em SQL?", "options": ["Seleciona a primeira coluna", "Seleciona todas as colunas", "Multiplica os valores", "Seleciona a última linha"], "correct": 1},
+    ],
   },
   {
     "order": 2,
@@ -531,6 +722,11 @@ LESSONS = {
     "starter_code": '-- Selecione todos os usuários com idade > 18\n-- escreva aqui\n',
     "hint": "SELECT * FROM tabela WHERE coluna > valor;",
     "tests": [{"stdin": "", "expected_stdout": "SELECT * FROM usuarios WHERE idade > 18;"}],
+    "quiz": [
+      {"question": "Qual cláusula SQL filtra linhas por condição?", "options": ["FILTER", "HAVING", "WHERE", "WHEN"], "correct": 2},
+      {"question": "Qual operador verifica igualdade no WHERE em SQL?", "options": ["==", ":=", "=", "==="], "correct": 2},
+      {"question": "Como filtrar nomes que começam com 'A' em SQL?", "options": ["WHERE nome LIKE 'A%'", "WHERE nome START 'A'", "WHERE nome BEGINS 'A'", "WHERE nome = 'A*'"], "correct": 0},
+    ],
   },
   {
     "order": 3,
@@ -542,6 +738,10 @@ LESSONS = {
     "starter_code": "-- Insira um usuário com nome 'Maria' e email 'maria@email.com'\n-- escreva aqui\n",
     "hint": "INSERT INTO tabela (coluna1, coluna2) VALUES ('valor1', 'valor2'); — aspas simples ' ou duplas \" são aceitas.",
     "tests": [{"stdin": "", "expected_stdout": "INSERT INTO usuarios (nome, email) VALUES ('Maria', 'maria@email.com');"}],
+    "quiz": [
+      {"question": "Qual comando SQL adiciona novos registros?", "options": ["ADD INTO", "INSERT INTO", "PUT INTO", "CREATE INTO"], "correct": 1},
+      {"question": "Na sintaxe INSERT INTO, VALUES contém:", "options": ["As colunas da tabela", "Os nomes das tabelas", "Os valores a inserir", "Os filtros WHERE"], "correct": 2},
+    ],
   },
   {
     "order": 4,
@@ -553,6 +753,10 @@ LESSONS = {
     "starter_code": "-- Atualize o email para 'novo@email.com' do usuário com id = 1\n-- escreva aqui\n",
     "hint": "UPDATE tabela SET coluna = 'valor' WHERE id = 1; — aspas simples ' ou duplas \" são aceitas.",
     "tests": [{"stdin": "", "expected_stdout": "UPDATE usuarios SET email = 'novo@email.com' WHERE id = 1;"}],
+    "quiz": [
+      {"question": "Qual cláusula SQL define qual linha atualizar em UPDATE?", "options": ["WHEN", "FILTER", "WHERE", "SET"], "correct": 2},
+      {"question": "O que acontece se UPDATE não usar WHERE?", "options": ["Nada", "Atualiza apenas a primeira linha", "Atualiza todos os registros", "Gera erro"], "correct": 2},
+    ],
   },
   {
     "order": 5,
@@ -564,6 +768,10 @@ LESSONS = {
     "starter_code": "-- Remova o usuário com id = 5 da tabela usuarios\n-- escreva aqui\n",
     "hint": "DELETE FROM tabela WHERE coluna = valor;",
     "tests": [{"stdin": "", "expected_stdout": "DELETE FROM usuarios WHERE id = 5;"}],
+    "quiz": [
+      {"question": "Qual comando SQL remove registros?", "options": ["REMOVE FROM", "DROP FROM", "DELETE FROM", "ERASE FROM"], "correct": 2},
+      {"question": "Por que sempre usar WHERE com DELETE?", "options": ["Por convenção", "Para evitar remover todos os registros", "Por performance", "É obrigatório"], "correct": 1},
+    ],
   },
   {
     "order": 6,
@@ -575,6 +783,10 @@ LESSONS = {
     "starter_code": "-- Liste todos os usuários ordenados pelo nome (A-Z)\n-- escreva aqui\n",
     "hint": "SELECT * FROM usuarios ORDER BY nome ASC;",
     "tests": [{"stdin": "", "expected_stdout": "SELECT * FROM usuarios ORDER BY nome ASC;"}],
+    "quiz": [
+      {"question": "Qual cláusula SQL ordena os resultados?", "options": ["SORT BY", "ORDER BY", "GROUP BY", "ARRANGE BY"], "correct": 1},
+      {"question": "Para ordenar em ordem decrescente usa-se:", "options": ["ASC", "DESC", "DOWN", "REVERSE"], "correct": 1},
+    ],
   },
   {
     "order": 7,
@@ -586,6 +798,10 @@ LESSONS = {
     "starter_code": "-- Retorne apenas os 3 primeiros produtos\n-- escreva aqui\n",
     "hint": "SELECT * FROM produtos LIMIT 3;",
     "tests": [{"stdin": "", "expected_stdout": "SELECT * FROM produtos LIMIT 3;"}],
+    "quiz": [
+      {"question": "Qual cláusula SQL limita o número de linhas retornadas?", "options": ["MAXIMUM", "TOP", "LIMIT", "ROWS"], "correct": 2},
+      {"question": "LIMIT é especialmente útil para:", "options": ["Filtrar por data", "Paginação de resultados", "Ordenar dados", "Contar registros"], "correct": 1},
+    ],
   },
   {
     "order": 8,
@@ -597,6 +813,11 @@ LESSONS = {
     "starter_code": "-- Conte o número total de usuários na tabela usuarios\n-- escreva aqui\n",
     "hint": "SELECT COUNT(*) FROM usuarios;",
     "tests": [{"stdin": "", "expected_stdout": "SELECT COUNT(*) FROM usuarios;"}],
+    "quiz": [
+      {"question": "Qual função SQL conta o total de linhas?", "options": ["SUM(*)", "COUNT(*)", "TOTAL(*)", "NUM(*)"], "correct": 1},
+      {"question": "Qual função SQL calcula a média de uma coluna?", "options": ["MEAN()", "AVERAGE()", "AVG()", "MED()"], "correct": 2},
+      {"question": "Qual função SQL retorna o maior valor de uma coluna?", "options": ["GREATEST()", "MAX()", "TOP()", "HIGH()"], "correct": 1},
+    ],
   },
   {
     "order": 9,
@@ -608,6 +829,10 @@ LESSONS = {
     "starter_code": "-- Mostre quantos usuários existem em cada cidade\n-- escreva aqui\n",
     "hint": "SELECT cidade, COUNT(*) FROM usuarios GROUP BY cidade;",
     "tests": [{"stdin": "", "expected_stdout": "SELECT cidade, COUNT(*) FROM usuarios GROUP BY cidade;"}],
+    "quiz": [
+      {"question": "GROUP BY agrupa linhas que possuem:", "options": ["Valores únicos em uma coluna", "Datas iguais", "Qualquer condição", "Linhas consecutivas"], "correct": 0},
+      {"question": "GROUP BY sempre é usado junto com:", "options": ["WHERE", "LIMIT", "Funções de agregação", "ORDER BY"], "correct": 2},
+    ],
   },
   {
     "order": 10,
@@ -619,6 +844,10 @@ LESSONS = {
     "starter_code": "-- Una usuarios com pedidos pelo id do usuário\n-- Selecione u.nome e p.produto\n-- escreva aqui\n",
     "hint": "SELECT u.nome, p.produto FROM usuarios u INNER JOIN pedidos p ON u.id = p.usuario_id;",
     "tests": [{"stdin": "", "expected_stdout": "SELECT u.nome, p.produto FROM usuarios u INNER JOIN pedidos p ON u.id = p.usuario_id;"}],
+    "quiz": [
+      {"question": "O que INNER JOIN retorna?", "options": ["Todos os registros da primeira tabela", "Todos os registros de ambas as tabelas", "Apenas os registros com correspondência em ambas", "Registros sem correspondência"], "correct": 2},
+      {"question": "Qual cláusula define a condição de ligação no JOIN?", "options": ["WHERE", "ON", "AND", "USING"], "correct": 1},
+    ],
   },
   {
     "order": 11,
@@ -630,6 +859,11 @@ LESSONS = {
     "starter_code": "-- Crie a tabela produtos com id (INT), nome (VARCHAR(100)) e preco (DECIMAL(10,2))\n-- escreva aqui\n",
     "hint": "CREATE TABLE produtos (id INT, nome VARCHAR(100), preco DECIMAL(10,2));",
     "tests": [{"stdin": "", "expected_stdout": "CREATE TABLE produtos (id INT, nome VARCHAR(100), preco DECIMAL(10,2));"}],
+    "quiz": [
+      {"question": "Qual comando SQL cria uma nova tabela?", "options": ["NEW TABLE", "ADD TABLE", "CREATE TABLE", "MAKE TABLE"], "correct": 2},
+      {"question": "Qual tipo SQL armazena texto de tamanho variável?", "options": ["TEXT()", "CHAR", "VARCHAR(n)", "STRING"], "correct": 2},
+      {"question": "O que é PRIMARY KEY em SQL?", "options": ["A primeira coluna da tabela", "Um índice único que identifica cada registro", "Uma senha da tabela", "A chave de criptografia"], "correct": 1},
+    ],
   },
   {
     "order": 12,
@@ -641,6 +875,10 @@ LESSONS = {
     "starter_code": "-- Adicione a coluna telefone (VARCHAR(15)) à tabela usuarios\n-- escreva aqui\n",
     "hint": "ALTER TABLE usuarios ADD COLUMN telefone VARCHAR(15);",
     "tests": [{"stdin": "", "expected_stdout": "ALTER TABLE usuarios ADD COLUMN telefone VARCHAR(15);"}],
+    "quiz": [
+      {"question": "Qual comando SQL modifica a estrutura de uma tabela?", "options": ["MODIFY TABLE", "CHANGE TABLE", "ALTER TABLE", "UPDATE TABLE"], "correct": 2},
+      {"question": "Como adicionar uma coluna com ALTER TABLE?", "options": ["ADD COLUMN", "INSERT COLUMN", "APPEND COLUMN", "NEW COLUMN"], "correct": 0},
+    ],
   },
 ],
 
@@ -656,6 +894,10 @@ LESSONS = {
     "starter_code": '// Declare a variável "nome" com tipo string (sem valor inicial)\n// escreva aqui\n',
     "hint": "Sintaxe: let nome: string;",
     "tests": [{"stdin": "", "expected_stdout": "let nome: string;"}],
+    "quiz": [
+      {"question": "O que TypeScript adiciona ao JavaScript?", "options": ["Mais velocidade de execução", "Tipagem estática", "CSS-in-JS", "Banco de dados embutido"], "correct": 1},
+      {"question": "Como declarar uma variável string em TypeScript?", "options": ["let nome = string", "string nome;", "let nome: string;", "var nome as string;"], "correct": 2},
+    ],
   },
   {
     "order": 2,
@@ -667,6 +909,10 @@ LESSONS = {
     "starter_code": '// Escreva a assinatura (apenas a primeira linha) da função somar\n// function somar(??): ?? {\n// escreva aqui\n',
     "hint": "function somar(a: number, b: number): number {",
     "tests": [{"stdin": "", "expected_stdout": "function somar(a: number, b: number): number {"}],
+    "quiz": [
+      {"question": "Como especificar o tipo de retorno de uma função TypeScript?", "options": ["function f() as number", "function f(): number", "function f() -> number", "function f() => number"], "correct": 1},
+      {"question": "Uma vantagem de tipar funções em TypeScript é:", "options": ["Código mais lento", "Evitar erros de tipo em tempo de compilação", "Menos linhas de código", "Compatibilidade com Python"], "correct": 1},
+    ],
   },
   {
     "order": 3,
@@ -678,6 +924,11 @@ LESSONS = {
     "starter_code": '// Escreva a interface Aluno com dois campos: nome (string) e idade (number)\n// Formato: interface NomeInterface { campo: tipo; campo2: tipo; }\n// escreva aqui\n',
     "hint": "interface NomeInterface { campo: tipo; campo2: tipo; }",
     "tests": [{"stdin": "", "expected_stdout": "interface Aluno { nome: string; idade: number; }"}],
+    "quiz": [
+      {"question": "Qual palavra-chave define uma interface em TypeScript?", "options": ["type", "interface", "struct", "schema"], "correct": 1},
+      {"question": "Interfaces em TypeScript servem para:", "options": ["Executar funções", "Definir a forma esperada de objetos", "Criar loops", "Declarar variáveis globais"], "correct": 1},
+      {"question": "Uma interface pode ter diferentes tipos nas propriedades?", "options": ["Não", "Sim, cada propriedade tem seu próprio tipo", "Apenas tipos primitivos", "Apenas string e number"], "correct": 1},
+    ],
   },
   {
     "order": 4,
@@ -689,6 +940,10 @@ LESSONS = {
     "starter_code": "// Escreva o type alias Cor com três cores: vermelho, azul e verde\n// Dica: type NomeAlias = 'valor1' | 'valor2' | 'valor3';\n// escreva aqui\n",
     "hint": "type NomeAlias = 'valor1' | 'valor2' | 'valor3'; — aspas simples ' ou duplas \" são aceitas.",
     "tests": [{"stdin": "", "expected_stdout": "type Cor = 'vermelho' | 'azul' | 'verde';"}],
+    "quiz": [
+      {"question": "O que um type alias faz em TypeScript?", "options": ["Renomeia variáveis", "Cria um apelido reutilizável para um tipo", "Define uma interface", "Cria uma classe"], "correct": 1},
+      {"question": "Qual símbolo separa valores em union types?", "options": ["&", "|", "+", "~"], "correct": 1},
+    ],
   },
   {
     "order": 5,
@@ -700,6 +955,10 @@ LESSONS = {
     "starter_code": "// Declare a variável id que aceita number OU string\n// escreva aqui\n",
     "hint": "let variavel: tipo1 | tipo2;",
     "tests": [{"stdin": "", "expected_stdout": "let id: number | string;"}],
+    "quiz": [
+      {"question": "O que let id: number | string significa?", "options": ["id pode ser number e string ao mesmo tempo", "id pode ser number ou string", "id é do tipo number_string", "Erro de sintaxe"], "correct": 1},
+      {"question": "Union types usam qual operador?", "options": ["+", "&", "|", "~"], "correct": 2},
+    ],
   },
   {
     "order": 6,
@@ -711,6 +970,10 @@ LESSONS = {
     "starter_code": "// Declare o array numeros do tipo number[] com valores [1, 2, 3]\n// escreva aqui\n",
     "hint": "let variavel: tipo[] = [valor1, valor2, valor3];",
     "tests": [{"stdin": "", "expected_stdout": "let numeros: number[] = [1, 2, 3];"}],
+    "quiz": [
+      {"question": "Como declarar um array de strings em TypeScript?", "options": ["string array", "Array(string)", "string[]", "list<string>"], "correct": 2},
+      {"question": "O que number[] representa em TypeScript?", "options": ["Um número com índice", "Um array de números", "Uma matriz 2D", "Um tipo numérico especial"], "correct": 1},
+    ],
   },
   {
     "order": 7,
@@ -722,6 +985,10 @@ LESSONS = {
     "starter_code": "// Escreva a interface Config com a propriedade opcional debug do tipo boolean\n// Use ? após o nome do campo para torná-lo opcional\n// escreva aqui\n",
     "hint": "interface NomeInterface { campo?: tipo; }",
     "tests": [{"stdin": "", "expected_stdout": "interface Config { debug?: boolean; }"}],
+    "quiz": [
+      {"question": "Como marcar uma propriedade como opcional em interface TypeScript?", "options": ["Colocar ! após o nome", "Colocar ? após o nome", "Usar o tipo optional", "Adicionar | undefined"], "correct": 1},
+      {"question": "interface Config { debug?: boolean } significa:", "options": ["debug é obrigatório boolean", "debug pode estar ausente ou ser boolean", "debug é sempre true", "debug aceita qualquer tipo"], "correct": 1},
+    ],
   },
   {
     "order": 8,
@@ -733,6 +1000,10 @@ LESSONS = {
     "starter_code": "// Escreva o enum Direcao com os membros: Norte, Sul, Leste, Oeste\n// Dica: enum NomeEnum { Membro1, Membro2, Membro3, Membro4 }\n// escreva aqui\n",
     "hint": "enum NomeEnum { Membro1, Membro2, Membro3, Membro4 }",
     "tests": [{"stdin": "", "expected_stdout": "enum Direcao { Norte, Sul, Leste, Oeste }"}],
+    "quiz": [
+      {"question": "Para que serve enum em TypeScript?", "options": ["Criar loops", "Definir um conjunto de constantes nomeadas", "Fazer herança", "Importar módulos"], "correct": 1},
+      {"question": "Qual é o valor padrão de enum Cor { Vermelho, Azul }?", "options": ["'Vermelho', 'Azul'", "null, null", "0, 1", "1, 2"], "correct": 2},
+    ],
   },
   {
     "order": 9,
@@ -744,6 +1015,10 @@ LESSONS = {
     "starter_code": "// Escreva a assinatura da função genérica identidade<T>\n// que recebe um parâmetro (valor: T) e retorna T\n// escreva aqui\n",
     "hint": "function nomeFuncao<T>(param: T): T {",
     "tests": [{"stdin": "", "expected_stdout": "function identidade<T>(valor: T): T {"}],
+    "quiz": [
+      {"question": "O que <T> representa em uma função genérica TypeScript?", "options": ["O nome da função", "Um tipo que será definido na chamada", "TypeScript interno", "Um template HTML"], "correct": 1},
+      {"question": "A vantagem dos generics é:", "options": ["Código mais rápido", "Reutilização tipada para qualquer tipo", "Menos memória", "Compilação mais rápida"], "correct": 1},
+    ],
   },
   {
     "order": 10,
@@ -755,6 +1030,10 @@ LESSONS = {
     "starter_code": "// Escreva o constructor da classe Animal\n// com a propriedade pública nome do tipo string\n// escreva aqui\n",
     "hint": "constructor(public nomeProp: tipo) {}",
     "tests": [{"stdin": "", "expected_stdout": "constructor(public nome: string) {}"}],
+    "quiz": [
+      {"question": "O que 'public' faz no constructor de uma classe TypeScript?", "options": ["Deixa a classe pública", "Cria e atribui automaticamente a propriedade", "Permite herança", "Define o tipo de retorno"], "correct": 1},
+      {"question": "Classes TypeScript funcionam de modo similar a:", "options": ["Python (def)", "Java/C++ (class com tipos)", "Go (struct)", "Lua (table)"], "correct": 1},
+    ],
   },
 ],
 
@@ -770,6 +1049,10 @@ LESSONS = {
     "starter_code": 'public class Main {\n    public static void main(String[] args) {\n        // Escreva o comando para imprimir "Olá, Java!"\n        // escreva aqui\n    }\n}\n',
     "hint": "System.out.println(\"Olá, Java!\"); — aspas simples ' ou duplas \" são aceitas neste exercício.",
     "tests": [{"stdin": "", "expected_stdout": 'System.out.println("Olá, Java!");'}],
+    "quiz": [
+      {"question": "Como imprimir texto com quebra de linha em Java?", "options": ["System.print()", "Console.log()", "System.out.println()", "print()"], "correct": 2},
+      {"question": "O que System.out.print() faz diferente de println()?", "options": ["Imprime em vermelho", "Não adiciona quebra de linha no final", "Imprime em maiúsculas", "Salva em arquivo"], "correct": 1},
+    ],
   },
   {
     "order": 2,
@@ -781,6 +1064,10 @@ LESSONS = {
     "starter_code": '// Declare um inteiro chamado "idade" com valor 25\n// escreva aqui\n',
     "hint": "int nomeDaVariavel = valor;",
     "tests": [{"stdin": "", "expected_stdout": "int idade = 25;"}],
+    "quiz": [
+      {"question": "Como declarar um inteiro em Java?", "options": ["integer x = 5;", "Int x = 5;", "int x = 5;", "number x = 5;"], "correct": 2},
+      {"question": "Java é uma linguagem:", "options": ["Dinamicamente tipada", "Fortemente tipada (requer declaração de tipo)", "Sem tipos", "Tipada opcionalmente"], "correct": 1},
+    ],
   },
   {
     "order": 3,
@@ -792,6 +1079,10 @@ LESSONS = {
     "starter_code": '// Escreva apenas a assinatura do método dobrar (sem o corpo)\n// Recebe int n e retorna int\n// escreva aqui\n',
     "hint": "public static int dobrar(int n) {",
     "tests": [{"stdin": "", "expected_stdout": "public static int dobrar(int n) {"}],
+    "quiz": [
+      {"question": "O que 'static' significa em um método Java?", "options": ["O método não muda", "O método pertence à classe, não a uma instância", "O método é privado", "O método é final"], "correct": 1},
+      {"question": "Qual é o tipo de retorno void em Java?", "options": ["Retorna zero", "Retorna string vazia", "Não retorna nada", "Retorna null sempre"], "correct": 2},
+    ],
   },
   {
     "order": 4,
@@ -803,6 +1094,10 @@ LESSONS = {
     "starter_code": "// Declare um array de inteiros chamado numeros com os valores 1, 2 e 3\n// Dica: tipo[] nome = {val1, val2, val3};\n// escreva aqui\n",
     "hint": "int[] nomeArray = {val1, val2, val3};",
     "tests": [{"stdin": "", "expected_stdout": "int[] numeros = {1, 2, 3};"}],
+    "quiz": [
+      {"question": "Arrays em Java têm tamanho:", "options": ["Dinâmico (cresce automaticamente)", "Fixo (definido na criação)", "Indefinido", "Limitado a 100 elementos"], "correct": 1},
+      {"question": "Como acessar o terceiro elemento de int[] arr em Java?", "options": ["arr[3]", "arr.get(3)", "arr[2]", "arr.third()"], "correct": 2},
+    ],
   },
   {
     "order": 5,
@@ -814,6 +1109,10 @@ LESSONS = {
     "starter_code": "// Escreva o cabeçalho do if que verifica se a variável x é maior que zero\n// Dica: if (condicao) {\n// escreva aqui\n",
     "hint": "if (variavel > 0) {",
     "tests": [{"stdin": "", "expected_stdout": "if (x > 0) {"}],
+    "quiz": [
+      {"question": "Java usa parênteses na condição do if?", "options": ["Não, é opcional", "Sim, são obrigatórios", "Só em else if", "Depende da versão"], "correct": 1},
+      {"question": "Como escrever else-if em Java?", "options": ["elseif (cond)", "elif (cond)", "else if (cond)", "otherwise (cond)"], "correct": 2},
+    ],
   },
   {
     "order": 6,
@@ -825,6 +1124,10 @@ LESSONS = {
     "starter_code": "// Escreva o cabeçalho do for que conta de 0 a 4 (i menor que 5)\n// Dica: for (inicializacao; condicao; incremento) {\n// escreva aqui\n",
     "hint": "for (int i = 0; i < 5; i++) {",
     "tests": [{"stdin": "", "expected_stdout": "for (int i = 0; i < 5; i++) {"}],
+    "quiz": [
+      {"question": "Qual é a ordem das partes do for em Java?", "options": ["condição; incremento; init", "init; condição; incremento", "incremento; init; condição", "init; incremento; condição"], "correct": 1},
+      {"question": "O que i++ faz em Java?", "options": ["Multiplica por i", "Incrementa i em 1", "Decrementa i em 1", "Reinicia i"], "correct": 1},
+    ],
   },
   {
     "order": 7,
@@ -836,6 +1139,10 @@ LESSONS = {
     "starter_code": "// Declare uma String chamada msg com o valor Olá\n// Dica: String nomeDaVariavel = \"valor\";\n// escreva aqui\n",
     "hint": "String nomeDaVariavel = \"valor\"; — aspas simples ' ou duplas \" são aceitas.",
     "tests": [{"stdin": "", "expected_stdout": 'String msg = "Olá";'}],
+    "quiz": [
+      {"question": "Em Java, String é:", "options": ["Um tipo primitivo como int", "Uma classe (objeto)", "Um array de char básico", "Um tipo numérico"], "correct": 1},
+      {"question": "Como obter o número de caracteres de uma String em Java?", "options": ["str.size()", "str.count()", "str.len", "str.length()"], "correct": 3},
+    ],
   },
   {
     "order": 8,
@@ -847,6 +1154,10 @@ LESSONS = {
     "starter_code": "// Declare um ArrayList de String chamado nomes\n// Dica: ArrayList<Tipo> nome = new ArrayList<>();\n// escreva aqui\n",
     "hint": "ArrayList<Tipo> nomeDaLista = new ArrayList<>();",
     "tests": [{"stdin": "", "expected_stdout": "ArrayList<String> nomes = new ArrayList<>();"}],
+    "quiz": [
+      {"question": "Qual é a diferença entre Array e ArrayList em Java?", "options": ["Array é mais lento", "ArrayList tem tamanho dinâmico, Array tem tamanho fixo", "ArrayList não aceita objetos", "São idênticos"], "correct": 1},
+      {"question": "Qual método adiciona elemento ao ArrayList em Java?", "options": ["append()", "push()", "add()", "insert()"], "correct": 2},
+    ],
   },
   {
     "order": 9,
@@ -858,6 +1169,10 @@ LESSONS = {
     "starter_code": "// Escreva o construtor da classe Pessoa que recebe String nome\n// Dica: NomeDaClasse(Tipo parametro) {\n// escreva aqui\n",
     "hint": "NomeDaClasse(Tipo parametro) {",
     "tests": [{"stdin": "", "expected_stdout": "Pessoa(String nome) {"}],
+    "quiz": [
+      {"question": "O construtor de uma classe Java:", "options": ["Tem o mesmo nome da classe", "Sempre retorna void", "É chamado com 'create'", "É opcional em toda classe"], "correct": 0},
+      {"question": "O que 'this' representa no construtor Java?", "options": ["A classe pai", "A instância sendo criada", "O método main", "O pacote atual"], "correct": 1},
+    ],
   },
   {
     "order": 10,
@@ -869,6 +1184,10 @@ LESSONS = {
     "starter_code": "// Escreva a declaração da classe Aluno que herda de Pessoa\n// Dica: public class SubClasse extends SuperClasse {\n// escreva aqui\n",
     "hint": "public class SubClasse extends SuperClasse {",
     "tests": [{"stdin": "", "expected_stdout": "public class Aluno extends Pessoa {"}],
+    "quiz": [
+      {"question": "Qual palavra-chave implementa herança em Java?", "options": ["inherits", "implements", "extends", ":"], "correct": 2},
+      {"question": "Uma classe Java pode herdar de quantas classes simultaneamente?", "options": ["Quantas quiser", "Apenas uma", "Máximo de três", "Apenas de classes abstratas"], "correct": 1},
+    ],
   },
 ],
 
@@ -884,6 +1203,10 @@ LESSONS = {
     "starter_code": '#include <iostream>\nusing namespace std;\nint main() {\n    // Escreva o comando para exibir "Olá, C++!"\n    // escreva aqui\n    return 0;\n}\n',
     "hint": "cout << \"Olá, C++!\" << endl; — aspas simples ' ou duplas \" são aceitas neste exercício.",
     "tests": [{"stdin": "", "expected_stdout": 'cout << "Olá, C++!" << endl;'}],
+    "quiz": [
+      {"question": "Qual objeto exibe texto no console em C++?", "options": ["System.out", "Console", "cout", "print"], "correct": 2},
+      {"question": "O que 'endl' faz em C++?", "options": ["Finaliza o programa", "Quebra a linha (equivalente a \\n)", "Limpa o buffer", "Define o fim do array"], "correct": 1},
+    ],
   },
   {
     "order": 2,
@@ -895,6 +1218,10 @@ LESSONS = {
     "starter_code": '// Declare um inteiro chamado "nota" com valor 10\n// escreva aqui\n',
     "hint": "int nomeDaVariavel = valor;",
     "tests": [{"stdin": "", "expected_stdout": "int nota = 10;"}],
+    "quiz": [
+      {"question": "Qual tipo C++ armazena números decimais?", "options": ["float/double", "int", "char", "bool"], "correct": 0},
+      {"question": "C++ requer declaração explícita de tipo?", "options": ["Não, é opcional", "Sim, sempre", "Só para funções", "Só para arrays"], "correct": 1},
+    ],
   },
   {
     "order": 3,
@@ -906,6 +1233,10 @@ LESSONS = {
     "starter_code": '// Escreva apenas a assinatura da função soma(int a, int b) que retorna int\n// escreva aqui\n',
     "hint": "int nomeFuncao(int a, int b) {",
     "tests": [{"stdin": "", "expected_stdout": "int soma(int a, int b) {"}],
+    "quiz": [
+      {"question": "Em C++, onde fica o tipo de retorno na declaração de função?", "options": ["Após o nome da função", "Antes do nome da função", "Após os parâmetros", "Em uma linha separada"], "correct": 1},
+      {"question": "O que void como tipo de retorno significa em C++?", "options": ["Retorna zero", "Retorna null", "Função sem retorno", "Retorna string vazia"], "correct": 2},
+    ],
   },
   {
     "order": 4,
@@ -917,6 +1248,10 @@ LESSONS = {
     "starter_code": "// Declare um array de inteiros chamado numeros com os valores 1, 2 e 3\n// Dica: tipo nomeArray[] = {val1, val2, val3};\n// escreva aqui\n",
     "hint": "int nomeArray[] = {val1, val2, val3};",
     "tests": [{"stdin": "", "expected_stdout": "int numeros[] = {1, 2, 3};"}],
+    "quiz": [
+      {"question": "Arrays em C++ têm tamanho:", "options": ["Dinâmico", "Fixo definido na criação", "Ilimitado", "Até 256 elementos"], "correct": 1},
+      {"question": "Como declarar um array de 5 inteiros em C++?", "options": ["int arr(5)", "int[] arr = {}", "int arr[5]", "array<int> arr[5]"], "correct": 2},
+    ],
   },
   {
     "order": 5,
@@ -928,6 +1263,10 @@ LESSONS = {
     "starter_code": "// Escreva o cabeçalho do if que verifica se a variável x é maior que zero\n// Dica: if (condicao) {\n// escreva aqui\n",
     "hint": "if (variavel > 0) {",
     "tests": [{"stdin": "", "expected_stdout": "if (x > 0) {"}],
+    "quiz": [
+      {"question": "C++ usa chaves {} para delimitar blocos condicionais?", "options": ["Não, usa indentação", "Sim, definem o início e fim do bloco", "Só em funções", "Só com else"], "correct": 1},
+      {"question": "Qual operador lógico significa 'E' em C++?", "options": ["and", "&&", "||", "!"], "correct": 1},
+    ],
   },
   {
     "order": 6,
@@ -939,6 +1278,10 @@ LESSONS = {
     "starter_code": "// Escreva o cabeçalho do for que conta de 0 a 4 (i menor que 5)\n// Dica: for (inicializacao; condicao; incremento) {\n// escreva aqui\n",
     "hint": "for (int i = 0; i < 5; i++) {",
     "tests": [{"stdin": "", "expected_stdout": "for (int i = 0; i < 5; i++) {"}],
+    "quiz": [
+      {"question": "O loop for em C++ é idêntico ao de:", "options": ["Python", "Java/JavaScript", "Go", "Rust"], "correct": 1},
+      {"question": "O que i++ faz em C++?", "options": ["Cria novo i", "Incrementa i em 1", "Multiplica i por 2", "Copia i"], "correct": 1},
+    ],
   },
   {
     "order": 7,
@@ -950,6 +1293,10 @@ LESSONS = {
     "starter_code": "// Declare uma string chamada nome com o valor Carlos\n// Dica: string nomeDaVariavel = \"valor\";\n// escreva aqui\n",
     "hint": "string nomeDaVariavel = \"valor\"; — aspas simples ' ou duplas \" são aceitas.",
     "tests": [{"stdin": "", "expected_stdout": 'string nome = "Carlos";'}],
+    "quiz": [
+      {"question": "Para usar string em C++ você precisa incluir:", "options": ["<stdio.h>", "<string>", "<text>", "<chars>"], "correct": 1},
+      {"question": "Qual a diferença entre char e string em C++?", "options": ["char é um texto, string é um caractere", "char é um único caractere, string é uma sequência", "São idênticos", "char é mais rápido sempre"], "correct": 1},
+    ],
   },
   {
     "order": 8,
@@ -961,6 +1308,10 @@ LESSONS = {
     "starter_code": "// Declare um vector de inteiros chamado numeros com os valores 1, 2 e 3\n// Dica: vector<Tipo> nomeVector = {val1, val2, val3};\n// escreva aqui\n",
     "hint": "vector<Tipo> nomeVector = {val1, val2, val3};",
     "tests": [{"stdin": "", "expected_stdout": "vector<int> numeros = {1, 2, 3};"}],
+    "quiz": [
+      {"question": "Qual é a vantagem do vector sobre arrays em C++?", "options": ["É mais rápido sempre", "Tem tamanho dinâmico (cresce conforme necessário)", "Usa menos memória", "Não precisa de tipo"], "correct": 1},
+      {"question": "Para usar vector em C++ você precisa incluir:", "options": ["<array>", "<list>", "<vector>", "<dynamic>"], "correct": 2},
+    ],
   },
   {
     "order": 9,
@@ -972,6 +1323,10 @@ LESSONS = {
     "starter_code": "// Escreva a struct Pessoa com dois campos: nome (string) e idade (int)\n// Dica: struct NomeDaStruct { tipo campo; tipo campo; };\n// escreva aqui\n",
     "hint": "struct NomeDaStruct { tipo campo1; tipo campo2; };",
     "tests": [{"stdin": "", "expected_stdout": "struct Pessoa { string nome; int idade; };"}],
+    "quiz": [
+      {"question": "Para que serve struct em C++?", "options": ["Criar loops", "Agrupar variáveis relacionadas", "Definir funções", "Gerenciar memória"], "correct": 1},
+      {"question": "Diferença entre struct e class em C++:", "options": ["struct tem membros públicos por padrão, class tem privados", "São completamente iguais", "struct não tem métodos", "class não tem dados"], "correct": 0},
+    ],
   },
   {
     "order": 10,
@@ -983,6 +1338,11 @@ LESSONS = {
     "starter_code": "// Declare um ponteiro do tipo int chamado ptr que aponta para a variável x\n// Dica: tipo* nomePonteiro = &nomeVariavel;\n// escreva aqui\n",
     "hint": "tipo* nomePonteiro = &nomeVariavel;",
     "tests": [{"stdin": "", "expected_stdout": "int* ptr = &x;"}],
+    "quiz": [
+      {"question": "O que um ponteiro armazena em C++?", "options": ["Um valor inteiro", "O endereço de memória de uma variável", "Uma cópia da variável", "O tipo da variável"], "correct": 1},
+      {"question": "O que o operador & faz com uma variável?", "options": ["Copia a variável", "Retorna o endereço de memória", "Decrementa o valor", "Cria uma referência constante"], "correct": 1},
+      {"question": "O que o operador * faz com um ponteiro?", "options": ["Multiplica o endereço", "Desreferencia (acessa o valor apontado)", "Cria um novo ponteiro", "Libera memória"], "correct": 1},
+    ],
   },
 ],
 
@@ -998,6 +1358,10 @@ LESSONS = {
     "starter_code": 'package main\nimport "fmt"\nfunc main() {\n    // Exiba "Olá, Go!"\n    // escreva aqui\n}\n',
     "hint": "fmt.Println(\"Olá, Go!\") — aspas simples ' ou duplas \" são aceitas neste exercício.",
     "tests": [{"stdin": "", "expected_stdout": 'fmt.Println("Olá, Go!")'}],
+    "quiz": [
+      {"question": "Qual pacote Go precisa ser importado para imprimir?", "options": ["os", "io", "fmt", "log"], "correct": 2},
+      {"question": "Qual função Go imprime com quebra de linha no final?", "options": ["fmt.Print()", "fmt.Println()", "fmt.Printf()", "print()"], "correct": 1},
+    ],
   },
   {
     "order": 2,
@@ -1009,6 +1373,10 @@ LESSONS = {
     "starter_code": '// Declare a variável "nome" com valor "Gopher" usando :=\n// escreva aqui\n',
     "hint": "nome := \"Gopher\" — aspas simples ' ou duplas \" são aceitas neste exercício.",
     "tests": [{"stdin": "", "expected_stdout": 'nome := "Gopher"'}],
+    "quiz": [
+      {"question": "O que := faz em Go?", "options": ["Compara dois valores", "Declara e atribui uma variável com tipo inferido", "Incrementa uma variável", "Importa um pacote"], "correct": 1},
+      {"question": "Qual é a diferença entre := e var em Go?", "options": [":= só funciona em funções e infere o tipo; var pode ser global", "São idênticos", "var é mais rápido", ":= exige tipo explícito"], "correct": 0},
+    ],
   },
   {
     "order": 3,
@@ -1020,6 +1388,10 @@ LESSONS = {
     "starter_code": '// Escreva a assinatura da função dobrar(n int) que retorna int\n// escreva aqui\n',
     "hint": "func dobrar(n int) int {",
     "tests": [{"stdin": "", "expected_stdout": "func dobrar(n int) int {"}],
+    "quiz": [
+      {"question": "Qual palavra-chave define uma função em Go?", "options": ["def", "function", "fn", "func"], "correct": 3},
+      {"question": "Em Go, o tipo de retorno fica:", "options": ["Antes do nome da função", "Após os parâmetros", "Entre parênteses", "No início do arquivo"], "correct": 1},
+    ],
   },
   {
     "order": 4,
@@ -1031,6 +1403,10 @@ LESSONS = {
     "starter_code": "// Declare um slice de inteiros chamado numeros com os valores 1, 2 e 3\n// Dica: nomeSlice := []tipo{val1, val2, val3}\n// escreva aqui\n",
     "hint": "nomeSlice := []tipo{val1, val2, val3}",
     "tests": [{"stdin": "", "expected_stdout": "numeros := []int{1, 2, 3}"}],
+    "quiz": [
+      {"question": "Qual é a diferença entre slice e array em Go?", "options": ["Slice tem tipo diferente", "Slice tem tamanho dinâmico, array tem tamanho fixo", "Array é mais moderno", "São idênticos"], "correct": 1},
+      {"question": "Como declarar um slice literal de ints em Go?", "options": ["int[]{1, 2, 3}", "[]int{1, 2, 3}", "(1, 2, 3)", "slice{1, 2, 3}"], "correct": 1},
+    ],
   },
   {
     "order": 5,
@@ -1042,6 +1418,10 @@ LESSONS = {
     "starter_code": "// Declare um map chamado idades que mapeia string para int com o par Ana:20\n// Dica: nomeMap := map[tipoChave]tipoValor{\"chave\": valor}\n// escreva aqui\n",
     "hint": "nomeMap := map[tipoChave]tipoValor{\"chave\": valor} — aspas simples ' ou duplas \" são aceitas.",
     "tests": [{"stdin": "", "expected_stdout": 'idades := map[string]int{"Ana": 20}'}],
+    "quiz": [
+      {"question": "Qual é o equivalente de dicionário em Go?", "options": ["dict", "hashmap", "map", "object"], "correct": 2},
+      {"question": "Como declarar um map de string para int em Go?", "options": ["map{string:int}{}", "map[string]int{}", "Map<string, int>{}", "dict[string]int{}"], "correct": 1},
+    ],
   },
   {
     "order": 6,
@@ -1053,6 +1433,10 @@ LESSONS = {
     "starter_code": "// Escreva o cabeçalho do if que verifica se x é maior que zero\n// Lembrete: Go nao usa parenteses no if\n// escreva aqui\n",
     "hint": "if variavel > 0 {",
     "tests": [{"stdin": "", "expected_stdout": "if x > 0 {"}],
+    "quiz": [
+      {"question": "Go usa parênteses na condição do if?", "options": ["Sim, obrigatórios", "Não, são proibidos/desnecessários", "Opcional", "Só com else"], "correct": 1},
+      {"question": "Go tem switch? Como ele difere do C++?", "options": ["Não tem switch", "Tem switch; não precisa de break entre cases", "Tem switch igual ao C++", "Só suporta strings no switch"], "correct": 1},
+    ],
   },
   {
     "order": 7,
@@ -1064,6 +1448,10 @@ LESSONS = {
     "starter_code": "// Escreva o cabeçalho do for que conta de 0 a 4 (i menor que 5)\n// Lembrete: Go nao usa parenteses no for\n// escreva aqui\n",
     "hint": "for i := 0; i < 5; i++ {",
     "tests": [{"stdin": "", "expected_stdout": "for i := 0; i < 5; i++ {"}],
+    "quiz": [
+      {"question": "Go tem loop while?", "options": ["Sim, com a palavra while", "Não; for sozinho age como while", "Sim, com a palavra loop", "Não, só for...range"], "correct": 1},
+      {"question": "Como percorrer uma slice em Go?", "options": ["for item in slice", "foreach(slice)", "for i, v := range slice", "slice.forEach()"], "correct": 2},
+    ],
   },
   {
     "order": 8,
@@ -1075,6 +1463,10 @@ LESSONS = {
     "starter_code": "// Escreva a struct Pessoa com dois campos: Nome (string) e Idade (int)\n// Dica: type NomeDaStruct struct { Campo1 tipo1; Campo2 tipo2 }\n// escreva aqui\n",
     "hint": "type NomeDaStruct struct { Campo1 tipo1; Campo2 tipo2 }",
     "tests": [{"stdin": "", "expected_stdout": "type Pessoa struct { Nome string; Idade int }"}],
+    "quiz": [
+      {"question": "Como definir uma struct em Go?", "options": ["struct Pessoa { }", "class Pessoa { }", "type Pessoa struct { }", "Pessoa struct { }"], "correct": 2},
+      {"question": "Structs em Go podem ter métodos?", "options": ["Não, apenas dados", "Sim, definidos com receiver", "Só métodos estáticos", "Só com interface"], "correct": 1},
+    ],
   },
   {
     "order": 9,
@@ -1086,6 +1478,10 @@ LESSONS = {
     "starter_code": "// Escreva a assinatura do método saudar para a struct Pessoa, que retorna string\n// Dica: func (receiver NomeStruct) nomeMetodo() tipoRetorno {\n// escreva aqui\n",
     "hint": "func (receiver NomeStruct) nomeMetodo() tipoRetorno {",
     "tests": [{"stdin": "", "expected_stdout": "func (p Pessoa) saudar() string {"}],
+    "quiz": [
+      {"question": "O que é um receiver em Go?", "options": ["Um canal de comunicação", "O tipo ao qual o método pertence", "Um retorno especial", "Uma importação de pacote"], "correct": 1},
+      {"question": "A sintaxe de um método com receiver em Go é:", "options": ["func Pessoa.saudar() {}", "func (p Pessoa) saudar() {}", "method Pessoa.saudar() {}", "func saudar(Pessoa) {}"], "correct": 1},
+    ],
   },
   {
     "order": 10,
@@ -1097,6 +1493,10 @@ LESSONS = {
     "starter_code": "// Escreva a interface Animal com o método Falar() que retorna string\n// Dica: type NomeInterface interface { NomeMetodo() tipoRetorno }\n// escreva aqui\n",
     "hint": "type NomeInterface interface { NomeMetodo() tipoRetorno }",
     "tests": [{"stdin": "", "expected_stdout": "type Animal interface { Falar() string }"}],
+    "quiz": [
+      {"question": "Como uma struct satisfaz uma interface em Go?", "options": ["Declarando implements explicitamente", "Implementando todos os métodos da interface", "Herdando a interface", "Registrando no compilador"], "correct": 1},
+      {"question": "Interfaces em Go são:", "options": ["Explícitas (declara-se implements)", "Implícitas (automático ao implementar os métodos)", "Opcionais", "Apenas para classes"], "correct": 1},
+    ],
   },
 ],
 
@@ -1112,6 +1512,10 @@ LESSONS = {
     "starter_code": "// Escreva seu prompt aqui:\n// (deve conter a frase: 3 exemplos de Python para ciência de dados)\n// escreva aqui\n",
     "hint": "Exemplo completo: Dê-me 3 exemplos de Python para ciência de dados, em português.",
     "tests": [{"stdin": "", "expected_stdout": "3 exemplos de Python para ciência de dados"}],
+    "quiz": [
+      {"question": "Por que prompts vagos geram respostas ruins?", "options": ["A IA é mais lenta com prompts curtos", "Falta de contexto e especificidade leva a respostas genéricas", "Prompts curtos consomem mais tokens", "A IA prefere prompts formais"], "correct": 1},
+      {"question": "O que especificar em um bom prompt?", "options": ["Apenas o tema", "Quantidade, tema, idioma e formato", "Só a pergunta principal", "O nome da IA"], "correct": 1},
+    ],
   },
   {
     "order": 2,
@@ -1123,6 +1527,10 @@ LESSONS = {
     "starter_code": "// Escreva um prompt com persona\n// Comece com: Aja como [persona]. [Tarefa].\n// escreva aqui\n",
     "hint": "Exemplo: Aja como um tutor de programação paciente. Explique o que é uma variável de forma simples.",
     "tests": [{"stdin": "", "expected_stdout": "Aja como um tutor de programação"}],
+    "quiz": [
+      {"question": "Por que atribuir uma persona melhora as respostas da IA?", "options": ["A IA fica mais rápida", "Orienta o estilo, tom e nível de profundidade da resposta", "Economiza tokens", "É requisito técnico das APIs"], "correct": 1},
+      {"question": "Qual frase geralmente inicia um prompt com persona?", "options": ["'Responda como se fosse'", "'Aja como [persona].'", "'Simule [persona].'", "Qualquer das anteriores funciona igualmente"], "correct": 3},
+    ],
   },
   {
     "order": 3,
@@ -1134,6 +1542,10 @@ LESSONS = {
     "starter_code": "// Escreva seu prompt sobre 17 × 23\n// Termine com: Pense passo a passo antes de responder.\n// escreva aqui\n",
     "hint": "Exemplo: Quanto é 17 × 23? Pense passo a passo antes de responder.",
     "tests": [{"stdin": "", "expected_stdout": "passo a passo antes de responder"}],
+    "quiz": [
+      {"question": "O que chain-of-thought prompting solicita da IA?", "options": ["Respostas mais curtas", "Raciocinar passo a passo antes de responder", "Usar linguagem formal", "Citar fontes"], "correct": 1},
+      {"question": "Chain-of-thought é mais útil para:", "options": ["Criar imagens", "Traduzir textos", "Problemas matemáticos e raciocínio complexo", "Formatar documentos"], "correct": 2},
+    ],
   },
   {
     "order": 4,
@@ -1145,6 +1557,10 @@ LESSONS = {
     "starter_code": "// Escreva dois exemplos Produto → Slogan e peça para Café\n// Deve conter: Produto: Café → Slogan:\n// escreva aqui\n",
     "hint": "Exemplo: Produto: Tênis → Slogan: Vá além dos seus limites. Produto: Livro → Slogan: Abra um mundo novo. Produto: Café → Slogan:",
     "tests": [{"stdin": "", "expected_stdout": "Produto: Café → Slogan:"}],
+    "quiz": [
+      {"question": "O que few-shot prompting significa?", "options": ["Usar poucas palavras", "Fornecer exemplos antes de pedir a tarefa", "Limitar o tamanho da resposta", "Usar várias IAs"], "correct": 1},
+      {"question": "Zero-shot prompting é quando:", "options": ["O modelo não funciona", "A tarefa é pedida sem nenhum exemplo", "São dados zero parâmetros", "A resposta tem zero erros"], "correct": 1},
+    ],
   },
   {
     "order": 5,
@@ -1156,6 +1572,10 @@ LESSONS = {
     "starter_code": "// Escreva um prompt pedindo dados em formato JSON\n// Deve conter: formato JSON\n// escreva aqui\n",
     "hint": "Exemplo: Liste as 3 linguagens de programação mais populares em formato JSON, com os campos nome e uso_principal.",
     "tests": [{"stdin": "", "expected_stdout": "formato JSON"}],
+    "quiz": [
+      {"question": "Por que especificar formato de saída no prompt?", "options": ["A IA responde mais rápido", "A resposta fica mais processável e previsível", "Economiza memória", "É obrigatório na API"], "correct": 1},
+      {"question": "Qual dos seguintes especifica formato de saída?", "options": ["'Responda brevemente'", "'Responda em JSON com campos nome e idade'", "'Use linguagem simples'", "'Seja preciso'"], "correct": 1},
+    ],
   },
   {
     "order": 6,
@@ -1167,6 +1587,10 @@ LESSONS = {
     "starter_code": "// Escreva um prompt de geração de código\n// Deve conter o nome: calcular_media\n// escreva aqui\n",
     "hint": "Exemplo: Escreva uma função Python chamada calcular_media que receba uma lista de números e retorne a média. Inclua docstring.",
     "tests": [{"stdin": "", "expected_stdout": "calcular_media"}],
+    "quiz": [
+      {"question": "O que incluir em um prompt para gerar código?", "options": ["Apenas o nome da função", "Linguagem, nome, parâmetros, retorno e observações", "Só a linguagem de programação", "Apenas o comportamento esperado"], "correct": 1},
+      {"question": "Por que pedir docstring no prompt de código?", "options": ["Ocupa mais espaço", "Documenta o código gerado para fácil entendimento", "É obrigatório pelo Python", "Torna o código mais rápido"], "correct": 1},
+    ],
   },
   {
     "order": 7,
@@ -1178,6 +1602,10 @@ LESSONS = {
     "starter_code": "// Escreva um prompt com restrições claras\n// Deve conter: no máximo 3 frases\n// escreva aqui\n",
     "hint": "Exemplo: Explique o que é machine learning em no máximo 3 frases, sem jargões técnicos, para um aluno do ensino médio.",
     "tests": [{"stdin": "", "expected_stdout": "no máximo 3 frases"}],
+    "quiz": [
+      {"question": "Por que adicionar restrições ao prompt?", "options": ["Para testar a IA", "Para tornar a resposta mais adequada ao contexto e audiência", "Para economizar tokens", "Por requisito técnico"], "correct": 1},
+      {"question": "Qual é um exemplo de restrição de prompt?", "options": ["'Responda em português'", "'Sem jargões técnicos, máximo 3 frases, para leigos'", "'Use emojis'", "Todas acima são restrições"], "correct": 3},
+    ],
   },
   {
     "order": 8,
@@ -1189,6 +1617,11 @@ LESSONS = {
     "starter_code": "// Escreva um prompt profissional completo:\n// Persona + contexto + tarefa + formato\n// Deve conter: coach de carreira\n// escreva aqui\n",
     "hint": "Exemplo: Aja como um coach de carreira experiente em tecnologia. Analise o perfil de um desenvolvedor júnior com 1 ano de experiência em Python. Dê 3 dicas práticas em formato de lista numerada.",
     "tests": [{"stdin": "", "expected_stdout": "coach de carreira"}],
+    "quiz": [
+      {"question": "Um prompt profissional completo combina:", "options": ["Apenas persona e tarefa", "Persona + contexto + tarefa + formato + restrições", "Só tarefa e formato", "Contexto e tarefa apenas"], "correct": 1},
+      {"question": "Qual elemento do prompt define o estilo da resposta?", "options": ["Contexto", "Tarefa", "Persona", "Restrições"], "correct": 2},
+      {"question": "Qual elemento define limitações como 'máximo 3 itens'?", "options": ["Persona", "Contexto", "Formato", "Restrições"], "correct": 3},
+    ],
   },
 ],
 
@@ -1217,6 +1650,7 @@ def _build_doc(path_cfg: dict, les: dict) -> dict:
         "starter_code": les.get("starter_code", ""),
         "hint": les.get("hint", ""),
         "tests": les.get("tests", []),
+        "quiz": les.get("quiz", []),
         "language": path_cfg["language"],
         "real_exec": path_cfg["real_exec"],
         "updated_at": datetime.utcnow().isoformat(),
