@@ -60,11 +60,25 @@ export function usePyodide() {
   const run = async (code, stdin = '') => {
     if (!pyRef.current) throw new Error('Pyodide not ready');
     const py = pyRef.current;
+
     // Capture stdout
-    py.setStdout({ batched: () => {} });
     let out = '';
     py.setStdout({ batched: (s) => { out += s + '\n'; } });
-    if (stdin) py.setStdin({ stdin: () => stdin });
+
+    // Feed stdin line by line so multiple input() calls work correctly.
+    // Always set a stdin handler (even for empty string) to avoid I/O errors
+    // when the code calls input() but no real stdin is available.
+    const lines = typeof stdin === 'string' && stdin.length > 0
+      ? stdin.split('\n')
+      : [];
+    let lineIdx = 0;
+    py.setStdin({
+      stdin: () => {
+        if (lineIdx < lines.length) return lines[lineIdx++] + '\n';
+        return null; // EOF — signal end of input
+      },
+    });
+
     try {
       await py.runPythonAsync(code);
       return { stdout: out.replace(/\n$/, ''), error: null };

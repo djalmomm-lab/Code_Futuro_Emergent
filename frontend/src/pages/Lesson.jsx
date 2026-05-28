@@ -189,7 +189,9 @@ export default function Lesson() {
         return;
       }
       setOutput('Executando...');
-      const result = await py.run(code);
+      // Pass the first test case's stdin so input() works correctly in Pyodide
+      const stdinValue = tests[0]?.stdin ?? '';
+      const result = await py.run(code, stdinValue);
       out = result.stdout;
       error = result.error;
       setOutput(error ? `${out}\n${error}`.trim() : out || '(sem saída)');
