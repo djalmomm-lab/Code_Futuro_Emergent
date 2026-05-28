@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Lock, Check, Play, Flame, Star, Zap, Crown } from 'lucide-react';
+import { ArrowLeft, Lock, Check, Play, Flame, Star, Zap, Crown, RefreshCw, AlertCircle } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { useLanguage } from '../context/LanguageContext';
 import { pathsApi, authApi, isAuthed } from '../lib/api';
 import { logError } from '../lib/logger';
+
+const LOAD_TIMEOUT_MS = 10_000;
 
 export default function JourneyPage() {
   const { slug } = useParams();
@@ -18,22 +20,40 @@ export default function JourneyPage() {
   const [completed, setCompleted] = useState(new Set());
   const [isPro, setIsPro] = useState(false);
   const [freeLimit, setFreeLimit] = useState(3);
+  const [loadError, setLoadError] = useState(null);
+  const [loadKey, setLoadKey] = useState(0); // increment to retry
 
   useEffect(() => {
+    let cancelled = false;
+    setLoadError(null);
+    setPath(null);
+
+    const timeout = setTimeout(() => {
+      if (!cancelled) setLoadError('timeout');
+    }, LOAD_TIMEOUT_MS);
+
     (async () => {
       try {
         const res = await pathsApi.get(slug);
+        if (cancelled) return;
+        clearTimeout(timeout);
         setPath(res.path);
-        setLessons(res.lessons || []);
+        const lessonList = res.lessons || [];
+        setLessons(lessonList);
         setIsPro(!!res.is_pro);
         setFreeLimit(res.free_limit || 3);
+        // Bug 3: populate completed set from backend is_completed flag
+        setCompleted(new Set(lessonList.filter((l) => l.is_completed).map((l) => l.slug)));
       } catch (err) {
+        if (cancelled) return;
+        clearTimeout(timeout);
         logError('JourneyPage.loadPath', err, { slug });
+        setLoadError('api');
       }
-      if (isAuthed()) {
+      if (!cancelled && isAuthed()) {
         try {
           const me = await authApi.me();
-          if (me.progress) {
+          if (!cancelled && me.progress) {
             setStats({
               streak: me.progress.streak,
               xp: me.progress.xp_total,
@@ -45,13 +65,51 @@ export default function JourneyPage() {
         }
       }
     })();
-  }, [slug]);
+
+    return () => { cancelled = true; clearTimeout(timeout); };
+  }, [slug, loadKey]);
+
+  if (loadError) {
+    return (
+      <div className="min-h-screen" style={{ background: 'var(--cf-space)' }}>
+        <Navbar />
+        <div className="max-w-5xl mx-auto px-4 py-20 flex flex-col items-center gap-4 text-center">
+          <AlertCircle size={40} className="text-slate-500" />
+          <div className="text-white font-bold text-lg">
+            {loadError === 'timeout' ? 'A trilha demorou demais para carregar.' : 'Não foi possível carregar a trilha.'}
+          </div>
+          <div className="text-slate-400 text-sm">Verifique sua conexão e tente novamente.</div>
+          <button
+            onClick={() => setLoadKey((k) => k + 1)}
+            className="mt-2 flex items-center gap-2 px-5 py-2.5 rounded-lg cf-btn-lime text-sm font-bold"
+          >
+            <RefreshCw size={14} /> Tentar novamente
+          </button>
+          <button onClick={() => navigate('/catalogo')} className="text-slate-400 hover:text-white text-sm">
+            ← Voltar ao catálogo
+          </button>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   if (!path) {
     return (
       <div className="min-h-screen" style={{ background: 'var(--cf-space)' }}>
         <Navbar />
-        <div className="max-w-5xl mx-auto px-4 py-20 text-center text-slate-400">Carregando trilha...</div>
+        <div className="max-w-5xl mx-auto px-4 py-20 flex flex-col items-center gap-3">
+          {/* Skeleton cards enquanto carrega */}
+          <div className="w-full animate-pulse space-y-4">
+            <div className="h-32 rounded-2xl bg-[#1C2235]" />
+            <div className="h-8 w-48 rounded-lg bg-[#1C2235]" />
+            <div className="flex flex-col items-center gap-6 pt-4">
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="w-20 h-20 rounded-full bg-[#1C2235]" />
+              ))}
+            </div>
+          </div>
+        </div>
         <Footer />
       </div>
     );

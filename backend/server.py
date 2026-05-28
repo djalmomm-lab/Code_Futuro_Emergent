@@ -559,9 +559,21 @@ async def path_detail(slug: str, user=Depends(optional_user)):
         raise HTTPException(404, "Path not found")
     lessons = await db.lessons.find({"path_slug": slug}, {"_id": 0}).sort("order", 1).to_list(200)
     is_pro = bool(user and user.get("is_pro"))
-    # Mark which lessons are locked behind paywall for this user
+
+    # Build a set of completed lesson slugs for this user (empty for anonymous)
+    completed_slugs: set = set()
+    if user:
+        completions = await db.lesson_completions.find(
+            {"user_id": user["id"], "path_slug": slug},
+            {"_id": 0, "lesson_slug": 1},
+        ).to_list(500)
+        completed_slugs = {c["lesson_slug"] for c in completions}
+
+    # Mark paywall and completion status per lesson
     for le in lessons:
         le["requires_pro"] = le["order"] > FREE_LESSONS_PER_PATH and not is_pro
+        le["is_completed"] = le["slug"] in completed_slugs
+
     return {"path": path, "lessons": lessons, "free_limit": FREE_LESSONS_PER_PATH, "is_pro": is_pro}
 
 

@@ -10,6 +10,7 @@ Uso:
 import asyncio
 import re
 import sys
+import unicodedata
 import uuid
 from datetime import datetime
 from pathlib import Path
@@ -2086,7 +2087,11 @@ LESSONS = {
 # ---------------------------------------------------------------------------
 
 def _slug_base(title: str) -> str:
-    return re.sub(r"[^a-z0-9]+", "-", title.lower()).strip("-")[:40]
+    # Normalize Unicode → decompose accented chars (e.g. "ã" → "a" + combining tilde)
+    # then keep only ASCII, so "Condições" → "condicoes" not "condi-es"
+    normalized = unicodedata.normalize("NFKD", title)
+    ascii_title = normalized.encode("ascii", "ignore").decode("ascii")
+    return re.sub(r"[^a-z0-9]+", "-", ascii_title.lower()).strip("-")[:40]
 
 
 def _build_doc(path_cfg: dict, les: dict) -> dict:

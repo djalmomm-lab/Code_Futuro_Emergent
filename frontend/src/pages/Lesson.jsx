@@ -28,6 +28,7 @@ export default function Lesson() {
   const [running, setRunning] = useState(false);
   const [byteOpen, setByteOpen] = useState(false);
   const [hintIndex, setHintIndex] = useState(0);
+  const [lessonDone, setLessonDone] = useState(false); // prevents duplicate toasts on re-run
   const [stats, setStats] = useState({ streak: 0, xp: 0, energy: 5, maxEnergy: 5 });
   const [isPro, setIsPro] = useState(false);
   const [celebrationOpen, setCelebrationOpen] = useState(false);
@@ -52,6 +53,7 @@ export default function Lesson() {
         setQuizSubmitted(false);
         setByteOpen(false);
         setHintIndex(0);
+        setLessonDone(false);
       } catch (err) {
         logError('Lesson.load', err, { slug });
         toast.error('Lição não encontrada');
@@ -189,7 +191,33 @@ export default function Lesson() {
         return;
       }
       setOutput('Executando...');
-      // Pass the first test case's stdin so input() works correctly in Pyodide
+      if (tests.length > 1) {
+        // Multi-test: run code once per test case with the correct stdin each time
+        const tcResults = await py.runTests(code, tests);
+        setTests(tcResults.map((r) => ({ ...r, passed: r.passed })));
+        const allOk = tcResults.every((r) => r.passed);
+        // Show last execution output in console
+        const last = tcResults[tcResults.length - 1];
+        out = last.stdout;
+        error = last.error;
+        setOutput(error ? `${out}\n${error}`.trim() : out || '(sem saída)');
+        const passed = allOk;
+        setRunning(false);
+        if (passed) {
+          if (lessonDone) { setTab('tests'); } else if (isAuthed()) {
+            try {
+              const res = await progressApi.completeLesson({ lesson_slug: lesson.slug, path_slug: lesson.path_slug });
+              setLessonDone(true);
+              if (res.already_completed) toast.success('✅ Lição já concluída anteriormente.');
+              else { toast.success(`🎉 Lição concluída! +${res.xp_earned} XP`); setStats((s) => ({ ...s, xp: res.progress.xp_total, streak: res.progress.streak })); await triggerCelebrationIfMilestone(); }
+            } catch { toast.success('🎉 Lição concluída! +50 XP'); setLessonDone(true); }
+            setTab('tests');
+          } else { setLessonDone(true); toast.success('🎉 Lição concluída! Faça login para salvar.'); setTab('tests'); }
+        } else if (error) { toast.error('Erro no código — confira o console.'); }
+        else { toast.error('Não foi dessa vez! Revise e tente novamente.'); }
+        return; // early return — multi-test path handles everything
+      }
+      // Single test: run once with the test's stdin
       const stdinValue = tests[0]?.stdin ?? '';
       const result = await py.run(code, stdinValue);
       out = result.stdout;
@@ -219,21 +247,28 @@ export default function Lesson() {
     setRunning(false);
 
     if (allPassed) {
-      if (isAuthed()) {
+      // If already completed this session, skip API call and duplicate toasts
+      if (lessonDone) {
+        setTab('tests');
+      } else if (isAuthed()) {
         try {
           const res = await progressApi.completeLesson({ lesson_slug: lesson.slug, path_slug: lesson.path_slug });
-          if (res.already_completed) toast.success('🎉 Lição já concluída!');
-          else {
+          setLessonDone(true);
+          if (res.already_completed) {
+            // Already completed in a previous session — quiet confirmation, no XP fanfare
+            toast.success('✅ Lição já concluída anteriormente.');
+          } else {
             toast.success(`🎉 Lição concluída! +${res.xp_earned} XP`);
             setStats((s) => ({ ...s, xp: res.progress.xp_total, streak: res.progress.streak }));
-            // Trigger celebration if this was the last free lesson
-            if (!res.already_completed) await triggerCelebrationIfMilestone();
+            await triggerCelebrationIfMilestone();
           }
-        } catch { toast.success('🎉 Lição concluída! +50 XP'); }
+        } catch { toast.success('🎉 Lição concluída! +50 XP'); setLessonDone(true); }
+        setTab('tests');
       } else {
+        setLessonDone(true);
         toast.success('🎉 Lição concluída! Faça login para salvar.');
+        setTab('tests');
       }
-      setTab('tests');
     } else if (error) {
       toast.error('Erro no código — confira o console.');
     } else {

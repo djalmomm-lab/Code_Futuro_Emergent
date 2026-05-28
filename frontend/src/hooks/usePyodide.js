@@ -57,6 +57,11 @@ export function usePyodide() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  /**
+   * Run Python code with optional stdin.
+   * stdin is split by '\n' and fed line-by-line so multiple input() calls work.
+   * A fresh stdin handler is created every call — no state bleeds between runs.
+   */
   const run = async (code, stdin = '') => {
     if (!pyRef.current) throw new Error('Pyodide not ready');
     const py = pyRef.current;
@@ -65,9 +70,7 @@ export function usePyodide() {
     let out = '';
     py.setStdout({ batched: (s) => { out += s + '\n'; } });
 
-    // Feed stdin line by line so multiple input() calls work correctly.
-    // Always set a stdin handler (even for empty string) to avoid I/O errors
-    // when the code calls input() but no real stdin is available.
+    // Feed stdin line by line. Always set handler to avoid OSError [Errno 29].
     const lines = typeof stdin === 'string' && stdin.length > 0
       ? stdin.split('\n')
       : [];
@@ -75,7 +78,7 @@ export function usePyodide() {
     py.setStdin({
       stdin: () => {
         if (lineIdx < lines.length) return lines[lineIdx++] + '\n';
-        return null; // EOF — signal end of input
+        return null; // EOF
       },
     });
 
@@ -87,5 +90,21 @@ export function usePyodide() {
     }
   };
 
-  return { ready, loading, error, run };
+  /**
+   * Run Python code against EACH test case independently.
+   * Returns array of { stdin, expected, stdout, error, passed }.
+   */
+  const runTests = async (code, testCases) => {
+    if (!pyRef.current) throw new Error('Pyodide not ready');
+    const results = [];
+    for (const tc of testCases) {
+      const { stdout, error } = await run(code, tc.stdin ?? '');
+      const expected = (tc.expected_stdout || tc.expected || '').trim();
+      const actual = (stdout || '').trim();
+      results.push({ ...tc, stdout, error, passed: !error && actual === expected });
+    }
+    return results;
+  };
+
+  return { ready, loading, error, run, runTests };
 }

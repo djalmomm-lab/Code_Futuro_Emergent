@@ -53,11 +53,34 @@ export default function Catalog() {
         </div>
 
         <div className="text-sm text-slate-400 mb-4">
-          {loading ? 'Carregando trilhas...' : `${filtered.length} trilha${filtered.length !== 1 ? 's' : ''} disponíve${filtered.length !== 1 ? 'is' : 'l'}`}
+          {loading ? ' ' : `${filtered.length} trilha${filtered.length !== 1 ? 's' : ''} disponíve${filtered.length !== 1 ? 'is' : 'l'}`}
         </div>
 
+        {/* Skeleton cards while loading */}
+        {loading && (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 animate-pulse">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="cf-card p-6 space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="w-14 h-14 rounded-2xl bg-[#1C2235]" />
+                  <div className="w-16 h-6 rounded-full bg-[#1C2235]" />
+                </div>
+                <div className="h-5 w-3/4 rounded bg-[#1C2235]" />
+                <div className="space-y-2">
+                  <div className="h-3 rounded bg-[#1C2235]" />
+                  <div className="h-3 w-5/6 rounded bg-[#1C2235]" />
+                </div>
+                <div className="pt-3 border-t flex items-center justify-between" style={{ borderColor: 'var(--cf-border)' }}>
+                  <div className="h-3 w-24 rounded bg-[#1C2235]" />
+                  <div className="h-3 w-4 rounded bg-[#1C2235]" />
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {filtered.map((p) => (
+          {!loading && filtered.map((p) => (
             <div
               key={p.slug}
               onClick={() => navigate(`/jornada/${p.slug}`)}
