@@ -34,8 +34,10 @@ export default function Lesson() {
   const [celebrationOpen, setCelebrationOpen] = useState(false);
   const [upcomingLessons, setUpcomingLessons] = useState([]);
   const [totalRemaining, setTotalRemaining] = useState(0);
-  const [quizAnswers, setQuizAnswers] = useState({});
-  const [quizSubmitted, setQuizSubmitted] = useState(false);
+  const [phase, setPhase] = useState('code'); // 'code' | 'quiz' | 'done'
+  const [currentQuizIndex, setCurrentQuizIndex] = useState(0);
+  const [selectedOption, setSelectedOption] = useState(null);
+  const [quizFeedback, setQuizFeedback] = useState(null); // null | 'correct' | 'wrong'
   const previewRef = useRef(null);
 
   const py = usePyodide();
@@ -49,8 +51,10 @@ export default function Lesson() {
         setLesson(les);
         setCode(les.starter_code || '');
         setTests((les.tests || []).map((t) => ({ ...t, passed: false })));
-        setQuizAnswers({});
-        setQuizSubmitted(false);
+        setPhase('code');
+        setCurrentQuizIndex(0);
+        setSelectedOption(null);
+        setQuizFeedback(null);
         setByteOpen(false);
         setHintIndex(0);
         setLessonDone(false);
@@ -208,10 +212,21 @@ export default function Lesson() {
             try {
               const res = await progressApi.completeLesson({ lesson_slug: lesson.slug, path_slug: lesson.path_slug });
               setLessonDone(true);
-              if (!res.already_completed) { toast.success(`🎉 Lição concluída! +${res.xp_earned} XP`); setStats((s) => ({ ...s, xp: res.progress.xp_total, streak: res.progress.streak })); await triggerCelebrationIfMilestone(); }
-            } catch { toast.success('🎉 Lição concluída! +50 XP'); setLessonDone(true); }
-            setTab('tests');
-          } else { setLessonDone(true); toast.success('🎉 Lição concluída! Faça login para salvar.'); setTab('tests'); }
+              if (!res.already_completed) { setStats((s) => ({ ...s, xp: res.progress.xp_total, streak: res.progress.streak })); await triggerCelebrationIfMilestone(); }
+            } catch { setLessonDone(true); }
+            if (lesson.quiz && lesson.quiz.length > 0) {
+              setPhase('quiz'); setCurrentQuizIndex(0); setSelectedOption(null); setQuizFeedback(null);
+            } else {
+              setPhase('done');
+            }
+          } else {
+            setLessonDone(true);
+            if (lesson.quiz && lesson.quiz.length > 0) {
+              setPhase('quiz'); setCurrentQuizIndex(0); setSelectedOption(null); setQuizFeedback(null);
+            } else {
+              setPhase('done');
+            }
+          }
         } else if (error) { toast.error('Erro no código — confira o console.'); }
         else { toast.error('Não foi dessa vez! Revise e tente novamente.'); }
         return; // early return — multi-test path handles everything
@@ -246,24 +261,34 @@ export default function Lesson() {
     setRunning(false);
 
     if (allPassed) {
-      // If already completed this session, skip API call and duplicate toasts
+      // If already completed this session, skip API call
       if (lessonDone) {
-        setTab('tests');
+        if (lesson.quiz && lesson.quiz.length > 0) {
+          setPhase('quiz'); setCurrentQuizIndex(0); setSelectedOption(null); setQuizFeedback(null);
+        } else {
+          setPhase('done');
+        }
       } else if (isAuthed()) {
         try {
           const res = await progressApi.completeLesson({ lesson_slug: lesson.slug, path_slug: lesson.path_slug });
           setLessonDone(true);
           if (!res.already_completed) {
-            toast.success(`🎉 Lição concluída! +${res.xp_earned} XP`);
             setStats((s) => ({ ...s, xp: res.progress.xp_total, streak: res.progress.streak }));
             await triggerCelebrationIfMilestone();
           }
-        } catch { toast.success('🎉 Lição concluída! +50 XP'); setLessonDone(true); }
-        setTab('tests');
+        } catch { setLessonDone(true); }
+        if (lesson.quiz && lesson.quiz.length > 0) {
+          setPhase('quiz'); setCurrentQuizIndex(0); setSelectedOption(null); setQuizFeedback(null);
+        } else {
+          setPhase('done');
+        }
       } else {
         setLessonDone(true);
-        toast.success('🎉 Lição concluída! Faça login para salvar.');
-        setTab('tests');
+        if (lesson.quiz && lesson.quiz.length > 0) {
+          setPhase('quiz'); setCurrentQuizIndex(0); setSelectedOption(null); setQuizFeedback(null);
+        } else {
+          setPhase('done');
+        }
       }
     } else if (error) {
       toast.error('Erro no código — confira o console.');
@@ -276,6 +301,24 @@ export default function Lesson() {
     setCode(lesson.starter_code || '');
     setOutput('');
     setTests((lesson.tests || []).map((t) => ({ ...t, passed: false })));
+  };
+
+  const handleQuizAnswer = () => {
+    const q = lesson.quiz[currentQuizIndex];
+    if (selectedOption === q.correct) {
+      setQuizFeedback('correct');
+      setTimeout(() => {
+        if (currentQuizIndex + 1 < lesson.quiz.length) {
+          setCurrentQuizIndex(i => i + 1);
+          setSelectedOption(null);
+          setQuizFeedback(null);
+        } else {
+          setPhase('done');
+        }
+      }, 800);
+    } else {
+      setQuizFeedback('wrong');
+    }
   };
 
   const passedCount = tests.filter((t) => t.passed).length;
@@ -291,6 +334,11 @@ export default function Lesson() {
           <button onClick={() => navigate(`/jornada/${lesson.path_slug}`)} className="text-slate-300 hover:text-white flex items-center gap-1 text-sm font-semibold shrink-0">
             <ArrowLeft size={16} /> Trilha
           </button>
+          {lesson.previous?.slug && (
+            <button onClick={() => navigate(`/licao/${lesson.previous.slug}`)} className="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-[#1C2235] shrink-0" title="Atividade anterior">
+              <ArrowLeft size={16} />
+            </button>
+          )}
           <div className="flex-1 min-w-0">
             <div className="text-xs text-slate-400 truncate">{lesson.path_slug} · {lesson.chapter}</div>
             <div className="font-display font-bold text-white truncate">{lesson.title}</div>
@@ -335,7 +383,96 @@ export default function Lesson() {
         )}
       </header>
 
-      <main className="flex-1 max-w-7xl w-full mx-auto p-4 grid md:grid-cols-2 gap-4">
+      {phase === 'quiz' && (
+        <main className="flex-1 flex items-center justify-center p-4">
+          <div className="cf-card p-8 w-full max-w-xl">
+            <div className="flex items-center gap-2 mb-6">
+              <HelpCircle size={16} className="text-[#A3E635]" />
+              <span className="text-xs font-bold uppercase tracking-wider text-[#A3E635]">
+                Verificação de Aprendizado — Pergunta {currentQuizIndex + 1} de {lesson.quiz.length}
+              </span>
+            </div>
+            <div className="w-full h-1.5 rounded-full bg-slate-700 mb-6">
+              <div
+                className="h-1.5 rounded-full bg-[#A3E635] transition-all duration-500"
+                style={{ width: `${((currentQuizIndex) / lesson.quiz.length) * 100}%` }}
+              />
+            </div>
+            <p className="text-lg font-bold text-white mb-5">
+              {lesson.quiz[currentQuizIndex].question}
+            </p>
+            <div className="space-y-3">
+              {lesson.quiz[currentQuizIndex].options.map((opt, oi) => {
+                let cls = 'w-full text-left px-4 py-3 rounded-xl border transition-all text-sm font-medium ';
+                if (quizFeedback) {
+                  if (oi === lesson.quiz[currentQuizIndex].correct) cls += 'bg-green-900/30 border-green-500 text-green-300';
+                  else if (oi === selectedOption && quizFeedback === 'wrong') cls += 'bg-red-900/30 border-red-500 text-red-300';
+                  else cls += 'border-slate-700/30 text-slate-600';
+                } else if (selectedOption === oi) {
+                  cls += 'bg-[#1a2540] border-[#A3E635] text-white';
+                } else {
+                  cls += 'bg-[#0d1425] border-slate-700 text-slate-300 hover:border-slate-500 hover:text-white';
+                }
+                return (
+                  <button key={oi} disabled={!!quizFeedback} onClick={() => setSelectedOption(oi)} className={cls}>
+                    <span className="font-mono text-[#A3E635] mr-3 text-xs opacity-80">{String.fromCharCode(65 + oi)}.</span>
+                    {opt}
+                  </button>
+                );
+              })}
+            </div>
+            {quizFeedback === 'wrong' && (
+              <p className="mt-4 text-sm text-red-400">❌ Não foi dessa vez! Tente outra opção.</p>
+            )}
+            {!quizFeedback && (
+              <button
+                onClick={handleQuizAnswer}
+                disabled={selectedOption === null}
+                className="mt-6 w-full py-3 rounded-xl cf-btn-lime font-bold text-sm disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                Confirmar resposta
+              </button>
+            )}
+            {quizFeedback === 'wrong' && (
+              <button
+                onClick={() => { setSelectedOption(null); setQuizFeedback(null); }}
+                className="mt-4 w-full py-3 rounded-xl border border-slate-600 text-slate-300 font-bold text-sm hover:border-slate-400"
+              >
+                Tentar novamente
+              </button>
+            )}
+          </div>
+        </main>
+      )}
+
+      {phase === 'done' && (
+        <main className="flex-1 flex items-center justify-center p-4">
+          <div className="cf-card p-10 w-full max-w-lg text-center">
+            <div className="text-6xl mb-4">🎉</div>
+            <h2 className="font-display text-3xl font-bold text-white mb-2">Atividade concluída!</h2>
+            <p className="text-slate-400 mb-8">Você completou o exercício e respondeu todas as perguntas corretamente.</p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              {nextSlug && (
+                <Link
+                  to={`/licao/${nextSlug}`}
+                  className="inline-flex items-center justify-center gap-2 px-8 py-3 rounded-xl font-bold text-base"
+                  style={{ background: '#A3E635', color: '#0A0F1E' }}
+                >
+                  Próxima atividade <ChevronRight size={18} />
+                </Link>
+              )}
+              <button
+                onClick={() => navigate(`/jornada/${lesson.path_slug}`)}
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl border border-slate-600 text-slate-300 font-bold text-base hover:border-slate-400"
+              >
+                Ver trilha
+              </button>
+            </div>
+          </div>
+        </main>
+      )}
+
+      {phase === 'code' && <main className="flex-1 max-w-7xl w-full mx-auto p-4 grid md:grid-cols-2 gap-4">
         <div className="cf-card p-6 overflow-auto">
           <div className="flex items-center gap-2 mb-1">
             <ByteNavbar size={28} />
@@ -384,59 +521,6 @@ export default function Lesson() {
             </button>
           )}
 
-          {lesson.quiz && lesson.quiz.length > 0 && (
-            <div className="mt-6 border-t pt-5" style={{ borderColor: 'var(--cf-border)' }}>
-              <div className="flex items-center gap-2 mb-4">
-                <HelpCircle size={15} className="text-[#A3E635]" />
-                <span className="text-xs font-bold uppercase tracking-wider text-[#A3E635]">Verificação do Aprendizado</span>
-              </div>
-              <div className="space-y-5">
-                {lesson.quiz.map((q, qi) => (
-                  <div key={qi}>
-                    <p className="text-sm font-semibold text-white mb-2">{qi + 1}. {q.question}</p>
-                    <div className="space-y-1.5">
-                      {q.options.map((opt, oi) => {
-                        let cls = 'w-full text-left text-sm px-3 py-2 rounded-lg border transition-all ';
-                        if (quizSubmitted) {
-                          if (oi === q.correct) cls += 'bg-green-900/30 border-green-500/60 text-green-300';
-                          else if (oi === quizAnswers[qi]) cls += 'bg-red-900/30 border-red-500/60 text-red-300 line-through opacity-70';
-                          else cls += 'border-slate-700/30 text-slate-600';
-                        } else if (quizAnswers[qi] === oi) {
-                          cls += 'bg-[#1a2540] border-[#A3E635]/70 text-white';
-                        } else {
-                          cls += 'bg-[#0d1425] border-slate-700 text-slate-300 hover:border-slate-500 hover:text-white';
-                        }
-                        return (
-                          <button key={oi} disabled={quizSubmitted} onClick={() => setQuizAnswers(a => ({ ...a, [qi]: oi }))} className={cls}>
-                            <span className="font-mono text-[#A3E635] mr-2 text-xs opacity-80">{String.fromCharCode(65 + oi)}.</span>
-                            {opt}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                ))}
-              </div>
-              {!quizSubmitted ? (
-                <button
-                  onClick={() => setQuizSubmitted(true)}
-                  disabled={Object.keys(quizAnswers).length < lesson.quiz.length}
-                  className="mt-5 px-4 py-2 rounded-lg cf-btn-lime text-sm font-bold disabled:opacity-40 disabled:cursor-not-allowed"
-                >
-                  Verificar Respostas
-                </button>
-              ) : (
-                <div className="mt-4 flex items-center gap-4">
-                  <span className="text-sm font-semibold text-slate-200">
-                    {lesson.quiz.filter((q, qi) => quizAnswers[qi] === q.correct).length}/{lesson.quiz.length} corretas ✓
-                  </span>
-                  <button onClick={() => { setQuizAnswers({}); setQuizSubmitted(false); }} className="text-sm text-[#A3E635] hover:underline">
-                    Tentar novamente
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
         </div>
 
         <div className="flex flex-col gap-4">
@@ -511,7 +595,7 @@ export default function Lesson() {
             </div>
           </div>
         </div>
-      </main>
+      </main>}
       {/* ─── Byte Instrutor flutuante ─────────────────────────────────────────── */}
       {hints.length > 0 && (
         <>
