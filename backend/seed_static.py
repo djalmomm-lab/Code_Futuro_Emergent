@@ -276,6 +276,10 @@ LESSONS = {
       "Use uma f-string para montar a mensagem: `return f\"Olá, {nome}!\"` — lembre das chaves em volta de `nome`.",
     ],
     "tests": [{"stdin": "", "expected_stdout": "Olá, Ana!"}],
+    "quiz": [
+      {"question": "Qual palavra-chave define uma função em Python?", "options": ["function", "def", "func", "fn"], "correct": 1},
+      {"question": "O que return faz dentro de uma função?", "options": ["Imprime o resultado na tela", "Devolve um valor e encerra a função", "Chama outra função", "Reinicia a função"], "correct": 1},
+    ],
   },
   {
     "order": 12,
@@ -290,6 +294,10 @@ LESSONS = {
       "No corpo da função, substitua os `___` pelos nomes dos parâmetros: `return base * altura / 2`.",
     ],
     "tests": [{"stdin": "", "expected_stdout": "25.0\n12.0"}],
+    "quiz": [
+      {"question": "Qual é a diferença entre parâmetro e argumento?", "options": ["São a mesma coisa", "Parâmetro está na definição; argumento é o valor passado na chamada", "Argumento está na definição; parâmetro é o valor passado", "Parâmetro só existe em funções recursivas"], "correct": 1},
+      {"question": "Uma função pode ter mais de um parâmetro?", "options": ["Não, apenas um", "Sim, separados por vírgula", "Sim, mas apenas dois", "Depende do tipo de dado"], "correct": 1},
+    ],
   },
   {
     "order": 13,
@@ -304,6 +312,10 @@ LESSONS = {
       'No `for`, imprima a variável do loop: `print(convidado)`. Para o total, use `len(convidados)` dentro da f-string.',
     ],
     "tests": [{"stdin": "", "expected_stdout": "Ana\nCarlos\nTotal: 2"}],
+    "quiz": [
+      {"question": "Qual método adiciona um item ao final de uma lista?", "options": ["add()", "insert()", "push()", "append()"], "correct": 3},
+      {"question": "O que lista.remove('Bruno') faz?", "options": ["Remove todos os itens iguais a 'Bruno'", "Remove a primeira ocorrência de 'Bruno'", "Remove o último item da lista", "Apaga a lista inteira"], "correct": 1},
+    ],
   },
   {
     "order": 14,
@@ -318,6 +330,11 @@ LESSONS = {
       'Para acessar um valor, use o nome da chave entre aspas e colchetes: `aluno["nome"]`.',
     ],
     "tests": [{"stdin": "", "expected_stdout": "Nome: Carlos\nIdade: 15\nNota: 8.5"}],
+    "quiz": [
+      {"question": "Como acessar o valor da chave 'nome' em um dicionário aluno?", "options": ["aluno.nome", "aluno['nome']", "aluno->nome", "aluno.get_nome()"], "correct": 1},
+      {"question": "O que um dicionário Python armazena?", "options": ["Apenas valores numéricos", "Pares de chave: valor", "Listas ordenadas", "Apenas strings"], "correct": 1},
+      {"question": "Como verificar se 'idade' é uma chave no dicionário d?", "options": ["'idade' in d", "d.has('idade')", "d.exists('idade')", "check(d, 'idade')"], "correct": 0},
+    ],
   },
   {
     "order": 15,
@@ -334,6 +351,10 @@ LESSONS = {
     "tests": [
       {"stdin": "ana",    "expected_stdout": "ANA\nana\n3"},
       {"stdin": "Carlos", "expected_stdout": "CARLOS\ncarlos\n6"},
+    ],
+    "quiz": [
+      {"question": "Qual método converte uma string para maiúsculas em Python?", "options": ["capitalize()", "toUpperCase()", "upper()", "uppercase()"], "correct": 2},
+      {"question": "O que o método strip() faz em uma string?", "options": ["Remove todos os espaços da string", "Remove espaços do início e do fim", "Divide a string em pedaços", "Substitui caracteres especiais"], "correct": 1},
     ],
   },
   {
@@ -353,6 +374,11 @@ LESSONS = {
       {"stdin": "Carlos\n8", "expected_stdout": "Aprovado\nCarlos está na lista de aprovados"},
       {"stdin": "Maria\n6",  "expected_stdout": "Recuperação\nMaria não está na lista de aprovados"},
       {"stdin": "João\n3",   "expected_stdout": "Reprovado\nJoão não está na lista de aprovados"},
+    ],
+    "quiz": [
+      {"question": "Qual estrutura verifica se um nome está dentro de uma lista?", "options": ["nome.in(lista)", "nome in lista", "lista.contains(nome)", "lista.find(nome)"], "correct": 1},
+      {"question": "Por que usamos float(input()) para ler a nota neste projeto?", "options": ["Para aceitar notas com decimais como 6.5", "Porque float é obrigatório com input()", "Para arredondar a nota automaticamente", "Para converter a nota em string"], "correct": 0},
+      {"question": "O que lista.append(nome) faz neste projeto?", "options": ["Verifica se o nome está na lista", "Remove o nome da lista", "Adiciona o nome ao final da lista de aprovados", "Imprime o nome na tela"], "correct": 2},
     ],
   },
   {
@@ -2189,6 +2215,10 @@ LESSONS = {
       "Substitua `___` pelo texto entre aspas: `\"Olá, Mundo!\"` — não esqueça a vírgula e o ponto de exclamação!",
     ],
     "tests": [{"stdin": "", "expected_stdout": "Olá, Mundo!"}],
+    "quiz": [
+      {"question": "Como exibir texto no console em JavaScript?", "options": ["print('texto')", "echo('texto')", "console.log('texto')", "log('texto')"], "correct": 2},
+      {"question": "console.log() em JavaScript é equivalente a qual função em Python?", "options": ["input()", "type()", "print()", "str()"], "correct": 2},
+    ],
   },
   {
     "order": 2,
@@ -2204,6 +2234,10 @@ LESSONS = {
       "As variáveis já aparecem no template literal `${nome}` e `${idade}` — você só precisa atribuir os valores corretos.",
     ],
     "tests": [{"stdin": "", "expected_stdout": "Olá, meu nome é Carlos e tenho 15 anos."}],
+    "quiz": [
+      {"question": "Qual palavra-chave usar para uma variável que nunca muda em JavaScript?", "options": ["let", "var", "const", "static"], "correct": 2},
+      {"question": "Qual é a diferença principal entre let e const?", "options": ["let é mais rápido que const", "const não pode ser reatribuído; let pode", "let é para números; const é para texto", "Não há diferença"], "correct": 1},
+    ],
   },
   {
     "order": 3,
@@ -2219,6 +2253,11 @@ LESSONS = {
       "Para obter `string`, passe qualquer texto com aspas. Para `number`, passe um número. Para `boolean`, passe `true` ou `false`.",
     ],
     "tests": [{"stdin": "", "expected_stdout": "string\nnumber\nboolean"}],
+    "quiz": [
+      {"question": "O que typeof 'Olá' retorna em JavaScript?", "options": ["text", "String", "string", "char"], "correct": 2},
+      {"question": "Qual é o tipo de true em JavaScript?", "options": ["string", "number", "Boolean", "boolean"], "correct": 3},
+      {"question": "O que typeof 42 retorna?", "options": ["int", "integer", "number", "num"], "correct": 2},
+    ],
   },
   {
     "order": 4,
@@ -2234,6 +2273,10 @@ LESSONS = {
       "O operador `%` retorna o resto da divisão inteira. `15 % 4` = 3, pois 15 = 4×3 + 3.",
     ],
     "tests": [{"stdin": "", "expected_stdout": "28\n37\n42\n3"}],
+    "quiz": [
+      {"question": "O que o operador % faz em JavaScript?", "options": ["Calcula porcentagem", "Retorna o resto da divisão inteira", "Divide e arredonda", "Multiplica por 100"], "correct": 1},
+      {"question": "Qual é o resultado de 7 * 6 em JavaScript?", "options": ["13", "42", "76", "67"], "correct": 1},
+    ],
   },
   {
     "order": 5,
@@ -2249,6 +2292,11 @@ LESSONS = {
       "Monte assim: `${produto} custa R$ ${preco} e serve ${porcoes} pessoas.` — substitua o `___` por isso entre crases dentro do `console.log()`.",
     ],
     "tests": [{"stdin": "", "expected_stdout": "Bife de frango custa R$ 25 e serve 2 pessoas."}],
+    "quiz": [
+      {"question": "O que são template literals em JavaScript?", "options": ["Strings com crase que permitem ${variável}", "Modelos HTML prontos", "Funções especiais de texto", "Arrays de texto"], "correct": 0},
+      {"question": "Qual caractere é usado para abrir um template literal?", "options": ["Aspas simples '", "Aspas duplas \"", "Crase `", "Til ~"], "correct": 2},
+      {"question": "Como inserir uma variável dentro de um template literal?", "options": ["#{variavel}", "${variavel}", "{variavel}", "{{variavel}}"], "correct": 1},
+    ],
   },
   {
     "order": 6,
@@ -2264,6 +2312,10 @@ LESSONS = {
       "Para a terceira linha ser `true`: `pontos != meta` → 80 != 100 é verdadeiro. Substitua cada `___` pelo operador correto.",
     ],
     "tests": [{"stdin": "", "expected_stdout": "false\ntrue\ntrue"}],
+    "quiz": [
+      {"question": "Qual operador verifica igualdade estrita (tipo e valor) em JavaScript?", "options": ["==", "===", "=", "eq"], "correct": 1},
+      {"question": "O que 80 != 100 retorna em JavaScript?", "options": ["false", "true", "80", "Error"], "correct": 1},
+    ],
   },
   {
     "order": 7,
@@ -2279,6 +2331,10 @@ LESSONS = {
       "Dentro das chaves `{}`, coloque o `console.log()` com a mensagem certa. Atenção aos acentos e pontuações!",
     ],
     "tests": [{"stdin": "", "expected_stdout": "Ana foi aprovada!"}],
+    "quiz": [
+      {"question": "Em JavaScript, onde fica a condição do if?", "options": ["Entre chaves {}", "Entre parênteses ()", "Após dois-pontos :", "Entre colchetes []"], "correct": 1},
+      {"question": "O que o bloco else executa?", "options": ["Sempre, independente da condição", "Quando a condição do if é verdadeira", "Quando a condição do if é falsa", "Quando há um erro no código"], "correct": 2},
+    ],
   },
   {
     "order": 8,
@@ -2294,6 +2350,10 @@ LESSONS = {
       "Dentro do template literal, o resultado da tabuada é `3 * i`. Substitua o último `___` por `3 * i`.",
     ],
     "tests": [{"stdin": "", "expected_stdout": "3 x 1 = 3\n3 x 2 = 6\n3 x 3 = 9\n3 x 4 = 12\n3 x 5 = 15"}],
+    "quiz": [
+      {"question": "No for tradicional do JavaScript, o que i++ faz?", "options": ["Multiplica i por 2", "Decrementa i em 1", "Incrementa i em 1", "Reinicia i para 0"], "correct": 2},
+      {"question": "Qual é a estrutura correta de um for em JavaScript?", "options": ["for i in range(5)", "for (let i = 0; i < 5; i++)", "for i = 0 to 5", "foreach (0..5)"], "correct": 1},
+    ],
   },
   {
     "order": 9,
@@ -2309,6 +2369,11 @@ LESSONS = {
       "`array.length` retorna o número de elementos. Use `times.length` tanto na condição do loop quanto no template literal do total.",
     ],
     "tests": [{"stdin": "", "expected_stdout": "Flamengo\nCorinthians\nPalmeiras\nTotal de times: 3"}],
+    "quiz": [
+      {"question": "Como obter o número de elementos de um array em JavaScript?", "options": ["array.size()", "array.count", "array.length", "len(array)"], "correct": 2},
+      {"question": "Qual é o índice do primeiro elemento de um array JavaScript?", "options": ["1", "0", "-1", "Depende do array"], "correct": 1},
+      {"question": "Dado times = ['Flamengo', 'Corinthians'], qual é times[1]?", "options": ["'Flamengo'", "'Corinthians'", "undefined", "Error"], "correct": 1},
+    ],
   },
   {
     "order": 10,
@@ -2324,6 +2389,10 @@ LESSONS = {
       "O preço final é o preço original menos o desconto: `return preco - desconto`. Substitua o segundo `___` por isso.",
     ],
     "tests": [{"stdin": "", "expected_stdout": "Preço final: R$ 180"}],
+    "quiz": [
+      {"question": "Como declarar uma função em JavaScript?", "options": ["def somar() {}", "func somar() {}", "function somar() {}", "fn somar() {}"], "correct": 2},
+      {"question": "O que return faz em uma função JavaScript?", "options": ["Imprime o valor no console", "Devolve um valor e encerra a função", "Chama a função novamente", "Salva o valor em uma variável"], "correct": 1},
+    ],
   },
 ],
 

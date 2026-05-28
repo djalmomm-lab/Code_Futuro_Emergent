@@ -20,6 +20,10 @@ export const LESSONS = {
     tests: [
       { id: 1, stdin: '', expected: 'Olá, Mundo!' },
     ],
+    quiz: [
+      { question: 'Qual função usamos para exibir texto na tela em Python?', options: ['input()', 'print()', 'show()', 'display()'], correct: 1 },
+      { question: 'O que acontece se você esquecer as aspas em print(Olá)?', options: ['Exibe Olá normalmente', 'Ocorre um erro — Python trata Olá como variável', 'Exibe (Olá)', 'Nada acontece'], correct: 1 },
+    ],
   },
 
   'variaveis': {
@@ -39,6 +43,10 @@ export const LESSONS = {
     hint: "Para combinar texto e variáveis em uma frase, experimente usar f-string — coloque `f` antes das aspas e use `{}` para inserir o valor de cada variável.",
     tests: [
       { id: 1, stdin: '', expected: 'Ana tem 12 anos' },
+    ],
+    quiz: [
+      { question: 'Como atribuir o valor "Ana" à variável nome em Python?', options: ['var nome = "Ana"', 'nome = "Ana"', 'let nome = "Ana"', 'string nome = "Ana"'], correct: 1 },
+      { question: 'O que é uma f-string em Python?', options: ['Uma string de formato fixo', 'Uma string que permite inserir variáveis com {}', 'Uma string de arquivo', 'Uma string numérica'], correct: 1 },
     ],
   },
 
@@ -60,6 +68,11 @@ export const LESSONS = {
     tests: [
       { id: 1, stdin: '', expected: "<class 'int'>\n<class 'float'>\n<class 'str'>" },
     ],
+    quiz: [
+      { question: 'Qual função revela o tipo de um valor em Python?', options: ['typeof()', 'type()', 'kind()', 'gettype()'], correct: 1 },
+      { question: 'Qual é o tipo de 3.14 em Python?', options: ['int', 'str', 'float', 'number'], correct: 2 },
+      { question: 'Qual é o tipo de True em Python?', options: ['str', 'int', 'bool', 'flag'], correct: 2 },
+    ],
   },
 
   'operadores': {
@@ -79,6 +92,10 @@ export const LESSONS = {
     hint: "Você pode passar uma expressão matemática diretamente dentro do `print()`. Por exemplo, `print(3 + 2)` imprime `5`.",
     tests: [
       { id: 1, stdin: '', expected: '22\n48\n2' },
+    ],
+    quiz: [
+      { question: 'O que o operador % faz em Python?', options: ['Divide dois números', 'Retorna o resto da divisão inteira', 'Calcula a porcentagem', 'Multiplica por 100'], correct: 1 },
+      { question: 'Qual é o resultado de 17 // 5 em Python?', options: ['3', '3.4', '2', '5'], correct: 0 },
     ],
   },
 
@@ -101,6 +118,10 @@ export const LESSONS = {
       { id: 1, stdin: '20', expected: 'Adulto' },
       { id: 2, stdin: '15', expected: 'Menor de idade' },
     ],
+    quiz: [
+      { question: 'O que o bloco else executa?', options: ['Sempre executa, independente da condição', 'Executa quando a condição do if é falsa', 'Executa antes do if', 'Executa quando há erro'], correct: 1 },
+      { question: 'Por que usar int(input()) ao ler uma idade?', options: ['Para formatar o texto', 'Porque input() retorna string e precisamos de número inteiro', 'Para tornar a leitura mais rápida', 'Porque int() é obrigatório com input()'], correct: 1 },
+    ],
   },
 
   'python-zero-comparadores': {
@@ -120,6 +141,11 @@ export const LESSONS = {
     hint: "Pensa no significado de cada operador: `>` compara se o lado esquerdo é maior, `==` verifica se os dois lados são iguais, e `!=` verifica se eles são diferentes. Substitua cada `___` pelo operador correto.",
     tests: [
       { id: 1, stdin: '', expected: 'True\nFalse\nTrue' },
+    ],
+    quiz: [
+      { question: 'Qual operador verifica se dois valores são iguais em Python?', options: ['=', '==', '===', 'eq'], correct: 1 },
+      { question: 'O que a comparação 10 != 5 retorna?', options: ['False', 'True', '5', 'Error'], correct: 1 },
+      { question: 'Qual comparador verifica se um valor é maior ou igual a outro?', options: ['>', '<', '>=', '=>'], correct: 2 },
     ],
   },
 
@@ -143,6 +169,10 @@ export const LESSONS = {
       { id: 2, stdin: '6', expected: 'Recuperação' },
       { id: 3, stdin: '3', expected: 'Reprovado' },
     ],
+    quiz: [
+      { question: 'O que elif significa em Python?', options: ['end if — encerra o bloco', 'else if — nova condição quando a anterior é falsa', 'error if — trata erros', 'eval if — avalia expressão'], correct: 1 },
+      { question: 'Quantos elif podemos ter em uma cadeia if/elif/else?', options: ['Apenas 1', 'No máximo 3', 'Quantos forem necessários', 'Nenhum — elif não existe'], correct: 2 },
+    ],
   },
 
   'python-zero-for': {
@@ -162,6 +192,10 @@ export const LESSONS = {
     hint: "Dica 1: `range(inicio, fim)` gera números começando em `inicio` e terminando em `fim - 1`. Para ir de 1 a 5, use `range(1, 6)`.\n\nDica 2: Dentro da f-string, você pode fazer contas! Para calcular o resultado da tabuada, multiplique `5` por `i` dentro das chaves: `{5 * i}`.",
     tests: [
       { id: 1, stdin: '', expected: '5 x 1 = 5\n5 x 2 = 10\n5 x 3 = 15\n5 x 4 = 20\n5 x 5 = 25' },
+    ],
+    quiz: [
+      { question: 'O que range(1, 6) gera em Python?', options: ['1, 2, 3, 4, 5, 6', '1, 2, 3, 4, 5', '0, 1, 2, 3, 4, 5', '2, 3, 4, 5, 6'], correct: 1 },
+      { question: 'Quantas vezes "for i in range(4)" executa?', options: ['5 vezes', '3 vezes', '4 vezes', '1 vez'], correct: 2 },
     ],
   },
 
@@ -183,6 +217,10 @@ export const LESSONS = {
     tests: [
       { id: 1, stdin: '', expected: 'maçã\nbanana\nuva\nTotal: 3' },
     ],
+    quiz: [
+      { question: 'Qual é o índice do primeiro elemento de uma lista Python?', options: ['1', '0', '-1', 'Depende da lista'], correct: 1 },
+      { question: 'Qual função retorna o número de itens de uma lista?', options: ['size()', 'count()', 'len()', 'length()'], correct: 2 },
+    ],
   },
 
   'while': {
@@ -202,6 +240,10 @@ export const LESSONS = {
     hint: "Pensa assim: o loop deve rodar enquanto `i` ainda não passou de 5. Qual sinal de comparação faz isso? Lembre que `>` significa 'maior que' e `<=` significa 'menor ou igual a'.",
     tests: [
       { id: 1, stdin: '', expected: '1\n2\n3\n4\n5' },
+    ],
+    quiz: [
+      { question: 'Quando um loop while para de executar?', options: ['Após 100 iterações', 'Quando a condição se torna False', 'Após 1 segundo', 'Quando return é chamado'], correct: 1 },
+      { question: 'O que é um loop infinito?', options: ['Um loop que executa exatamente 1000 vezes', 'Um loop cuja condição nunca se torna False', 'Um loop com range(infinity)', 'Um loop aninhado'], correct: 1 },
     ],
   },
   'python-zero-funcoes': {
@@ -224,6 +266,10 @@ export const LESSONS = {
     ],
     tests: [
       { id: 1, stdin: '', expected: 'Olá, Ana!' },
+    ],
+    quiz: [
+      { question: 'Qual palavra-chave define uma função em Python?', options: ['function', 'def', 'func', 'fn'], correct: 1 },
+      { question: 'O que return faz dentro de uma função?', options: ['Imprime o resultado na tela', 'Devolve um valor e encerra a função', 'Chama outra função', 'Reinicia a função'], correct: 1 },
     ],
   },
 
@@ -248,6 +294,10 @@ export const LESSONS = {
     tests: [
       { id: 1, stdin: '', expected: '25.0\n12.0' },
     ],
+    quiz: [
+      { question: 'Qual é a diferença entre parâmetro e argumento?', options: ['São a mesma coisa', 'Parâmetro está na definição; argumento é o valor passado na chamada', 'Argumento está na definição; parâmetro é o valor passado', 'Parâmetro só existe em funções recursivas'], correct: 1 },
+      { question: 'Uma função pode ter mais de um parâmetro?', options: ['Não, apenas um', 'Sim, separados por vírgula', 'Sim, mas apenas dois', 'Depende do tipo de dado'], correct: 1 },
+    ],
   },
 
   'python-zero-listas-avancado': {
@@ -270,6 +320,10 @@ export const LESSONS = {
     ],
     tests: [
       { id: 1, stdin: '', expected: 'Ana\nCarlos\nTotal: 2' },
+    ],
+    quiz: [
+      { question: 'Qual método adiciona um item ao final de uma lista?', options: ['add()', 'insert()', 'push()', 'append()'], correct: 3 },
+      { question: 'O que lista.remove("Bruno") faz?', options: ['Remove todos os itens iguais a "Bruno"', 'Remove a primeira ocorrência de "Bruno"', 'Remove o último item da lista', 'Apaga a lista inteira'], correct: 1 },
     ],
   },
 
@@ -294,6 +348,11 @@ export const LESSONS = {
     tests: [
       { id: 1, stdin: '', expected: 'Nome: Carlos\nIdade: 15\nNota: 8.5' },
     ],
+    quiz: [
+      { question: 'Como acessar o valor da chave "nome" em um dicionário aluno?', options: ['aluno.nome', 'aluno["nome"]', 'aluno->nome', 'aluno.get_nome()'], correct: 1 },
+      { question: 'O que um dicionário Python armazena?', options: ['Apenas valores numéricos', 'Pares de chave: valor', 'Listas ordenadas', 'Apenas strings'], correct: 1 },
+      { question: 'Como verificar se "idade" é uma chave no dicionário d?', options: ['"idade" in d', 'd.has("idade")', 'd.exists("idade")', 'check(d, "idade")'], correct: 0 },
+    ],
   },
 
   'python-zero-strings': {
@@ -317,6 +376,10 @@ export const LESSONS = {
     tests: [
       { id: 1, stdin: 'ana', expected: 'ANA\nana\n3' },
       { id: 2, stdin: 'Carlos', expected: 'CARLOS\ncarlos\n6' },
+    ],
+    quiz: [
+      { question: 'Qual método converte uma string para maiúsculas em Python?', options: ['capitalize()', 'toUpperCase()', 'upper()', 'uppercase()'], correct: 2 },
+      { question: 'O que o método strip() faz em uma string?', options: ['Remove todos os espaços da string', 'Remove espaços do início e do fim', 'Divide a string em pedaços', 'Substitui caracteres especiais'], correct: 1 },
     ],
   },
 
@@ -343,6 +406,11 @@ export const LESSONS = {
       { id: 1, stdin: 'Carlos\n8', expected: 'Aprovado\nCarlos está na lista de aprovados' },
       { id: 2, stdin: 'Maria\n6', expected: 'Recuperação\nMaria não está na lista de aprovados' },
       { id: 3, stdin: 'João\n3', expected: 'Reprovado\nJoão não está na lista de aprovados' },
+    ],
+    quiz: [
+      { question: 'Qual estrutura verifica se um nome está dentro de uma lista?', options: ['nome.in(lista)', 'nome in lista', 'lista.contains(nome)', 'lista.find(nome)'], correct: 1 },
+      { question: 'Por que usamos float(input()) para ler a nota neste projeto?', options: ['Para aceitar notas com decimais como 6.5', 'Porque float é obrigatório com input()', 'Para arredondar a nota automaticamente', 'Para converter a nota em string'], correct: 0 },
+      { question: 'O que lista.append(nome) faz neste projeto?', options: ['Verifica se o nome está na lista', 'Remove o nome da lista', 'Adiciona o nome ao final da lista de aprovados', 'Imprime o nome na tela'], correct: 2 },
     ],
   },
 
@@ -371,6 +439,10 @@ LESSONS['js-ola-mundo'] = {
   tests: [
     { id: 1, stdin: '', expected: 'Olá, Mundo!' },
   ],
+  quiz: [
+    { question: 'Como exibir texto no console em JavaScript?', options: ['print("texto")', 'echo("texto")', 'console.log("texto")', 'log("texto")'], correct: 2 },
+    { question: 'console.log() em JavaScript é equivalente a qual função em Python?', options: ['input()', 'type()', 'print()', 'str()'], correct: 2 },
+  ],
 };
 
 LESSONS['js-variaveis'] = {
@@ -393,6 +465,10 @@ LESSONS['js-variaveis'] = {
   ],
   tests: [
     { id: 1, stdin: '', expected: 'Olá, meu nome é Carlos e tenho 15 anos.' },
+  ],
+  quiz: [
+    { question: 'Qual palavra-chave usar para uma variável que nunca muda em JavaScript?', options: ['let', 'var', 'const', 'static'], correct: 2 },
+    { question: 'Qual é a diferença principal entre let e const?', options: ['let é mais rápido que const', 'const não pode ser reatribuído; let pode', 'let é para números; const é para texto', 'Não há diferença'], correct: 1 },
   ],
 };
 
@@ -417,6 +493,11 @@ LESSONS['js-tipos'] = {
   tests: [
     { id: 1, stdin: '', expected: 'string\nnumber\nboolean' },
   ],
+  quiz: [
+    { question: 'O que typeof "Olá" retorna em JavaScript?', options: ['text', 'String', 'string', 'char'], correct: 2 },
+    { question: 'Qual é o tipo de true em JavaScript?', options: ['string', 'number', 'Boolean', 'boolean'], correct: 3 },
+    { question: 'O que typeof 42 retorna?', options: ['int', 'integer', 'number', 'num'], correct: 2 },
+  ],
 };
 
 LESSONS['js-operadores'] = {
@@ -439,6 +520,10 @@ LESSONS['js-operadores'] = {
   ],
   tests: [
     { id: 1, stdin: '', expected: '28\n37\n42\n3' },
+  ],
+  quiz: [
+    { question: 'O que o operador % faz em JavaScript?', options: ['Calcula porcentagem', 'Retorna o resto da divisão inteira', 'Divide e arredonda', 'Multiplica por 100'], correct: 1 },
+    { question: 'Qual é o resultado de 7 * 6 em JavaScript?', options: ['13', '42', '76', '67'], correct: 1 },
   ],
 };
 
@@ -463,6 +548,11 @@ LESSONS['js-template-literals'] = {
   tests: [
     { id: 1, stdin: '', expected: 'Bife de frango custa R$ 25 e serve 2 pessoas.' },
   ],
+  quiz: [
+    { question: 'O que são template literals em JavaScript?', options: ['Strings com crase que permitem ${variável}', 'Modelos HTML prontos', 'Funções especiais de texto', 'Arrays de texto'], correct: 0 },
+    { question: 'Qual caractere é usado para abrir um template literal?', options: ['Aspas simples \'', 'Aspas duplas "', 'Crase `', 'Til ~'], correct: 2 },
+    { question: 'Como inserir uma variável dentro de um template literal?', options: ['#{variavel}', '${variavel}', '{variavel}', '{{variavel}}'], correct: 1 },
+  ],
 };
 
 LESSONS['js-comparadores'] = {
@@ -485,6 +575,10 @@ LESSONS['js-comparadores'] = {
   ],
   tests: [
     { id: 1, stdin: '', expected: 'false\ntrue\ntrue' },
+  ],
+  quiz: [
+    { question: 'Qual operador verifica igualdade estrita (tipo e valor) em JavaScript?', options: ['==', '===', '=', 'eq'], correct: 1 },
+    { question: 'O que 80 != 100 retorna em JavaScript?', options: ['false', 'true', '80', 'Error'], correct: 1 },
   ],
 };
 
@@ -509,6 +603,10 @@ LESSONS['js-if-else'] = {
   tests: [
     { id: 1, stdin: '', expected: 'Ana foi aprovada!' },
   ],
+  quiz: [
+    { question: 'Em JavaScript, onde fica a condição do if?', options: ['Entre chaves {}', 'Entre parênteses ()', 'Após dois-pontos :', 'Entre colchetes []'], correct: 1 },
+    { question: 'O que o bloco else executa?', options: ['Sempre, independente da condição', 'Quando a condição do if é verdadeira', 'Quando a condição do if é falsa', 'Quando há um erro no código'], correct: 2 },
+  ],
 };
 
 LESSONS['js-for'] = {
@@ -531,6 +629,10 @@ LESSONS['js-for'] = {
   ],
   tests: [
     { id: 1, stdin: '', expected: '3 x 1 = 3\n3 x 2 = 6\n3 x 3 = 9\n3 x 4 = 12\n3 x 5 = 15' },
+  ],
+  quiz: [
+    { question: 'No for tradicional do JavaScript, o que i++ faz?', options: ['Multiplica i por 2', 'Decrementa i em 1', 'Incrementa i em 1', 'Reinicia i para 0'], correct: 2 },
+    { question: 'Qual é a estrutura correta de um for em JavaScript?', options: ['for i in range(5)', 'for (let i = 0; i < 5; i++)', 'for i = 0 to 5', 'foreach (0..5)'], correct: 1 },
   ],
 };
 
@@ -555,6 +657,11 @@ LESSONS['js-arrays'] = {
   tests: [
     { id: 1, stdin: '', expected: 'Flamengo\nCorinthians\nPalmeiras\nTotal de times: 3' },
   ],
+  quiz: [
+    { question: 'Como obter o número de elementos de um array em JavaScript?', options: ['array.size()', 'array.count', 'array.length', 'len(array)'], correct: 2 },
+    { question: 'Qual é o índice do primeiro elemento de um array JavaScript?', options: ['1', '0', '-1', 'Depende do array'], correct: 1 },
+    { question: 'Dado times = ["Flamengo", "Corinthians"], qual é times[1]?', options: ['"Flamengo"', '"Corinthians"', 'undefined', 'Error'], correct: 1 },
+  ],
 };
 
 LESSONS['js-funcoes'] = {
@@ -577,6 +684,10 @@ LESSONS['js-funcoes'] = {
   ],
   tests: [
     { id: 1, stdin: '', expected: 'Preço final: R$ 180' },
+  ],
+  quiz: [
+    { question: 'Como declarar uma função em JavaScript?', options: ['def somar() {}', 'func somar() {}', 'function somar() {}', 'fn somar() {}'], correct: 2 },
+    { question: 'O que return faz em uma função JavaScript?', options: ['Imprime o valor no console', 'Devolve um valor e encerra a função', 'Chama a função novamente', 'Salva o valor em uma variável'], correct: 1 },
   ],
 };
 
