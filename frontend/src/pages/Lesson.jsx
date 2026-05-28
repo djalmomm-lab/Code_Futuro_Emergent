@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import ReactMarkdown from 'react-markdown';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Play, RotateCcw, ChevronRight, CheckCircle2, XCircle, Flame, Zap, Star, Lightbulb, ArrowLeft, Loader2, Code2 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
@@ -300,7 +301,26 @@ export default function Lesson() {
             <div className="text-xs font-bold uppercase tracking-wider text-[#A3E635]">{t('lesson.instruction')}</div>
           </div>
           <h2 className="mt-1 font-display text-2xl font-bold text-white">{lesson.title}</h2>
-          <p className="mt-4 text-slate-300 leading-relaxed whitespace-pre-line">{instruction}</p>
+          <div className="mt-4 text-slate-300 leading-relaxed prose-instr">
+            <ReactMarkdown
+              components={{
+                p:      ({node, ...p}) => <p className="mt-3 first:mt-0 leading-relaxed" {...p} />,
+                strong: ({node, ...p}) => <strong className="font-bold text-white" {...p} />,
+                em:     ({node, ...p}) => <em className="italic text-slate-200" {...p} />,
+                code:   ({node, inline, ...p}) =>
+                  inline
+                    ? <code className="bg-slate-700 rounded px-1 py-0.5 text-[#A3E635] font-mono text-sm" {...p} />
+                    : <code className="block text-slate-200 text-sm" {...p} />,
+                pre:    ({node, ...p}) => <pre className="bg-slate-800 rounded-lg p-3 my-2 text-sm font-mono overflow-x-auto" {...p} />,
+                ul:     ({node, ...p}) => <ul className="mt-2 mb-1 space-y-1 list-disc list-inside" {...p} />,
+                ol:     ({node, ...p}) => <ol className="mt-2 mb-1 space-y-1 list-decimal list-inside" {...p} />,
+                li:     ({node, ...p}) => <li className="text-slate-300" {...p} />,
+                hr:     () => <hr className="border-slate-700 my-3" />,
+              }}
+            >
+              {instruction}
+            </ReactMarkdown>
+          </div>
 
           {expected && (
             <div className="mt-5 p-4 rounded-xl font-code text-sm" style={{ background: 'var(--cf-panel-light)' }}>
