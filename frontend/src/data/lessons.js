@@ -192,7 +192,7 @@ export const LESSONS = {
     pathSlug: 'python-zero',
     chapter: 'Capítulo 2: Controle de Fluxo',
     order: 10,
-    next: null,
+    next: 'python-zero-funcoes',
     instruction: {
       pt: 'Um laço `while` repete um bloco de código enquanto uma condição for verdadeira — assim que a condição vira falsa, o laço para.\n\nO código abaixo tem um **erro proposital** na condição do `while`. Seu desafio é encontrar e corrigir esse erro para que o programa imprima os números de `1` a `5`, um por linha.\n\nSaída esperada:\n```\n1\n2\n3\n4\n5\n```',
       en: 'Fix the broken while condition so it prints 1 to 5, each on a new line.',
@@ -204,6 +204,148 @@ export const LESSONS = {
       { id: 1, stdin: '', expected: '1\n2\n3\n4\n5' },
     ],
   },
+  'python-zero-funcoes': {
+    slug: 'python-zero-funcoes',
+    title: 'Funções',
+    path: 'Python do Zero',
+    pathSlug: 'python-zero',
+    chapter: 'Capítulo 3: Funções',
+    order: 11,
+    next: 'python-zero-parametros',
+    instruction: {
+      pt: 'Funções são blocos de código que você escreve uma vez e pode usar quantas vezes quiser! Em Python, criamos uma função com a palavra `def`, seguida do nome e parênteses.\n\nExemplo:\n```python\ndef cumprimentar():\n    print("Oi!")\n\ncumprimentar()  # chama a função\n```\n\nO `return` faz a função **devolver** um valor para quem chamou ela.\n\nSua tarefa: complete a função `saudacao(nome)` que recebe um nome e **retorna** a mensagem `"Olá, {nome}!"`.\n\nExemplo:\n- `print(saudacao("Ana"))` → `Olá, Ana!`',
+      en: 'Create a function saudacao(nome) that returns "Olá, {nome}!".',
+      es: 'Crea una función saudacao(nome) que retorne "Olá, {nome}!".',
+    },
+    starter: 'def saudacao(___):\n    return ___\n\nprint(saudacao("Ana"))\n',
+    hints: [
+      'A palavra `def` define a função. Dentro dos parênteses coloque o nome do parâmetro — aqui é `nome`.',
+      'Use uma f-string para montar a mensagem: `return f"Olá, {nome}!"` — lembre das chaves em volta de `nome`.',
+    ],
+    tests: [
+      { id: 1, stdin: '', expected: 'Olá, Ana!' },
+    ],
+  },
+
+  'python-zero-parametros': {
+    slug: 'python-zero-parametros',
+    title: 'Parâmetros e argumentos',
+    path: 'Python do Zero',
+    pathSlug: 'python-zero',
+    chapter: 'Capítulo 3: Funções',
+    order: 12,
+    next: 'python-zero-listas-avancado',
+    instruction: {
+      pt: '**Parâmetro** é o nome que você coloca na definição da função. **Argumento** é o valor que você passa quando chama a função.\n\nExemplo:\n```python\ndef dobrar(numero):   # numero é o parâmetro\n    return numero * 2\n\nprint(dobrar(5))      # 5 é o argumento → imprime 10\n```\n\nAgora você vai calcular a **área de um triângulo**! A fórmula é: `base × altura / 2`.\n\nCrie a função `calcular_area(base, altura)` que retorna a área do triângulo.\n\nExemplos:\n- `calcular_area(10, 5)` → `25.0`\n- `calcular_area(6, 4)` → `12.0`',
+      en: 'Create calcular_area(base, altura) that returns base * altura / 2.',
+      es: 'Crea calcular_area(base, altura) que retorna base * altura / 2.',
+    },
+    starter: 'def calcular_area(___, ___):\n    return ___ * ___ / 2\n\nprint(calcular_area(10, 5))\nprint(calcular_area(6, 4))\n',
+    hints: [
+      'Coloque os dois parâmetros separados por vírgula: `def calcular_area(base, altura):`.',
+      'No corpo da função, substitua os `___` pelos nomes dos parâmetros: `return base * altura / 2`.',
+    ],
+    tests: [
+      { id: 1, stdin: '', expected: '25.0\n12.0' },
+    ],
+  },
+
+  'python-zero-listas-avancado': {
+    slug: 'python-zero-listas-avancado',
+    title: 'Listas avançadas',
+    path: 'Python do Zero',
+    pathSlug: 'python-zero',
+    chapter: 'Capítulo 3: Funções',
+    order: 13,
+    next: 'python-zero-dicionarios',
+    instruction: {
+      pt: 'Listas têm métodos poderosos para gerenciar seus itens:\n- `lista.append(item)` → adiciona um item no final\n- `lista.remove(item)` → remove a primeira ocorrência do item\n- `len(lista)` → retorna o número de itens\n\nVocê está organizando a **lista de convidados de uma festa**! Comece com `["Ana", "Bruno"]`, adicione `"Carlos"` com `append`, remova `"Bruno"` com `remove`, depois imprima cada nome e o total.\n\nSaída esperada:\n```\nAna\nCarlos\nTotal: 2\n```',
+      en: 'Manage a guest list using append, remove, len and a for loop.',
+      es: 'Gestiona una lista de invitados usando append, remove, len y for.',
+    },
+    starter: 'convidados = ["Ana", "Bruno"]\n\nconvidados.___(___)\nconvidados.___(___)\n\nfor convidado in convidados:\n    print(___)\n\nprint(f"Total: {___}")\n',
+    hints: [
+      'Use `convidados.append("Carlos")` para adicionar e `convidados.remove("Bruno")` para remover.',
+      'No `for`, imprima a variável do loop: `print(convidado)`. Para o total, use `len(convidados)` dentro da f-string.',
+    ],
+    tests: [
+      { id: 1, stdin: '', expected: 'Ana\nCarlos\nTotal: 2' },
+    ],
+  },
+
+  'python-zero-dicionarios': {
+    slug: 'python-zero-dicionarios',
+    title: 'Dicionários',
+    path: 'Python do Zero',
+    pathSlug: 'python-zero',
+    chapter: 'Capítulo 3: Funções',
+    order: 14,
+    next: 'python-zero-strings',
+    instruction: {
+      pt: 'Dicionários guardam informações em pares **chave: valor** — como uma ficha com campos!\n\nExemplo:\n```python\npessoa = {"nome": "Ana", "idade": 20}\nprint(pessoa["nome"])  # Ana\n```\n\nVocê vai criar a **ficha de um aluno** com três informações: nome, idade e nota.\n\nSaída esperada:\n```\nNome: Carlos\nIdade: 15\nNota: 8.5\n```',
+      en: 'Create a student dict with name, age and grade, then print each value.',
+      es: 'Crea un diccionario de alumno con nombre, edad y nota, luego imprime cada valor.',
+    },
+    starter: 'aluno = {\n    "nome": ___,\n    "idade": ___,\n    "nota": ___\n}\n\nprint(f"Nome: {aluno[___]}")\nprint(f"Idade: {aluno[___]}")\nprint(f"Nota: {aluno[___]}")\n',
+    hints: [
+      'Preencha os valores do dicionário: `"Carlos"` para nome, `15` para idade, `8.5` para nota. Strings precisam de aspas, números não.',
+      'Para acessar um valor, use o nome da chave entre aspas e colchetes: `aluno["nome"]`. Substitua os `___` nos prints.',
+    ],
+    tests: [
+      { id: 1, stdin: '', expected: 'Nome: Carlos\nIdade: 15\nNota: 8.5' },
+    ],
+  },
+
+  'python-zero-strings': {
+    slug: 'python-zero-strings',
+    title: 'Manipulando texto',
+    path: 'Python do Zero',
+    pathSlug: 'python-zero',
+    chapter: 'Capítulo 3: Funções',
+    order: 15,
+    next: 'python-zero-projeto',
+    instruction: {
+      pt: 'Strings têm métodos incríveis para transformar texto:\n- `.upper()` → TUDO EM MAIÚSCULAS\n- `.lower()` → tudo em minúsculas\n- `.strip()` → remove espaços extras nas bordas\n- `.replace(a, b)` → substitui `a` por `b`\n\nSua tarefa: leia um nome com `input()`, depois imprima:\n1. O nome em **MAIÚSCULAS**\n2. O nome em **minúsculas**\n3. O **número de caracteres** do nome\n\nExemplo — entrada `ana`:\n```\nANA\nana\n3\n```',
+      en: 'Read a name with input() and print it in uppercase, lowercase and its length.',
+      es: 'Lee un nombre con input() e imprime en mayúsculas, minúsculas y su longitud.',
+    },
+    starter: 'nome = input("Digite seu nome: ")\n\nprint(nome.___())\nprint(nome.___())\nprint(___)\n',
+    hints: [
+      'Use `.upper()` para maiúsculas e `.lower()` para minúsculas: `nome.upper()` e `nome.lower()`.',
+      'Para contar os caracteres, use `len(nome)` — a função `len()` funciona tanto em listas quanto em strings!',
+    ],
+    tests: [
+      { id: 1, stdin: 'ana', expected: 'ANA\nana\n3' },
+      { id: 2, stdin: 'Carlos', expected: 'CARLOS\ncarlos\n6' },
+    ],
+  },
+
+  'python-zero-projeto': {
+    slug: 'python-zero-projeto',
+    title: 'Projeto final',
+    path: 'Python do Zero',
+    pathSlug: 'python-zero',
+    chapter: 'Capítulo 3: Funções',
+    order: 16,
+    next: null,
+    instruction: {
+      pt: 'Chegou a hora de combinar tudo que você aprendeu! Vamos criar um **sistema de cadastro de alunos**.\n\nO programa deve:\n1. Ler o **nome** do aluno com `input()`\n2. Ler a **nota** com `input()` (converta para `float`)\n3. Imprimir o resultado:\n   - `"Aprovado"` se nota >= 7\n   - `"Recuperação"` se nota >= 5\n   - `"Reprovado"` se nota < 5\n4. Adicionar o nome à lista `aprovados` se foi aprovado\n5. Imprimir se o aluno está ou não na lista\n\nExemplo — nome `Carlos`, nota `8`:\n```\nAprovado\nCarlos está na lista de aprovados\n```',
+      en: 'Build a student registration system combining input, if/elif, lists and functions.',
+      es: 'Crea un sistema de registro de alumnos combinando input, if/elif, listas y funciones.',
+    },
+    starter: 'aprovados = []\n\nnome = input()\nnota = float(input())\n\nif nota >= ___:\n    print("Aprovado")\n    aprovados.___(___)\nelif nota >= ___:\n    print("Recuperação")\nelse:\n    print("Reprovado")\n\nif nome in aprovados:\n    print(f"{___} está na lista de aprovados")\nelse:\n    print(f"{___} não está na lista de aprovados")\n',
+    hints: [
+      'Para a condição de aprovação use `nota >= 7` e para recuperação `nota >= 5`. A ordem das condições importa — verifique do maior para o menor!',
+      'Para adicionar o nome à lista de aprovados use `aprovados.append(nome)`. Isso deve ficar dentro do bloco `if` de Aprovado.',
+      'No último `if/else`, substitua os `___` pelo nome da variável `nome` para montar a mensagem correta.',
+    ],
+    tests: [
+      { id: 1, stdin: 'Carlos\n8', expected: 'Aprovado\nCarlos está na lista de aprovados' },
+      { id: 2, stdin: 'Maria\n6', expected: 'Recuperação\nMaria não está na lista de aprovados' },
+      { id: 3, stdin: 'João\n3', expected: 'Reprovado\nJoão não está na lista de aprovados' },
+    ],
+  },
+
 };
 
 // ── JavaScript do Zero ────────────────────────────────────────────────────────
