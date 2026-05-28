@@ -8,7 +8,7 @@ import { usePyodide } from '../hooks/usePyodide';
 import { logError } from '../lib/logger';
 import Paywall from '../components/Paywall';
 import UpgradeCelebration from '../components/UpgradeCelebration';
-import { runJavaScript, mountHTMLPreview, normalizeHTML } from '../lib/runners';
+import { runJavaScript, mountHTMLPreview, normalizeHTML, normalizeQuotes } from '../lib/runners';
 import { ByteNavbar } from '../components/ByteMascot';
 
 const FREE_LESSONS_PER_PATH = 3;
@@ -117,9 +117,15 @@ export default function Lesson() {
       let passed = false;
       if (!error) {
         if (isHTML) {
+          // HTML: normalize whitespace + case + both quote styles accepted
           passed = normalizeHTML(actual) === normalizeHTML(exp);
-        } else {
+        } else if (isPython || isJS) {
+          // Executed languages: output is plain text, no quotes in syntax
           passed = actual === exp;
+        } else {
+          // Static languages (SQL, TypeScript, Java, C++, Go, AI Prompts…)
+          // Accept both ' and " as equivalent — e.g. 'Maria' == "Maria"
+          passed = normalizeQuotes(actual) === normalizeQuotes(exp);
         }
       }
       return { ...t, passed };
@@ -190,10 +196,11 @@ export default function Lesson() {
       out = code;
       setOutput('Pré-visualização atualizada — confira ao lado.');
     } else {
-      // Fallback validation mode for other languages (SQL, etc.)
+      // Fallback validation mode for other languages (SQL, TypeScript, Java, C++, Go…)
+      // Normalize quotes so 'text' and "text" are treated as equivalent
       setOutput(code.trim() || '(sem saída)');
       const target = (tests[0]?.expected_stdout || '').trim();
-      const codeHas = code.includes(target);
+      const codeHas = normalizeQuotes(code).includes(normalizeQuotes(target));
       out = codeHas ? target : code.trim();
     }
 

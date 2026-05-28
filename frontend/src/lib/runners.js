@@ -103,11 +103,20 @@ export function mountHTMLPreview(container, html) {
   return iframe;
 }
 
-/** Normalize HTML for textual comparison: collapse whitespace, lowercase tags. */
+/**
+ * Normalize quote style: treat single quotes and double quotes as equivalent.
+ * Used to accept both print("hi") and print('hi') as correct answers.
+ */
+export function normalizeQuotes(s) {
+  return String(s || '').replace(/"/g, "'");
+}
+
+/** Normalize HTML for textual comparison: collapse whitespace, lowercase tags, normalize quotes. */
 export function normalizeHTML(s) {
   if (!s) return '';
   return String(s)
     .replace(/<!--[\s\S]*?-->/g, '')
+    .replace(/"/g, "'")           // both ' and " accepted in attributes
     .replace(/\s+/g, ' ')
     .replace(/>\s+</g, '><')
     .trim()
