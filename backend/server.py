@@ -173,9 +173,21 @@ async def ensure_progress(user_id: str) -> dict:
         await db.progress.insert_one(prog)
         return prog
 
-    # ── Recarga gradual de energia: +1 por hora completa desde o último uso ──
+    # ── Sincronizar max_energy com status Pro (Pro = 10, free = 5) ──────────
     changed = {}
-    max_e = prog.get("max_energy", 5)
+    user_doc = await db.users.find_one({"id": user_id}, {"is_pro": 1, "_id": 0})
+    is_pro = bool(user_doc and user_doc.get("is_pro"))
+    correct_max = 10 if is_pro else 5
+    if prog.get("max_energy", 5) != correct_max:
+        prog["max_energy"] = correct_max
+        # Se energia atual excede o novo max, ajusta
+        if prog.get("energy", 5) > correct_max:
+            prog["energy"] = correct_max
+        changed["max_energy"] = correct_max
+        changed["energy"] = prog.get("energy", correct_max)
+
+    # ── Recarga gradual de energia: +1 por hora completa desde o último uso ──
+    max_e = prog.get("max_energy", correct_max)
     cur_e = prog.get("energy", max_e)
     try:
         last_reset = datetime.fromisoformat(prog.get("last_energy_reset") or "")
