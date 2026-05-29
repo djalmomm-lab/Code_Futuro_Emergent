@@ -236,13 +236,25 @@ Por quê? Porque os testes automáticos fornecem a entrada diretamente — qualq
 
 ---
 
-## O que você vai praticar
+## O que você vai programar
 
-No exercício, você vai escrever um programa que:
-1. Lê um nome com \`input()\`
-2. Exibe \`Olá, \` seguido do nome usando \`+\`
+No exercício você vai completar este código:
 
-**Resultado esperado** (quando o sistema fornecer \`Carlos\`):
+\`\`\`python
+nome = input()
+print( ... )  # substitua ... pela concatenação correta
+\`\`\`
+
+Você deve substituir o \`...\` pelo \`print\` correto usando \`+\` para juntar \`"Olá, "\` com a variável \`nome\`.
+
+**Código completo esperado:**
+\`\`\`python
+nome = input()
+print("Olá, " + nome)
+\`\`\`
+
+**Entrada fornecida pelo teste:** \`Carlos\`
+**Saída esperada:**
 \`\`\`
 Olá, Carlos
 \`\`\``,
