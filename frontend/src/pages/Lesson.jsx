@@ -58,6 +58,8 @@ export default function Lesson() {
         setByteOpen(false);
         setHintIndex(0);
         setLessonDone(false);
+        setOutput('');
+        setTab('tests');
       } catch (err) {
         logError('Lesson.load', err, { slug });
         toast.error('Lição não encontrada');
