@@ -129,8 +129,16 @@ async def optional_user(credentials: HTTPAuthorizationCredentials = Depends(secu
     return await db.users.find_one({"id": user_id})
 
 
-# Paywall config: how many lessons per path are free
-FREE_LESSONS_PER_PATH = 3
+# Paywall config: Capítulo 1 de cada trilha é gratuito
+# Uma lição é gratuita se seu campo "chapter" começa com "Capítulo 1"
+FREE_LESSONS_PER_PATH = 3  # fallback para trilhas sem chapter definido
+
+def is_free_lesson(lesson: dict) -> bool:
+    """Retorna True se a lição é gratuita (Capítulo 1 ou order <= FREE_LESSONS_PER_PATH)."""
+    chapter = lesson.get("chapter", "")
+    if chapter:
+        return chapter.strip().startswith("Capítulo 1") or chapter.strip().startswith("Chapter 1")
+    return lesson.get("order", 0) <= FREE_LESSONS_PER_PATH
 
 
 def calc_age(birth_date: str) -> int:
@@ -357,8 +365,8 @@ async def get_progress(user=Depends(current_user)):
 @api.post("/progress/complete")
 async def complete_lesson(data: CompleteLessonIn, user=Depends(current_user)):
     # Paywall enforcement: block server-side even if client bypasses UI
-    les = await db.lessons.find_one({"slug": data.lesson_slug}, {"_id": 0, "order": 1})
-    if les and les.get("order", 0) > FREE_LESSONS_PER_PATH and not user.get("is_pro"):
+    les = await db.lessons.find_one({"slug": data.lesson_slug}, {"_id": 0, "order": 1, "chapter": 1})
+    if les and not is_free_lesson(les) and not user.get("is_pro"):
         raise HTTPException(
             status.HTTP_402_PAYMENT_REQUIRED,
             "Esta lição requer assinatura Pro",
@@ -571,7 +579,7 @@ async def path_detail(slug: str, user=Depends(optional_user)):
 
     # Mark paywall and completion status per lesson
     for le in lessons:
-        le["requires_pro"] = le["order"] > FREE_LESSONS_PER_PATH and not is_pro
+        le["requires_pro"] = not is_free_lesson(le) and not is_pro
         le["is_completed"] = le["slug"] in completed_slugs
 
     return {"path": path, "lessons": lessons, "free_limit": FREE_LESSONS_PER_PATH, "is_pro": is_pro}
@@ -594,9 +602,9 @@ async def lesson_detail(lesson_slug: str, user=Depends(optional_user)):
     )
     les["previous"] = prev
 
-    # Paywall: lessons beyond the free tier require Pro subscription
+    # Paywall: Capítulo 1 é gratuito; demais capítulos requerem Pro
     is_pro = bool(user and user.get("is_pro"))
-    if les["order"] > FREE_LESSONS_PER_PATH and not is_pro:
+    if not is_free_lesson(les) and not is_pro:
         # Return minimal metadata so UI can render the paywall with context
         return {
             "slug": les["slug"],
