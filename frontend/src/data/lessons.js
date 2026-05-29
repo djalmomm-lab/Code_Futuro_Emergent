@@ -112,27 +112,59 @@ Sem variáveis, você teria que repetir os mesmos valores em todo o código. Com
     next: 'python-zero-input-concat',
     theory: `## O que são f-strings?
 
-As f-strings são a forma mais moderna e prática de **inserir variáveis dentro de textos** em Python. Basta colocar a letra \`f\` antes das aspas e usar \`{variável}\` onde o valor deve aparecer.
+As **f-strings** são a forma mais prática de inserir variáveis dentro de textos em Python. Basta colocar a letra \`f\` antes das aspas e usar \`{variavel}\` onde o valor deve aparecer.
 
 \`\`\`python
 nome = "Ana"
-idade = 16
-print(f"Meu nome é {nome} e tenho {idade} anos")
-# Saída: Meu nome é Ana e tenho 16 anos
+print(f"Olá, {nome}!")
+\`\`\`
+\`\`\`
+Olá, Ana!
 \`\`\`
 
-### Como funciona?
-1. Coloque \`f\` antes das aspas: \`f"..."\`
-2. Use \`{variavel}\` dentro do texto para inserir o valor
+---
+
+## Como funciona, passo a passo
+
+**1. Declare suas variáveis:**
+\`\`\`python
+nome = "Carlos"
+idade = 16
+\`\`\`
+
+**2. Use f-string no print():**
+\`\`\`python
+print(f"Meu nome é {nome} e tenho {idade} anos")
+\`\`\`
+
+**3. Resultado:**
+\`\`\`
+Meu nome é Carlos e tenho 16 anos
+\`\`\`
+
+---
+
+## Comparando com a forma antiga
+
+Antes das f-strings, o código ficava assim:
 
 \`\`\`python
-cidade = "São Paulo"
-print(f"Eu moro em {cidade}!")
-# Saída: Eu moro em São Paulo!
+# Forma antiga com concatenação:
+print("Meu nome é " + nome + " e tenho " + str(idade) + " anos")
+
+# Com f-string (muito mais simples! ✨):
+print(f"Meu nome é {nome} e tenho {idade} anos")
 \`\`\`
 
-### Por que não usar concatenação (+) aqui?
-Com \`+\` ficaria: \`"Meu nome é " + nome + " e tenho " + str(idade) + " anos"\` — muito mais trabalhoso! As f-strings deixam o código limpo e fácil de ler. ✨`,
+---
+
+## O que você vai praticar
+
+No exercício, as variáveis \`nome\` e \`idade\` já estão declaradas. Você vai completar o \`print()\` usando f-string para exibir:
+
+\`\`\`
+Meu nome é Ana e tenho 16 anos
+\`\`\``,
     instruction: {
       pt: 'Você já sabe criar variáveis. Agora vamos aprender a usá-las dentro de textos! 🎉\n\nAs **f-strings** permitem colocar variáveis diretamente em uma frase. Basta colocar a letra `f` antes das aspas e usar `{variável}` onde o valor deve aparecer.\n\n**Exemplo:**\n```python\nnome = "Bia"\nprint(f"Olá, {nome}!")\n```\n**Saída:** `Olá, Bia!`\n\n---\n\nAs variáveis `nome` e `idade` já estão declaradas. Complete o `print()` usando f-string para exibir exatamente:\n\n**Meu nome é Ana e tenho 16 anos**',
     },
@@ -160,29 +192,60 @@ Com \`+\` ficaria: \`"Meu nome é " + nome + " e tenho " + str(idade) + " anos"\
     next: 'python-zero-input-fstring',
     theory: `## Como ler dados do usuário?
 
-A função \`input()\` faz o programa **esperar o usuário digitar algo** e guarda o que foi digitado em uma variável.
+Todo programa útil precisa conversar com quem está usando. Em Python, usamos a função \`input()\` para isso — ela **pausa o programa e espera o usuário digitar algo**.
 
 \`\`\`python
 nome = input()
-# O programa pausa e espera o usuário digitar
-# Quando o usuário digita "Carlos" e pressiona Enter:
-# nome agora vale "Carlos"
 \`\`\`
 
-### Exibindo o resultado com concatenação
-O operador \`+\` junta dois textos (isso se chama **concatenação**):
+Quando o usuário digita \`Carlos\` e pressiona Enter, a variável \`nome\` passa a guardar o valor \`"Carlos"\`.
+
+---
+
+## Exibindo o resultado com concatenação
+
+O operador \`+\` junta dois textos. Isso se chama **concatenação**:
 
 \`\`\`python
 nome = input()
 print("Olá, " + nome)
-# Se o usuário digitou "Maria":
-# Saída: Olá, Maria
 \`\`\`
 
-⚠️ **Atenção:** deixe o \`input()\` sem texto dentro dos parênteses neste exercício!
+**Se o usuário digitar \`Carlos\`:**
+\`\`\`
+Olá, Carlos
+\`\`\`
 
-### Por que isso importa?
-Com \`input()\` seu programa deixa de ser estático e passa a **interagir com pessoas reais**! É o primeiro passo para criar programas úteis de verdade. 🚀`,
+**Se o usuário digitar \`Maria\`:**
+\`\`\`
+Olá, Maria
+\`\`\`
+
+---
+
+## Regra importante
+
+Deixe o \`input()\` **sem texto dentro dos parênteses**:
+
+\`\`\`python
+nome = input()        # ✅ correto
+nome = input("Nome:") # ⚠️ não use neste exercício
+\`\`\`
+
+Por quê? Porque os testes automáticos fornecem a entrada diretamente — qualquer texto dentro do \`input()\` apareceria na saída e quebraria o teste.
+
+---
+
+## O que você vai praticar
+
+No exercício, você vai escrever um programa que:
+1. Lê um nome com \`input()\`
+2. Exibe \`Olá, \` seguido do nome usando \`+\`
+
+**Resultado esperado** (quando o sistema fornecer \`Carlos\`):
+\`\`\`
+Olá, Carlos
+\`\`\``,
     instruction: {
       pt: 'Agora vamos aprender a fazer o programa **conversar com o usuário**! 💬\n\nA função `input()` lê o que o usuário digita e guarda em uma variável. Use-a **sem texto dentro dos parênteses** por enquanto.\n\n**Exemplo:**\n```python\nnome = input()\nprint("Olá, " + nome)\n```\nSe o usuário digitar `Maria`, a saída será: `Olá, Maria`\n\n---\n\nEscreva um programa que:\n1. Leia um nome com `input()`\n2. Exiba `Olá, ` seguido do nome usando o operador `+` (concatenação)\n\n**Exemplo:**\n- Entrada: `Carlos`\n- Saída: `Olá, Carlos`\n\n> 💡 Atenção: deixe o `input()` sem texto dentro dos parênteses!',
     },
@@ -210,28 +273,59 @@ Com \`input()\` seu programa deixa de ser estático e passa a **interagir com pe
     next: 'tipos',
     theory: `## Unindo input() e f-string
 
-Agora que você sabe usar \`input()\` e f-strings separadamente, vamos combiná-los — essa é a forma mais elegante de criar programas interativos!
+Você já sabe usar \`input()\` para ler dados e f-strings para formatar texto. Agora vamos combinar as duas coisas — essa é a forma mais elegante de criar programas interativos!
 
 \`\`\`python
 nome = input()
 print(f"Bem-vindo, {nome}!")
-# Se o usuário digitou "Carlos":
-# Saída: Bem-vindo, Carlos!
 \`\`\`
 
-### Comparando as formas:
+**Se o usuário digitar \`Carlos\`:**
+\`\`\`
+Bem-vindo, Carlos!
+\`\`\`
+
+---
+
+## Por que f-string é melhor que concatenação?
+
+Compare as duas formas:
+
 \`\`\`python
-# Com concatenação (funciona, mas é mais trabalhoso):
+# Com concatenação (funciona, mas é trabalhoso):
 print("Bem-vindo, " + nome + "!")
 
 # Com f-string (mais limpo e moderno ✨):
 print(f"Bem-vindo, {nome}!")
 \`\`\`
 
-### Checklist para não esquecer:
-- ✅ \`f\` antes das aspas
-- ✅ \`{variavel}\` onde o valor deve aparecer
-- ✅ \`input()\` sem texto dentro`,
+A f-string fica ainda mais vantajosa quando você tem várias variáveis:
+
+\`\`\`python
+nome = input()
+cidade = "Recife"
+print(f"{nome} é de {cidade}!")
+# Carlos é de Recife!
+\`\`\`
+
+---
+
+## Checklist antes de começar
+
+- ✅ Coloque \`f\` antes das aspas: \`f"..."\`
+- ✅ Use \`{variavel}\` dentro do texto
+- ✅ Deixe \`input()\` sem texto dentro
+
+---
+
+## O que você vai praticar
+
+No exercício, você vai escrever um programa que lê um nome com \`input()\` e exibe \`Bem-vindo, <nome>!\` usando f-string.
+
+**Resultado esperado** (quando o sistema fornecer \`Carlos\`):
+\`\`\`
+Bem-vindo, Carlos!
+\`\`\``,
     instruction: {
       pt: 'Que tal unir tudo que você aprendeu? Vamos usar `input()` para ler um nome **e** f-string para formatar a mensagem! 🚀\n\n**Exemplo:**\n```python\nnome = input()\nprint(f"Bem-vindo, {nome}!")\n```\n- Entrada: `Carlos`\n- Saída: `Bem-vindo, Carlos!`\n\n---\n\nEscreva um programa que:\n1. Leia um nome com `input()` (sem texto dentro)\n2. Exiba `Bem-vindo, <nome>!` usando **f-string**\n\n**Exemplo:**\n- Entrada: `Carlos`\n- Saída: `Bem-vindo, Carlos!`',
     },
