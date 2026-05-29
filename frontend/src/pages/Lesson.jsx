@@ -384,70 +384,130 @@ export default function Lesson() {
       </header>
 
       {phase === 'intro' && (
-        <main className="flex-1 max-w-7xl w-full mx-auto p-4 grid md:grid-cols-[1fr_360px] gap-4">
-          {/* Coluna esquerda: conteúdo teórico */}
-          <div className="cf-card p-8 overflow-auto">
-            <div className="flex items-center gap-2 mb-4">
-              <ByteNavbar size={28} />
-              <span className="text-xs font-bold uppercase tracking-wider text-[#A3E635]">Introdução</span>
+        <main className="flex-1 max-w-7xl w-full mx-auto p-4 grid md:grid-cols-[1fr_340px] gap-4 items-start">
+          {/* Coluna esquerda: teoria rica */}
+          <div className="cf-card overflow-auto">
+            {/* Cabeçalho da lição */}
+            <div className="px-8 pt-7 pb-5 border-b" style={{ borderColor: 'var(--cf-border)' }}>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-xs font-bold uppercase tracking-wider text-[#A3E635]">Introdução</span>
+              </div>
+              <h2 className="font-display text-2xl font-bold text-white">{lesson.title}</h2>
             </div>
-            <h2 className="font-display text-2xl font-bold text-white mb-6">{lesson.title}</h2>
-            <div className="text-slate-300 leading-relaxed prose-instr">
+
+            {/* Conteúdo teórico */}
+            <div className="px-8 py-6 text-slate-300 leading-relaxed">
               <ReactMarkdown
                 components={{
-                  p:      ({node, ...p}) => <p className="mt-3 first:mt-0 leading-relaxed" {...p} />,
+                  h2: ({node, ...p}) => <h2 className="text-lg font-bold text-white mt-6 mb-3 first:mt-0" {...p} />,
+                  h3: ({node, ...p}) => <h3 className="text-base font-bold text-[#A3E635] mt-5 mb-2" {...p} />,
+                  p:  ({node, ...p}) => <p className="mt-3 first:mt-0 leading-relaxed text-slate-300" {...p} />,
                   strong: ({node, ...p}) => <strong className="font-bold text-white" {...p} />,
                   em:     ({node, ...p}) => <em className="italic text-slate-200" {...p} />,
                   code:   ({node, inline, ...p}) =>
                     inline
-                      ? <code className="bg-slate-700 rounded px-1 py-0.5 text-[#A3E635] font-mono text-sm" {...p} />
-                      : <code className="block text-slate-200 text-sm" {...p} />,
-                  pre:    ({node, ...p}) => <pre className="bg-slate-800 rounded-lg p-3 my-2 text-sm font-mono overflow-x-auto" {...p} />,
-                  ul:     ({node, ...p}) => <ul className="mt-2 mb-1 space-y-1 list-disc list-inside" {...p} />,
-                  ol:     ({node, ...p}) => <ol className="mt-2 mb-1 space-y-1 list-decimal list-inside" {...p} />,
-                  li:     ({node, ...p}) => <li className="text-slate-300" {...p} />,
-                  hr:     () => <hr className="border-slate-700 my-3" />,
+                      ? <code className="bg-[#1C2235] rounded px-1.5 py-0.5 text-[#A3E635] font-mono text-[13px]" {...p} />
+                      : <code className="block text-slate-200 text-sm leading-relaxed" {...p} />,
+                  pre: ({node, ...p}) => (
+                    <div className="my-4 rounded-xl overflow-hidden border" style={{ borderColor: 'rgba(163,230,53,0.15)' }}>
+                      <div className="flex items-center gap-1.5 px-4 py-2.5" style={{ background: '#0d1425' }}>
+                        <span className="w-2.5 h-2.5 rounded-full bg-red-500/60" />
+                        <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/60" />
+                        <span className="w-2.5 h-2.5 rounded-full bg-green-500/60" />
+                        <span className="ml-2 text-[11px] text-slate-500 font-mono">exemplo</span>
+                      </div>
+                      <pre className="p-4 text-sm font-mono overflow-x-auto" style={{ background: '#070d1a' }} {...p} />
+                    </div>
+                  ),
+                  ul: ({node, ...p}) => <ul className="mt-3 mb-2 space-y-1.5 list-disc list-inside" {...p} />,
+                  ol: ({node, ...p}) => <ol className="mt-3 mb-2 space-y-1.5 list-decimal list-inside" {...p} />,
+                  li: ({node, ...p}) => <li className="text-slate-300 leading-relaxed" {...p} />,
+                  hr: () => <hr className="border-slate-700/50 my-5" />,
+                  blockquote: ({node, ...p}) => (
+                    <blockquote className="border-l-4 border-[#A3E635]/40 pl-4 my-3 text-slate-400 italic" {...p} />
+                  ),
                 }}
               >
                 {lesson.theory || lesson[`instruction_${lang}`] || lesson.instruction_pt || ''}
               </ReactMarkdown>
             </div>
+
+            {/* Preview do exercício — o que o aluno vai escrever */}
+            {lesson.starter_code && (
+              <div className="mx-8 mb-8 rounded-xl overflow-hidden border" style={{ borderColor: 'rgba(163,230,53,0.2)' }}>
+                <div className="flex items-center justify-between px-4 py-2.5" style={{ background: '#0d1425' }}>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-2.5 h-2.5 rounded-full bg-red-500/60" />
+                    <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/60" />
+                    <span className="w-2.5 h-2.5 rounded-full bg-green-500/60" />
+                    <span className="ml-2 text-[11px] text-slate-400 font-mono">seu exercício</span>
+                  </div>
+                  <span className="text-[10px] text-[#A3E635] font-bold uppercase tracking-wider">Complete o código abaixo ↓</span>
+                </div>
+                <pre className="p-4 text-sm font-mono text-slate-300 overflow-x-auto whitespace-pre-wrap" style={{ background: '#070d1a' }}>
+                  {lesson.starter_code}
+                </pre>
+                {/* Saída esperada */}
+                {hints.length > 0 && (
+                  <div className="px-4 py-3 border-t flex items-start gap-2" style={{ background: '#0a1020', borderColor: 'rgba(163,230,53,0.1)' }}>
+                    <span className="text-[#A3E635] text-xs mt-0.5">💡</span>
+                    <span className="text-slate-400 text-xs">{hints[0]}</span>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
-          {/* Coluna direita: card de início */}
-          <div className="flex flex-col gap-4">
-            <div className="cf-card p-8 flex flex-col items-center justify-center text-center min-h-[300px]">
-              <ByteNavbar size={64} className="mb-4" />
-              <h3 className="font-display text-xl font-bold text-white mb-2 mt-4">
-                Pronto para o exercício?
+          {/* Coluna direita: card de início fixo */}
+          <div className="flex flex-col gap-3 sticky top-20">
+            <div className="cf-card p-6 flex flex-col items-center text-center">
+              <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4" style={{ background: 'rgba(163,230,53,0.1)', border: '1.5px solid rgba(163,230,53,0.3)' }}>
+                <ByteNavbar size={44} />
+              </div>
+              <h3 className="font-display text-lg font-bold text-white mb-1">
+                Pronto para começar o exercício?
               </h3>
-              <p className="text-slate-400 text-sm mb-8 leading-relaxed">
-                Leia a introdução e quando se sentir preparado, clique para começar!
+              <p className="text-slate-500 text-xs mb-6 leading-relaxed">
+                Leia a explicação ao lado e clique quando estiver pronto!
               </p>
               <button
                 onClick={() => setPhase('code')}
-                className="w-full py-4 rounded-xl font-bold text-base tracking-wide"
+                className="w-full py-3.5 rounded-xl font-bold text-sm tracking-widest uppercase transition-all hover:opacity-90 active:scale-95"
                 style={{ background: '#A3E635', color: '#0A0F1E' }}
               >
                 INICIAR EXERCÍCIO
               </button>
             </div>
 
-            {/* Card de stats/progresso */}
-            <div className="cf-card p-4">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-slate-400">Trilha</span>
-                <span className="text-white font-semibold">{lesson.path}</span>
+            {/* Info da lição */}
+            <div className="cf-card p-4 space-y-2">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-slate-500">Trilha</span>
+                <span className="text-slate-300 font-medium truncate ml-2">{lesson.path}</span>
               </div>
-              <div className="flex items-center justify-between text-sm mt-2">
-                <span className="text-slate-400">Capítulo</span>
-                <span className="text-white font-semibold">{lesson.chapter}</span>
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-slate-500">Lição</span>
+                <span className="text-slate-300 font-medium">#{lesson.order}</span>
               </div>
-              <div className="flex items-center justify-between text-sm mt-2">
-                <span className="text-slate-400">Energia</span>
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-slate-500">Energia</span>
                 <span className="text-blue-400 font-bold">{stats.energy}/{stats.maxEnergy} ⚡</span>
               </div>
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-slate-500">XP disponível</span>
+                <span className="text-[#A3E635] font-bold">+50 XP ⭐</span>
+              </div>
             </div>
+
+            {/* Dicas disponíveis */}
+            {hints.length > 0 && (
+              <div className="cf-card p-4">
+                <div className="flex items-center gap-2 text-xs text-slate-400">
+                  <Lightbulb size={13} className="text-[#A3E635]" />
+                  <span>{hints.length} dica{hints.length > 1 ? 's' : ''} disponíve{hints.length > 1 ? 'is' : 'l'} durante o exercício</span>
+                </div>
+              </div>
+            )}
           </div>
         </main>
       )}
