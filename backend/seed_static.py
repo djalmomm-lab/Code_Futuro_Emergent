@@ -75,7 +75,7 @@ LESSONS = {
     "title": "Variáveis",
     "chapter": "Capítulo 1: Fundamentos",
     "theory": "## O que são variáveis?\n\nVariáveis são como **caixas com etiquetas** onde você guarda informações para usar depois. Em Python, criar uma variável é simples:\n\n```python\nnome = \"Carlos\"\nidade = 15\naltura = 1.75\n```\n\nVocê pode guardar diferentes tipos de dados:\n- **Texto** (string): entre aspas — `\"Carlos\"`\n- **Número inteiro**: sem aspas — `15`\n- **Número decimal**: com ponto — `1.75`\n\n### Usando variáveis\nDepois de criar, é só usar o nome da variável onde precisar:\n\n```python\nnome = \"Ana\"\nprint(nome)\n# Saída: Ana\n```\n\n### Por que isso importa?\nSem variáveis, você teria que repetir os mesmos valores em todo o código. Com elas, muda em um lugar e funciona em todo lugar! 💡",
-    "instruction_pt": "As variáveis `nome` e `idade` já estão declaradas. Complete o `print()` para exibir a frase exata usando f-string.\n\n**Exemplo de programação:**\n```python\nnome = \"Ana\"\nidade = 12\nprint(f\"{nome} tem {idade} anos\")\n```\n\n**Saída esperada:**\n```\nAna tem 12 anos\n```",
+    "instruction_pt": "As variáveis `nome` e `idade` já estão declaradas. Complete o `print()` para exibir a frase exata usando f-string.\n\nVeja como funciona uma f-string:\n\n```python\nnome = \"Ana\"\nidade = 12\nprint(f\"{nome} tem {idade} anos\")\n```",
     "instruction_en": "The variables `nome` and `idade` are already declared. Complete the `print()` to display: Ana tem 12 anos",
     "instruction_es": "Las variables `nome` y `idade` ya están declaradas. Completa el `print()` para mostrar: Ana tem 12 anos",
     "starter_code": "nome = \"Ana\"\nidade = 12\n\n# Complete o print usando f-string\nprint(f\"...\")  # substitua ... pela expressão correta\n",
