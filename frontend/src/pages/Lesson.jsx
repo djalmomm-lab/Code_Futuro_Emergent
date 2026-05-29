@@ -619,8 +619,15 @@ export default function Lesson() {
                 code:   ({node, inline, ...p}) =>
                   inline
                     ? <code className="bg-slate-700 rounded px-1 py-0.5 text-[#A3E635] font-mono text-sm" {...p} />
-                    : <code className="block text-slate-200 text-sm" {...p} />,
-                pre:    ({node, ...p}) => <pre className="bg-slate-800 rounded-lg p-3 my-2 text-sm font-mono overflow-x-auto" {...p} />,
+                    : <code className="block text-slate-200 text-sm leading-relaxed" {...p} />,
+                pre: ({node, children, ...p}) => (
+                  <div className="my-3 rounded-xl overflow-hidden border" style={{ borderColor: 'rgba(163,230,53,0.2)' }}>
+                    <div className="px-4 py-2 text-xs font-bold uppercase tracking-wider text-[#A3E635]" style={{ background: '#0d1425' }}>
+                      Exemplo de programação
+                    </div>
+                    <pre className="p-4 text-sm font-mono overflow-x-auto" style={{ background: '#070d1a' }} {...p}>{children}</pre>
+                  </div>
+                ),
                 ul:     ({node, ...p}) => <ul className="mt-2 mb-1 space-y-1 list-disc list-inside" {...p} />,
                 ol:     ({node, ...p}) => <ol className="mt-2 mb-1 space-y-1 list-decimal list-inside" {...p} />,
                 li:     ({node, ...p}) => <li className="text-slate-300" {...p} />,
@@ -632,9 +639,13 @@ export default function Lesson() {
           </div>
 
           {expected && (
-            <div className="mt-5 p-4 rounded-xl font-code text-sm" style={{ background: 'var(--cf-panel-light)' }}>
-              <div className="text-slate-400 text-xs mb-2">Saída esperada:</div>
-              <pre className="text-[#A3E635] whitespace-pre-wrap">{expected}</pre>
+            <div className="mt-5 rounded-xl overflow-hidden border" style={{ borderColor: 'rgba(163,230,53,0.2)' }}>
+              <div className="px-4 py-2 text-xs font-bold uppercase tracking-wider text-[#A3E635]" style={{ background: '#0d1425' }}>
+                Saída esperada
+              </div>
+              <div className="p-4 font-code text-sm" style={{ background: 'var(--cf-panel-light)' }}>
+                <pre className="text-[#A3E635] whitespace-pre-wrap">{expected}</pre>
+              </div>
             </div>
           )}
 
