@@ -34,7 +34,7 @@ export default function Lesson() {
   const [celebrationOpen, setCelebrationOpen] = useState(false);
   const [upcomingLessons, setUpcomingLessons] = useState([]);
   const [totalRemaining, setTotalRemaining] = useState(0);
-  const [phase, setPhase] = useState('code'); // 'code' | 'quiz' | 'done'
+  const [phase, setPhase] = useState('intro'); // 'intro' | 'code' | 'quiz' | 'done'
   const [currentQuizIndex, setCurrentQuizIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState(null);
   const [quizFeedback, setQuizFeedback] = useState(null); // null | 'correct' | 'wrong'
@@ -51,7 +51,7 @@ export default function Lesson() {
         setLesson(les);
         setCode(les.starter_code || '');
         setTests((les.tests || []).map((t) => ({ ...t, passed: false })));
-        setPhase('code');
+        setPhase('intro');
         setCurrentQuizIndex(0);
         setSelectedOption(null);
         setQuizFeedback(null);
@@ -382,6 +382,75 @@ export default function Lesson() {
           </div>
         )}
       </header>
+
+      {phase === 'intro' && (
+        <main className="flex-1 max-w-7xl w-full mx-auto p-4 grid md:grid-cols-[1fr_360px] gap-4">
+          {/* Coluna esquerda: conteúdo teórico */}
+          <div className="cf-card p-8 overflow-auto">
+            <div className="flex items-center gap-2 mb-4">
+              <ByteNavbar size={28} />
+              <span className="text-xs font-bold uppercase tracking-wider text-[#A3E635]">Introdução</span>
+            </div>
+            <h2 className="font-display text-2xl font-bold text-white mb-6">{lesson.title}</h2>
+            <div className="text-slate-300 leading-relaxed prose-instr">
+              <ReactMarkdown
+                components={{
+                  p:      ({node, ...p}) => <p className="mt-3 first:mt-0 leading-relaxed" {...p} />,
+                  strong: ({node, ...p}) => <strong className="font-bold text-white" {...p} />,
+                  em:     ({node, ...p}) => <em className="italic text-slate-200" {...p} />,
+                  code:   ({node, inline, ...p}) =>
+                    inline
+                      ? <code className="bg-slate-700 rounded px-1 py-0.5 text-[#A3E635] font-mono text-sm" {...p} />
+                      : <code className="block text-slate-200 text-sm" {...p} />,
+                  pre:    ({node, ...p}) => <pre className="bg-slate-800 rounded-lg p-3 my-2 text-sm font-mono overflow-x-auto" {...p} />,
+                  ul:     ({node, ...p}) => <ul className="mt-2 mb-1 space-y-1 list-disc list-inside" {...p} />,
+                  ol:     ({node, ...p}) => <ol className="mt-2 mb-1 space-y-1 list-decimal list-inside" {...p} />,
+                  li:     ({node, ...p}) => <li className="text-slate-300" {...p} />,
+                  hr:     () => <hr className="border-slate-700 my-3" />,
+                }}
+              >
+                {lesson.theory || lesson[`instruction_${lang}`] || lesson.instruction_pt || ''}
+              </ReactMarkdown>
+            </div>
+          </div>
+
+          {/* Coluna direita: card de início */}
+          <div className="flex flex-col gap-4">
+            <div className="cf-card p-8 flex flex-col items-center justify-center text-center min-h-[300px]">
+              <ByteNavbar size={64} className="mb-4" />
+              <h3 className="font-display text-xl font-bold text-white mb-2 mt-4">
+                Pronto para o exercício?
+              </h3>
+              <p className="text-slate-400 text-sm mb-8 leading-relaxed">
+                Leia a introdução e quando se sentir preparado, clique para começar!
+              </p>
+              <button
+                onClick={() => setPhase('code')}
+                className="w-full py-4 rounded-xl font-bold text-base tracking-wide"
+                style={{ background: '#A3E635', color: '#0A0F1E' }}
+              >
+                INICIAR EXERCÍCIO
+              </button>
+            </div>
+
+            {/* Card de stats/progresso */}
+            <div className="cf-card p-4">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-slate-400">Trilha</span>
+                <span className="text-white font-semibold">{lesson.path}</span>
+              </div>
+              <div className="flex items-center justify-between text-sm mt-2">
+                <span className="text-slate-400">Capítulo</span>
+                <span className="text-white font-semibold">{lesson.chapter}</span>
+              </div>
+              <div className="flex items-center justify-between text-sm mt-2">
+                <span className="text-slate-400">Energia</span>
+                <span className="text-blue-400 font-bold">{stats.energy}/{stats.maxEnergy} ⚡</span>
+              </div>
+            </div>
+          </div>
+        </main>
+      )}
 
       {phase === 'quiz' && (
         <main className="flex-1 flex items-center justify-center p-4">
