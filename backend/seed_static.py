@@ -94,6 +94,64 @@ LESSONS = {
   },
   {
     "order": 3,
+    "title": "Usando f-strings",
+    "chapter": "Capítulo 1: Fundamentos",
+    "instruction_pt": 'Você já sabe criar variáveis. Agora vamos aprender a usá-las dentro de textos! 🎉\n\nAs **f-strings** permitem colocar variáveis diretamente em uma frase. Basta colocar a letra `f` antes das aspas e usar `{variável}` onde o valor deve aparecer.\n\n**Exemplo:**\n```python\nnome = "Bia"\nprint(f"Olá, {nome}!")\n```\n**Saída:** `Olá, Bia!`\n\n---\n\nAs variáveis `nome` e `idade` já estão declaradas. Complete o `print()` usando f-string para exibir exatamente:\n\n**Meu nome é Ana e tenho 16 anos**',
+    "instruction_en": "The variables `nome` and `idade` are already declared. Complete the `print()` using an f-string to display: Meu nome é Ana e tenho 16 anos",
+    "instruction_es": "Las variables `nome` e `idade` ya están declaradas. Completa el `print()` usando f-string para mostrar: Meu nome é Ana e tenho 16 anos",
+    "starter_code": 'nome = "Ana"\nidade = 16\n# Use f-string para exibir: "Meu nome é Ana e tenho 16 anos"\nprint(...)\n',
+    "hint": 'Coloque `f` antes das aspas e use {nome} e {idade}: print(f"Meu nome é {nome} e tenho {idade} anos")',
+    "hints": [
+      'Coloque a letra `f` antes das aspas: `print(f"...")`',
+      'Use `{nome}` e `{idade}` dentro das aspas para inserir os valores das variáveis',
+    ],
+    "tests": [{"stdin": "", "expected_stdout": "Meu nome é Ana e tenho 16 anos"}],
+    "quiz": [
+      {"question": "O que a letra `f` antes das aspas indica em Python?", "options": ["Que o texto é falso", "Que é uma f-string e pode usar {variáveis}", "Que o texto é um float", "Que é uma função"], "correct": 1},
+      {"question": "Como você insere o valor de uma variável `cidade` dentro de uma f-string?", "options": ["print(f'Eu moro em cidade')", "print(f'Eu moro em (cidade)')", "print(f'Eu moro em {cidade}')", "print('Eu moro em' + f{cidade})"], "correct": 2},
+    ],
+  },
+  {
+    "order": 4,
+    "title": "Lendo dados do usuário",
+    "chapter": "Capítulo 1: Fundamentos",
+    "instruction_pt": 'Agora vamos aprender a fazer o programa **conversar com o usuário**! 💬\n\nA função `input()` lê o que o usuário digita e guarda em uma variável. Use-a **sem texto dentro dos parênteses** por enquanto.\n\n**Exemplo:**\n```python\nnome = input()\nprint("Olá, " + nome)\n```\nSe o usuário digitar `Maria`, a saída será: `Olá, Maria`\n\n---\n\nEscreva um programa que:\n1. Leia um nome com `input()`\n2. Exiba `Olá, ` seguido do nome usando o operador `+` (concatenação)\n\n**Exemplo:**\n- Entrada: `Carlos`\n- Saída: `Olá, Carlos`\n\nAtenção: deixe o `input()` sem texto dentro dos parênteses!',
+    "instruction_en": "Write a program that reads a name with input() and prints 'Olá, ' followed by the name using the + operator.",
+    "instruction_es": "Escribe un programa que lea un nombre con input() e imprima 'Olá, ' seguido del nombre usando el operador +.",
+    "starter_code": 'nome = input()\nprint( ... )\n',
+    "hint": 'Use o operador + para concatenar: print("Olá, " + nome)',
+    "hints": [
+      'O operador `+` junta dois textos. Ex: `"Olá, " + nome` — atenção ao espaço depois da vírgula!',
+      'Não coloque nada dentro do `input()`. Deixe assim: `nome = input()`',
+    ],
+    "tests": [{"stdin": "Carlos", "expected_stdout": "Olá, Carlos"}],
+    "quiz": [
+      {"question": "Para que serve a função `input()` em Python?", "options": ["Para imprimir texto na tela", "Para ler o que o usuário digitou", "Para criar variáveis automaticamente", "Para calcular valores"], "correct": 1},
+      {"question": "Se `nome = 'Ana'`, o que `'Olá, ' + nome` produz?", "options": ["Olá,Ana", "Olá, Ana", "Olá, + Ana", "Erro de sintaxe"], "correct": 1},
+    ],
+  },
+  {
+    "order": 5,
+    "title": "Entrada e formatação com f-string",
+    "chapter": "Capítulo 1: Fundamentos",
+    "instruction_pt": 'Que tal unir tudo que você aprendeu? Vamos usar `input()` para ler um nome **e** f-string para formatar a mensagem! 🚀\n\n**Exemplo:**\n```python\nnome = input()\nprint(f"Bem-vindo, {nome}!")\n```\n- Entrada: `Carlos`\n- Saída: `Bem-vindo, Carlos!`\n\n---\n\nEscreva um programa que:\n1. Leia um nome com `input()` (sem texto dentro)\n2. Exiba `Bem-vindo, <nome>!` usando **f-string**\n\n**Exemplo:**\n- Entrada: `Carlos`\n- Saída: `Bem-vindo, Carlos!`',
+    "instruction_en": "Write a program that reads a name with input() and displays 'Bem-vindo, <name>!' using an f-string.",
+    "instruction_es": "Escribe un programa que lea un nombre con input() y muestre 'Bem-vindo, <nombre>!' usando f-string.",
+    "starter_code": 'nome = input()\nprint( ... )\n',
+    "hint": 'Use f-string: print(f"Bem-vindo, {nome}!")',
+    "hints": [
+      'Lembre-se do `f` antes das aspas: `print(f"...")`',
+      'Use `{nome}` dentro da f-string para inserir o valor da variável',
+      'Não coloque nada dentro do `input()`. Deixe assim: `nome = input()`',
+    ],
+    "tests": [{"stdin": "Carlos", "expected_stdout": "Bem-vindo, Carlos!"}],
+    "quiz": [
+      {"question": "Qual das opções lê um nome e exibe 'Bem-vindo, nome' usando f-string?", "options": ["nome = input('Bem-vindo'); print(nome)", "nome = input(); print('Bem-vindo, ' + nome)", "nome = input(); print(f'Bem-vindo, {nome}')", "input(nome); print('Bem-vindo, {nome}')"], "correct": 2},
+      {"question": "Por que não devemos colocar texto dentro do `input()` neste exercício?", "options": ["Porque causa erro de sintaxe", "Porque o texto apareceria na saída e quebraria o teste", "Porque input() não aceita texto", "Porque só funciona com números"], "correct": 1},
+    ],
+  },
+  {
+    "order": 6,
     "title": "Entrada do Usuário",
     "chapter": "Capítulo 1: Primeiros Passos",
     "instruction_pt": "**Objetivo:** Escreva um programa que leia um nome e exiba `Bem-vindo, <nome>!`.\n\n**Regras**\n* Use `input()` para ler o nome — sem texto dentro dos parênteses.\n* Use `print()` para exibir a mensagem.\n* O nome será fornecido automaticamente pelo sistema de teste.\n\n**O que você precisa fazer:** substitua o `# escreva aqui` pelo `print` correto que usa a variável `nome`.\n\n**Exemplo:** se o sistema fornecer `Carlos`, o programa deve imprimir:\n\n    Bem-vindo, Carlos!",
@@ -114,7 +172,7 @@ LESSONS = {
     ],
   },
   {
-    "order": 4,
+    "order": 7,
     "title": "Condicionais",
     "chapter": "Capítulo 2: Lógica e Controle",
     "instruction_pt": "`if`, `elif` e `else` permitem que o programa tome decisões. O bloco indentado (4 espaços) após o `if` executa somente quando a condição é verdadeira.",
@@ -138,7 +196,7 @@ LESSONS = {
     ],
   },
   {
-    "order": 5,
+    "order": 8,
     "title": "Loops com for",
     "chapter": "Capítulo 2: Lógica e Controle",
     "instruction_pt": "`for` repete um bloco de código. `range(1, 6)` gera os números 1, 2, 3, 4, 5. Use `for i in range(...)` para iterar sobre sequências.",
@@ -159,7 +217,7 @@ LESSONS = {
     ],
   },
   {
-    "order": 6,
+    "order": 9,
     "title": "Funções",
     "chapter": "Capítulo 3: Funções e Estruturas",
     "instruction_pt": "Funções agrupam código reutilizável. `def nome(parametros):` define uma função e `return` devolve um resultado. Chame a função pelo nome para executá-la.",
@@ -180,7 +238,7 @@ LESSONS = {
     ],
   },
   {
-    "order": 7,
+    "order": 10,
     "title": "Listas",
     "chapter": "Capítulo 4: Coleções",
     "instruction_pt": "Listas armazenam múltiplos valores em ordem. Use `lista[indice]` para acessar elementos (índice começa em 0). `.append()` adiciona ao final, `len()` retorna o tamanho.\n\nExemplo:\n  frutas = [\"maçã\", \"banana\", \"uva\"]\n  print(frutas[1])  # banana",
@@ -201,7 +259,7 @@ LESSONS = {
     ],
   },
   {
-    "order": 8,
+    "order": 11,
     "title": "Dicionários",
     "chapter": "Capítulo 4: Coleções",
     "instruction_pt": "Dicionários guardam pares `chave: valor`. Acesse valores pela chave: `dicionario[\"chave\"]`. Use `.keys()`, `.values()` e `.items()` para iterar.\n\nExemplo:\n  pessoa = {\"nome\": \"Ana\", \"idade\": 20}\n  print(pessoa[\"nome\"])  # Ana",
@@ -222,7 +280,7 @@ LESSONS = {
     ],
   },
   {
-    "order": 9,
+    "order": 12,
     "title": "Métodos de String",
     "chapter": "Capítulo 4: Coleções",
     "instruction_pt": "Strings têm métodos embutidos muito úteis:\n- `.upper()` → MAIÚSCULAS\n- `.lower()` → minúsculas\n- `.strip()` → remove espaços\n- `.replace(a, b)` → substitui\n- `.count(x)` → conta ocorrências\n\nUse `.count()` para contar quantas vezes a letra 'a' aparece em 'banana'.",
@@ -243,7 +301,7 @@ LESSONS = {
     ],
   },
   {
-    "order": 10,
+    "order": 13,
     "title": "Loop While",
     "chapter": "Capítulo 5: Controle Avançado",
     "instruction_pt": "`while` repete enquanto uma condição for verdadeira. Sempre garanta que a condição vai se tornar falsa para evitar loop infinito!\n\nExemplo:\n  i = 0\n  while i < 3:\n      print(i)\n      i += 1",
@@ -264,7 +322,7 @@ LESSONS = {
     ],
   },
   {
-    "order": 11,
+    "order": 14,
     "title": "Funções",
     "chapter": "Capítulo 3: Funções",
     "instruction_pt": "Funções são blocos de código que você escreve uma vez e pode usar quantas vezes quiser! Em Python, criamos uma função com a palavra `def`, seguida do nome e parênteses.\n\nO `return` faz a função devolver um valor para quem chamou ela.\n\nCrie a função `saudacao(nome)` que recebe um nome e retorna a mensagem `\"Olá, {nome}!\"`.\n\nExemplo:\n- `print(saudacao(\"Ana\"))` → `Olá, Ana!`",
@@ -282,7 +340,7 @@ LESSONS = {
     ],
   },
   {
-    "order": 12,
+    "order": 15,
     "title": "Parâmetros e argumentos",
     "chapter": "Capítulo 3: Funções",
     "instruction_pt": "**Parâmetro** é o nome que você coloca na definição da função. **Argumento** é o valor que você passa quando chama a função.\n\nCrie a função `calcular_area(base, altura)` que retorna a área de um triângulo: `base * altura / 2`.\n\nExemplos:\n- `calcular_area(10, 5)` → `25.0`\n- `calcular_area(6, 4)` → `12.0`",
@@ -300,7 +358,7 @@ LESSONS = {
     ],
   },
   {
-    "order": 13,
+    "order": 16,
     "title": "Listas avançadas",
     "chapter": "Capítulo 3: Funções",
     "instruction_pt": "Listas têm métodos poderosos:\n- `lista.append(item)` → adiciona um item no final\n- `lista.remove(item)` → remove a primeira ocorrência do item\n- `len(lista)` → retorna o número de itens\n\nVocê está organizando a lista de convidados de uma festa! Comece com `[\"Ana\", \"Bruno\"]`, adicione `\"Carlos\"`, remova `\"Bruno\"`, imprima cada nome e o total.\n\nSaída esperada:\n```\nAna\nCarlos\nTotal: 2\n```",
@@ -318,7 +376,7 @@ LESSONS = {
     ],
   },
   {
-    "order": 14,
+    "order": 17,
     "title": "Dicionários",
     "chapter": "Capítulo 3: Funções",
     "instruction_pt": "Dicionários guardam informações em pares **chave: valor** — como uma ficha com campos!\n\nCrie a ficha de um aluno com três informações: nome, idade e nota.\n\nSaída esperada:\n```\nNome: Carlos\nIdade: 15\nNota: 8.5\n```",
@@ -337,7 +395,7 @@ LESSONS = {
     ],
   },
   {
-    "order": 15,
+    "order": 18,
     "title": "Manipulando texto",
     "chapter": "Capítulo 3: Funções",
     "instruction_pt": "Strings têm métodos incríveis para transformar texto:\n- `.upper()` → TUDO EM MAIÚSCULAS\n- `.lower()` → tudo em minúsculas\n- `.strip()` → remove espaços extras\n- `.replace(a, b)` → substitui `a` por `b`\n\nLeia um nome com `input()`, depois imprima:\n1. O nome em MAIÚSCULAS\n2. O nome em minúsculas\n3. O número de caracteres\n\nExemplo — entrada `ana`:\n```\nANA\nana\n3\n```",
@@ -358,7 +416,7 @@ LESSONS = {
     ],
   },
   {
-    "order": 16,
+    "order": 19,
     "title": "Projeto final",
     "chapter": "Capítulo 3: Funções",
     "instruction_pt": "Chegou a hora de combinar tudo que você aprendeu! Vamos criar um sistema de cadastro de alunos.\n\nO programa deve:\n1. Ler o nome do aluno com `input()`\n2. Ler a nota com `input()` (converta para `float`)\n3. Imprimir: `\"Aprovado\"` se nota >= 7, `\"Recuperação\"` se >= 5, `\"Reprovado\"` se < 5\n4. Adicionar o nome à lista `aprovados` se foi aprovado\n5. Imprimir se o aluno está ou não na lista\n\nExemplo — nome `Carlos`, nota `8`:\n```\nAprovado\nCarlos está na lista de aprovados\n```",
@@ -382,7 +440,7 @@ LESSONS = {
     ],
   },
   {
-    "order": 17,
+    "order": 20,
     "title": "Compreensão de Lista",
     "chapter": "Capítulo 5: Controle Avançado",
     "instruction_pt": "List comprehension cria listas em uma linha só:\n\n  [expressão for item in iterável if condição]\n\nExemplo:\n  quadrados = [x**2 for x in range(5)]  # [0, 1, 4, 9, 16]",
@@ -403,7 +461,7 @@ LESSONS = {
     ],
   },
   {
-    "order": 18,
+    "order": 21,
     "title": "Tratamento de Erros",
     "chapter": "Capítulo 5: Controle Avançado",
     "instruction_pt": "`try/except` captura erros e evita que o programa trave:\n\n  try:\n      # código que pode falhar\n  except TipoDoErro:\n      # o que fazer se falhar\n\nErros comuns: `ZeroDivisionError`, `ValueError`, `TypeError`.",
@@ -424,7 +482,7 @@ LESSONS = {
     ],
   },
   {
-    "order": 19,
+    "order": 22,
     "title": "Classes e Objetos",
     "chapter": "Capítulo 6: Orientação a Objetos",
     "instruction_pt": "Classes são moldes para criar objetos. `__init__` é o construtor — é chamado ao criar o objeto. `self` representa a instância.\n\n  class Carro:\n      def __init__(self, marca):\n          self.marca = marca",
@@ -445,7 +503,7 @@ LESSONS = {
     ],
   },
   {
-    "order": 20,
+    "order": 23,
     "title": "Herança",
     "chapter": "Capítulo 6: Orientação a Objetos",
     "instruction_pt": "Herança permite que uma classe filha herde atributos e métodos da classe pai. Use `super().__init__()` para chamar o construtor do pai.\n\n  class Animal:\n      def __init__(self, nome):\n          self.nome = nome\n\n  class Cachorro(Animal):\n      def latir(self):\n          return f\"{self.nome} diz: Au!\"",
@@ -466,7 +524,7 @@ LESSONS = {
     ],
   },
   {
-    "order": 21,
+    "order": 24,
     "title": "Lambda e Map",
     "chapter": "Capítulo 7: Funções Avançadas",
     "instruction_pt": "**Lambda** é uma função anônima de uma linha: `lambda x: x * 2`.\n**map()** aplica uma função a cada elemento de uma lista:\n\n  dobros = list(map(lambda x: x * 2, [1, 2, 3]))  # [2, 4, 6]",
@@ -487,7 +545,7 @@ LESSONS = {
     ],
   },
   {
-    "order": 22,
+    "order": 25,
     "title": "Projeto: Fatorial",
     "chapter": "Capítulo 7: Funções Avançadas",
     "instruction_pt": "Combine tudo que aprendeu! O **fatorial** de n (escrito n!) é o produto de todos os inteiros de 1 até n.\n\n  5! = 5 × 4 × 3 × 2 × 1 = 120\n\nLeia um número com `input()`, calcule o fatorial com um loop `for` e imprima o resultado.",

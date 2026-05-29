@@ -33,7 +33,7 @@ export const LESSONS = {
     pathSlug: 'python-zero',
     chapter: 'Capítulo 1: Fundamentos',
     order: 2,
-    next: 'tipos',
+    next: 'python-zero-fstrings',
     instruction: {
       pt: 'Crie uma variável chamada `nome` com o valor `"Ana"` e outra chamada `idade` com o valor `12`. Depois imprima na tela a frase exata: `Ana tem 12 anos`.\n\nExemplo de saída esperada:\n```\nAna tem 12 anos\n```',
       en: 'Create `nome = "Ana"` and `idade = 12` then print `Ana tem 12 anos`.',
@@ -50,13 +50,89 @@ export const LESSONS = {
     ],
   },
 
+  'python-zero-fstrings': {
+    slug: 'python-zero-fstrings',
+    title: 'Usando f-strings',
+    path: 'Python do Zero',
+    pathSlug: 'python-zero',
+    chapter: 'Capítulo 1: Fundamentos',
+    order: 3,
+    next: 'python-zero-input-concat',
+    instruction: {
+      pt: 'Você já sabe criar variáveis. Agora vamos aprender a usá-las dentro de textos! 🎉\n\nAs **f-strings** permitem colocar variáveis diretamente em uma frase. Basta colocar a letra `f` antes das aspas e usar `{variável}` onde o valor deve aparecer.\n\n**Exemplo:**\n```python\nnome = "Bia"\nprint(f"Olá, {nome}!")\n```\n**Saída:** `Olá, Bia!`\n\n---\n\nAs variáveis `nome` e `idade` já estão declaradas. Complete o `print()` usando f-string para exibir exatamente:\n\n**Meu nome é Ana e tenho 16 anos**',
+    },
+    starter: 'nome = "Ana"\nidade = 16\n# Use f-string para exibir: "Meu nome é Ana e tenho 16 anos"\nprint(...)\n',
+    hints: [
+      'Coloque a letra `f` antes das aspas: `print(f"...")`',
+      'Use `{nome}` e `{idade}` dentro das aspas para inserir os valores das variáveis',
+    ],
+    tests: [
+      { id: 1, stdin: '', expected: 'Meu nome é Ana e tenho 16 anos' },
+    ],
+    quiz: [
+      { question: 'O que a letra `f` antes das aspas indica em Python?', options: ['Que o texto é falso', 'Que é uma f-string e pode usar {variáveis}', 'Que o texto é um float', 'Que é uma função'], correct: 1 },
+      { question: 'Como você insere o valor de uma variável `cidade` dentro de uma f-string?', options: ["`print(f'Eu moro em cidade')`", "`print(f'Eu moro em (cidade)')`", "`print(f'Eu moro em {cidade}')`", "`print('Eu moro em' + f{cidade})`"], correct: 2 },
+    ],
+  },
+
+  'python-zero-input-concat': {
+    slug: 'python-zero-input-concat',
+    title: 'Lendo dados do usuário',
+    path: 'Python do Zero',
+    pathSlug: 'python-zero',
+    chapter: 'Capítulo 1: Fundamentos',
+    order: 4,
+    next: 'python-zero-input-fstring',
+    instruction: {
+      pt: 'Agora vamos aprender a fazer o programa **conversar com o usuário**! 💬\n\nA função `input()` lê o que o usuário digita e guarda em uma variável. Use-a **sem texto dentro dos parênteses** por enquanto.\n\n**Exemplo:**\n```python\nnome = input()\nprint("Olá, " + nome)\n```\nSe o usuário digitar `Maria`, a saída será: `Olá, Maria`\n\n---\n\nEscreva um programa que:\n1. Leia um nome com `input()`\n2. Exiba `Olá, ` seguido do nome usando o operador `+` (concatenação)\n\n**Exemplo:**\n- Entrada: `Carlos`\n- Saída: `Olá, Carlos`\n\n> 💡 Atenção: deixe o `input()` sem texto dentro dos parênteses!',
+    },
+    starter: 'nome = input()\nprint( ... )\n',
+    hints: [
+      'O operador `+` junta dois textos. Ex: `"Olá, " + nome` — atenção ao espaço depois da vírgula!',
+      'Não coloque nada dentro do `input()`. Deixe assim: `nome = input()`',
+    ],
+    tests: [
+      { id: 1, stdin: 'Carlos', expected: 'Olá, Carlos' },
+    ],
+    quiz: [
+      { question: 'Para que serve a função `input()` em Python?', options: ['Para imprimir texto na tela', 'Para ler o que o usuário digitou', 'Para criar variáveis automaticamente', 'Para calcular valores'], correct: 1 },
+      { question: "Se `nome = 'Ana'`, o que `'Olá, ' + nome` produz?", options: ['`Olá,Ana`', '`Olá, Ana`', '`Olá, + Ana`', 'Erro de sintaxe'], correct: 1 },
+    ],
+  },
+
+  'python-zero-input-fstring': {
+    slug: 'python-zero-input-fstring',
+    title: 'Entrada e formatação com f-string',
+    path: 'Python do Zero',
+    pathSlug: 'python-zero',
+    chapter: 'Capítulo 1: Fundamentos',
+    order: 5,
+    next: 'tipos',
+    instruction: {
+      pt: 'Que tal unir tudo que você aprendeu? Vamos usar `input()` para ler um nome **e** f-string para formatar a mensagem! 🚀\n\n**Exemplo:**\n```python\nnome = input()\nprint(f"Bem-vindo, {nome}!")\n```\n- Entrada: `Carlos`\n- Saída: `Bem-vindo, Carlos!`\n\n---\n\nEscreva um programa que:\n1. Leia um nome com `input()` (sem texto dentro)\n2. Exiba `Bem-vindo, <nome>!` usando **f-string**\n\n**Exemplo:**\n- Entrada: `Carlos`\n- Saída: `Bem-vindo, Carlos!`',
+    },
+    starter: 'nome = input()\nprint( ... )\n',
+    hints: [
+      'Lembre-se do `f` antes das aspas: `print(f"...")`',
+      'Use `{nome}` dentro da f-string para inserir o valor da variável',
+      'Não coloque nada dentro do `input()`. Deixe assim: `nome = input()`',
+    ],
+    tests: [
+      { id: 1, stdin: 'Carlos', expected: 'Bem-vindo, Carlos!' },
+    ],
+    quiz: [
+      { question: "Qual das opções lê um nome e exibe 'Bem-vindo, nome' usando f-string?", options: ["`nome = input('Bem-vindo'); print(nome)`", "`nome = input(); print('Bem-vindo, ' + nome)`", "`nome = input(); print(f'Bem-vindo, {nome}')`", "`input(nome); print('Bem-vindo, {nome}')`"], correct: 2 },
+      { question: 'Por que não devemos colocar texto dentro do `input()` neste exercício?', options: ['Porque causa erro de sintaxe', 'Porque o texto apareceria na saída e quebraria o teste', 'Porque input() não aceita texto', 'Porque só funciona com números'], correct: 1 },
+    ],
+  },
+
   'tipos': {
     slug: 'tipos',
     title: 'Tipos de Dados',
     path: 'Python do Zero',
     pathSlug: 'python-zero',
     chapter: 'Capítulo 1: Fundamentos',
-    order: 3,
+    order: 6,
     next: 'operadores',
     instruction: {
       pt: 'Em Python, cada valor tem um tipo. A função `type()` revela qual é esse tipo. Complete o código abaixo para imprimir o tipo de três valores diferentes:\n- O número inteiro `42`\n- O número decimal `3.14`\n- O texto `"Python"`\n\nExemplo de saída esperada (3 linhas):\n```\n<class \'int\'>\n<class \'float\'>\n<class \'str\'>\n```',
@@ -81,7 +157,7 @@ export const LESSONS = {
     path: 'Python do Zero',
     pathSlug: 'python-zero',
     chapter: 'Capítulo 1: Fundamentos',
-    order: 4,
+    order: 7,
     next: 'if-else',
     instruction: {
       pt: 'Calcule e imprima, cada resultado em uma linha separada:\n- A soma de `15 + 7`\n- A multiplicação de `8 * 6`\n- O resto da divisão de `17 % 5` (o operador `%` retorna o que sobra após a divisão inteira)\n\nExemplo de saída esperada:\n```\n22\n48\n2\n```',
@@ -105,7 +181,7 @@ export const LESSONS = {
     path: 'Python do Zero',
     pathSlug: 'python-zero',
     chapter: 'Capítulo 2: Controle de Fluxo',
-    order: 5,
+    order: 8,
     next: 'python-zero-comparadores',
     instruction: {
       pt: 'Às vezes o programa precisa tomar decisões. O `if` executa um bloco de código quando uma condição é verdadeira; o `else` executa quando ela é falsa.\n\nSeu programa deve:\n1. Ler a idade pelo `input()`\n2. Imprimir `Adulto` se a idade for maior ou igual a `18`\n3. Imprimir `Menor de idade` caso contrário\n\nExemplos:\n- Entrada: `20` → Saída: `Adulto`\n- Entrada: `15` → Saída: `Menor de idade`',
@@ -130,7 +206,7 @@ export const LESSONS = {
     path: 'Python do Zero',
     pathSlug: 'python-zero',
     chapter: 'Capítulo 2: Controle de Fluxo',
-    order: 6,
+    order: 9,
     next: 'python-zero-elif',
     instruction: {
       pt: 'Comparadores são operadores que comparam dois valores e retornam `True` (verdadeiro) ou `False` (falso). São muito usados em condições `if`!\n\nOs principais comparadores são:\n- `==` → igual a\n- `!=` → diferente de\n- `>` → maior que\n- `<` → menor que\n- `>=` → maior ou igual a\n- `<=` → menor ou igual a\n\nExemplo:\n```python\na = 10\nb = 5\nprint(a > b)   # True, pois 10 é maior que 5\nprint(a == b)  # False, pois 10 não é igual a 5\n```\n\nAgora é a sua vez! Com `a = 10` e `b = 5`, complete o código para imprimir:\n1. `True` — usando o comparador "maior que"\n2. `False` — usando o comparador "igual a"\n3. `True` — usando o comparador "diferente de"\n\nSaída esperada:\n```\nTrue\nFalse\nTrue\n```',
@@ -155,7 +231,7 @@ export const LESSONS = {
     path: 'Python do Zero',
     pathSlug: 'python-zero',
     chapter: 'Capítulo 2: Controle de Fluxo',
-    order: 7,
+    order: 10,
     next: 'python-zero-for',
     instruction: {
       pt: 'Às vezes temos mais de duas possibilidades e o `if`/`else` não é suficiente. É aí que entra o `elif` (abreviação de "else if") — ele permite verificar várias condições em sequência!\n\nVamos criar um sistema de notas escolares. Dado uma nota, o programa deve imprimir:\n- `"Aprovado"` se a nota for maior ou igual a `7`\n- `"Recuperação"` se a nota for maior ou igual a `5` e menor que `7`\n- `"Reprovado"` se a nota for menor que `5`\n\nExemplos:\n- Entrada: `8` → Saída: `Aprovado`\n- Entrada: `6` → Saída: `Recuperação`\n- Entrada: `3` → Saída: `Reprovado`\n\nBoa sorte — você consegue! 🎯',
@@ -181,7 +257,7 @@ export const LESSONS = {
     path: 'Python do Zero',
     pathSlug: 'python-zero',
     chapter: 'Capítulo 2: Controle de Fluxo',
-    order: 8,
+    order: 11,
     next: 'python-zero-listas',
     instruction: {
       pt: 'O `for` com `range()` repete um bloco de código um número fixo de vezes — muito útil quando você sabe quantas repetições quer fazer!\n\nVamos usar isso para imprimir a tabuada do 5 de 1 a 5. Complete o loop para que a saída seja:\n```\n5 x 1 = 5\n5 x 2 = 10\n5 x 3 = 15\n5 x 4 = 20\n5 x 5 = 25\n```\n\nDica de estrutura:\n```python\nfor i in range(inicio, fim):\n    print(f"5 x {i} = {resultado}")\n```\n\nVocê já sabe fazer isso, vai lá! 💪',
@@ -205,7 +281,7 @@ export const LESSONS = {
     path: 'Python do Zero',
     pathSlug: 'python-zero',
     chapter: 'Capítulo 2: Controle de Fluxo',
-    order: 9,
+    order: 12,
     next: 'while',
     instruction: {
       pt: 'Listas são uma das estruturas mais usadas em Python! Elas guardam vários valores em uma só variável — é como uma prateleira onde você organiza itens em sequência.\n\nVamos criar uma lista de compras com frutas. Seu programa deve:\n1. Criar uma lista com 3 frutas: `"maçã"`, `"banana"` e `"uva"`\n2. Imprimir cada fruta usando um loop `for`\n3. Imprimir o total de itens da lista com `len()`\n\nSaída esperada:\n```\nmaçã\nbanana\nuva\nTotal: 3\n```\n\nSimplesmente demais! 🛒',
@@ -229,7 +305,7 @@ export const LESSONS = {
     path: 'Python do Zero',
     pathSlug: 'python-zero',
     chapter: 'Capítulo 2: Controle de Fluxo',
-    order: 10,
+    order: 13,
     next: 'python-zero-funcoes',
     instruction: {
       pt: 'Um laço `while` repete um bloco de código enquanto uma condição for verdadeira — assim que a condição vira falsa, o laço para.\n\nO código abaixo tem um **erro proposital** na condição do `while`. Seu desafio é encontrar e corrigir esse erro para que o programa imprima os números de `1` a `5`, um por linha.\n\nSaída esperada:\n```\n1\n2\n3\n4\n5\n```',
@@ -252,7 +328,7 @@ export const LESSONS = {
     path: 'Python do Zero',
     pathSlug: 'python-zero',
     chapter: 'Capítulo 3: Funções',
-    order: 11,
+    order: 14,
     next: 'python-zero-parametros',
     instruction: {
       pt: 'Funções são blocos de código que você escreve uma vez e pode usar quantas vezes quiser! Em Python, criamos uma função com a palavra `def`, seguida do nome e parênteses.\n\nExemplo:\n```python\ndef cumprimentar():\n    print("Oi!")\n\ncumprimentar()  # chama a função\n```\n\nO `return` faz a função **devolver** um valor para quem chamou ela.\n\nSua tarefa: complete a função `saudacao(nome)` que recebe um nome e **retorna** a mensagem `"Olá, {nome}!"`.\n\nExemplo:\n- `print(saudacao("Ana"))` → `Olá, Ana!`',
@@ -279,7 +355,7 @@ export const LESSONS = {
     path: 'Python do Zero',
     pathSlug: 'python-zero',
     chapter: 'Capítulo 3: Funções',
-    order: 12,
+    order: 15,
     next: 'python-zero-listas-avancado',
     instruction: {
       pt: '**Parâmetro** é o nome que você coloca na definição da função. **Argumento** é o valor que você passa quando chama a função.\n\nExemplo:\n```python\ndef dobrar(numero):   # numero é o parâmetro\n    return numero * 2\n\nprint(dobrar(5))      # 5 é o argumento → imprime 10\n```\n\nAgora você vai calcular a **área de um triângulo**! A fórmula é: `base × altura / 2`.\n\nCrie a função `calcular_area(base, altura)` que retorna a área do triângulo.\n\nExemplos:\n- `calcular_area(10, 5)` → `25.0`\n- `calcular_area(6, 4)` → `12.0`',
@@ -306,7 +382,7 @@ export const LESSONS = {
     path: 'Python do Zero',
     pathSlug: 'python-zero',
     chapter: 'Capítulo 3: Funções',
-    order: 13,
+    order: 16,
     next: 'python-zero-dicionarios',
     instruction: {
       pt: 'Listas têm métodos poderosos para gerenciar seus itens:\n- `lista.append(item)` → adiciona um item no final\n- `lista.remove(item)` → remove a primeira ocorrência do item\n- `len(lista)` → retorna o número de itens\n\nVocê está organizando a **lista de convidados de uma festa**! Comece com `["Ana", "Bruno"]`, adicione `"Carlos"` com `append`, remova `"Bruno"` com `remove`, depois imprima cada nome e o total.\n\nSaída esperada:\n```\nAna\nCarlos\nTotal: 2\n```',
@@ -333,7 +409,7 @@ export const LESSONS = {
     path: 'Python do Zero',
     pathSlug: 'python-zero',
     chapter: 'Capítulo 3: Funções',
-    order: 14,
+    order: 17,
     next: 'python-zero-strings',
     instruction: {
       pt: 'Dicionários guardam informações em pares **chave: valor** — como uma ficha com campos!\n\nExemplo:\n```python\npessoa = {"nome": "Ana", "idade": 20}\nprint(pessoa["nome"])  # Ana\n```\n\nVocê vai criar a **ficha de um aluno** com três informações: nome, idade e nota.\n\nSaída esperada:\n```\nNome: Carlos\nIdade: 15\nNota: 8.5\n```',
@@ -361,7 +437,7 @@ export const LESSONS = {
     path: 'Python do Zero',
     pathSlug: 'python-zero',
     chapter: 'Capítulo 3: Funções',
-    order: 15,
+    order: 18,
     next: 'python-zero-projeto',
     instruction: {
       pt: 'Strings têm métodos incríveis para transformar texto:\n- `.upper()` → TUDO EM MAIÚSCULAS\n- `.lower()` → tudo em minúsculas\n- `.strip()` → remove espaços extras nas bordas\n- `.replace(a, b)` → substitui `a` por `b`\n\nSua tarefa: leia um nome com `input()`, depois imprima:\n1. O nome em **MAIÚSCULAS**\n2. O nome em **minúsculas**\n3. O **número de caracteres** do nome\n\nExemplo — entrada `ana`:\n```\nANA\nana\n3\n```',
@@ -389,7 +465,7 @@ export const LESSONS = {
     path: 'Python do Zero',
     pathSlug: 'python-zero',
     chapter: 'Capítulo 3: Funções',
-    order: 16,
+    order: 19,
     next: null,
     instruction: {
       pt: 'Chegou a hora de combinar tudo que você aprendeu! Vamos criar um **sistema de cadastro de alunos**.\n\nO programa deve:\n1. Ler o **nome** do aluno com `input()`\n2. Ler a **nota** com `input()` (converta para `float`)\n3. Imprimir o resultado:\n   - `"Aprovado"` se nota >= 7\n   - `"Recuperação"` se nota >= 5\n   - `"Reprovado"` se nota < 5\n4. Adicionar o nome à lista `aprovados` se foi aprovado\n5. Imprimir se o aluno está ou não na lista\n\nExemplo — nome `Carlos`, nota `8`:\n```\nAprovado\nCarlos está na lista de aprovados\n```',
