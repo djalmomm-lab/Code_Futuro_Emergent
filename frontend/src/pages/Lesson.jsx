@@ -688,6 +688,12 @@ export default function Lesson() {
               value={code}
               onChange={(e) => setCode(e.target.value)}
               spellCheck={false}
+              autoCorrect="off"
+              autoCapitalize="off"
+              autoComplete="off"
+              data-gramm="false"
+              data-gramm_editor="false"
+              data-enable-grammarly="false"
               className="flex-1 p-4 font-code text-sm bg-[#0A0F1E] text-slate-100 outline-none resize-none min-h-[260px]"
               style={{ tabSize: 4 }}
             />
