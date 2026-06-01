@@ -2372,11 +2372,12 @@ async def seed_path(path_cfg: dict):
         upsert=True,
     )
 
-    # Upsert each lesson
+    # Upsert each lesson — usa slug como chave quando explícito, senão usa (path_slug, order)
     for les in lessons_data:
         doc = _build_doc(path_cfg, les)
+        filter_key = {"slug": doc["slug"]} if les.get("slug") else {"path_slug": slug, "order": doc["order"]}
         await db.lessons.update_one(
-            {"path_slug": slug, "order": doc["order"]},
+            filter_key,
             {"$set": doc},
             upsert=True,
         )
