@@ -2372,15 +2372,11 @@ async def seed_path(path_cfg: dict):
         upsert=True,
     )
 
-    # Upsert each lesson — usa slug como chave quando explícito, senão usa (path_slug, order)
-    for les in lessons_data:
-        doc = _build_doc(path_cfg, les)
-        filter_key = {"slug": doc["slug"]} if les.get("slug") else {"path_slug": slug, "order": doc["order"]}
-        await db.lessons.update_one(
-            filter_key,
-            {"$set": doc},
-            upsert=True,
-        )
+    # Apaga todas as lições da trilha e reinsere do zero — garante dados sempre frescos
+    await db.lessons.delete_many({"path_slug": slug})
+    if lessons_data:
+        docs = [_build_doc(path_cfg, les) for les in lessons_data]
+        await db.lessons.insert_many(docs)
 
     print(f"  {path_cfg['name']}: {len(lessons_data)} lições inseridas")
 
