@@ -406,6 +406,12 @@ export default function Lesson() {
                   p:  ({node, ...p}) => <p className="mt-3 first:mt-0 leading-relaxed text-slate-300" {...p} />,
                   strong: ({node, ...p}) => <strong className="font-bold text-white" {...p} />,
                   em:     ({node, ...p}) => <em className="italic text-slate-200" {...p} />,
+                  table: ({node, ...p}) => <div className="mt-4 mb-2 overflow-x-auto rounded-xl border" style={{ borderColor: 'rgba(163,230,53,0.2)' }}><table className="w-full text-sm" {...p} /></div>,
+                  thead: ({node, ...p}) => <thead style={{ background: '#0d1425' }} {...p} />,
+                  tbody: ({node, ...p}) => <tbody {...p} />,
+                  tr:    ({node, ...p}) => <tr className="border-b" style={{ borderColor: 'rgba(163,230,53,0.1)' }} {...p} />,
+                  th:    ({node, ...p}) => <th className="px-4 py-2.5 text-left text-xs font-bold uppercase tracking-wider text-[#A3E635]" {...p} />,
+                  td:    ({node, ...p}) => <td className="px-4 py-2.5 text-slate-300 font-mono text-xs" {...p} />,
                   code:   ({node, inline, ...p}) =>
                     inline
                       ? <code className="bg-[#1C2235] rounded px-1.5 py-0.5 text-[#A3E635] font-mono text-[13px]" {...p} />
