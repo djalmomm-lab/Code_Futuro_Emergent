@@ -215,9 +215,9 @@ LESSONS = {
     "hint": "Pensa no significado de cada operador: `>` compara se o lado esquerdo é maior, `==` verifica se os dois lados são iguais, e `!=` verifica se eles são diferentes.",
     "tests": [{"stdin": "", "expected_stdout": "True\nFalse\nTrue"}],
     "quiz": [
-      {"question": "Qual operador verifica se dois valores são iguais em Python?", "options": ["=", "==", "===", "eq"], "correct": 1},
-      {"question": "O que a comparação 10 != 5 retorna?", "options": ["False", "True", "5", "Error"], "correct": 1},
-      {"question": "Qual comparador verifica se um valor é maior ou igual a outro?", "options": [">", "<", ">=", "=>"], "correct": 2},
+      {"question": "O comparador `==` representa qual símbolo matemático?", "options": ["≠ (diferente)", "= (igual)", "≥ (maior ou igual)", "> (maior)"], "correct": 1},
+      {"question": "O comparador `!=` representa qual símbolo matemático?", "options": ["= (igual)", "≥ (maior ou igual)", "≠ (diferente)", "≤ (menor ou igual)"], "correct": 2},
+      {"question": "O comparador `>=` representa qual símbolo matemático?", "options": ["≤ (menor ou igual)", "> (maior)", "= (igual)", "≥ (maior ou igual)"], "correct": 3},
     ],
   },
   {
