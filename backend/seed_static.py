@@ -191,7 +191,7 @@ LESSONS = {
     "instruction_pt": "Às vezes o programa precisa tomar decisões. O `if` executa um bloco de código quando uma condição é verdadeira; o `else` executa quando ela é falsa.\n\nSeu programa deve:\n1. Ler a idade pelo `input()`\n2. Imprimir `Adulto` se a idade for maior ou igual a `18`\n3. Imprimir `Menor de idade` caso contrário\n\nExemplos:\n- Entrada: `20` → Saída: `Adulto`\n- Entrada: `15` → Saída: `Menor de idade`",
     "instruction_en": "Read age with input(), print \"Adulto\" if >=18 else \"Menor de idade\".",
     "instruction_es": "Lee la edad con input(), imprime \"Adulto\" si >=18 o \"Menor de idade\".",
-    "starter_code": "idade = int(input())\n\nif ___:\n    print(___)\nelse:\n    print(___)\n",
+    "starter_code": "idade = int(input())\n\n# Substitua os ___ pelos valores corretos\nif idade >= ___:\n    print('___')\nelse:\n    print('___')\n",
     "hint": "O `if` em Python usa dois-pontos no final da condição e o bloco dentro deve ter recuo (indentação) de 4 espaços — isso é como o Python sabe o que está 'dentro' do if. O `else:` fica no mesmo nível do `if`. Lembre de converter o valor do `input()` para inteiro com `int()`.",
     "tests": [
       {"stdin": "20", "expected_stdout": "Adulto"},
