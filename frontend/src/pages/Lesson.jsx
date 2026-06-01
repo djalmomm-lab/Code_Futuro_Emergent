@@ -397,6 +397,23 @@ export default function Lesson() {
               <h2 className="font-display text-2xl font-bold text-white">{lesson.title}</h2>
             </div>
 
+            {/* Learning goals */}
+            {lesson.learning_goals?.length > 0 && (
+              <div className="mx-8 mt-5 p-4 rounded-xl" style={{ background: 'rgba(163,230,53,0.08)', border: '1px solid rgba(163,230,53,0.25)' }}>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-sm font-bold text-[#A3E635]">🎯 Nesta lição você vai aprender:</span>
+                </div>
+                <ul className="space-y-1">
+                  {lesson.learning_goals.map((goal, i) => (
+                    <li key={i} className="flex items-start gap-2 text-sm text-slate-300">
+                      <span className="text-[#A3E635] mt-0.5 shrink-0">✓</span>
+                      {goal}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
             {/* Conteúdo teórico */}
             <div className="px-8 py-6 text-slate-300 leading-relaxed">
               <ReactMarkdown
@@ -416,17 +433,33 @@ export default function Lesson() {
                     inline
                       ? <code className="bg-[#1C2235] rounded px-1.5 py-0.5 text-[#A3E635] font-mono text-[13px]" {...p} />
                       : <code className="block text-slate-200 text-sm leading-relaxed" {...p} />,
-                  pre: ({node, ...p}) => (
-                    <div className="my-4 rounded-xl overflow-hidden border" style={{ borderColor: 'rgba(163,230,53,0.15)' }}>
-                      <div className="flex items-center gap-1.5 px-4 py-2.5" style={{ background: '#0d1425' }}>
-                        <span className="w-2.5 h-2.5 rounded-full bg-red-500/60" />
-                        <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/60" />
-                        <span className="w-2.5 h-2.5 rounded-full bg-green-500/60" />
-                        <span className="ml-2 text-[11px] text-slate-500 font-mono">exemplo</span>
+                  pre: ({node, children, ...p}) => {
+                    const text = String(children?.props?.children || '');
+                    const isOutput = text.trim().split('\n').every(l => l.trim().startsWith('#') || l.trim() === '');
+
+                    if (isOutput) {
+                      return (
+                        <div className="my-3 rounded-xl overflow-hidden border" style={{ borderColor: 'rgba(100,200,100,0.3)' }}>
+                          <div className="px-4 py-2 text-xs font-bold uppercase tracking-wider" style={{ background: '#0a1a0a', color: '#86efac' }}>
+                            Resultado
+                          </div>
+                          <pre className="p-4 text-sm font-mono overflow-x-auto" style={{ background: '#071007', color: '#86efac' }} {...p}>{children}</pre>
+                        </div>
+                      );
+                    }
+
+                    return (
+                      <div className="my-3 rounded-xl overflow-hidden border" style={{ borderColor: 'rgba(163,230,53,0.2)' }}>
+                        <div className="flex items-center gap-1.5 px-4 py-2.5" style={{ background: '#0d1425' }}>
+                          <span className="w-2.5 h-2.5 rounded-full bg-red-500/60" />
+                          <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/60" />
+                          <span className="w-2.5 h-2.5 rounded-full bg-green-500/60" />
+                          <span className="ml-2 text-[11px] text-slate-500 font-mono">código</span>
+                        </div>
+                        <pre className="p-4 text-sm font-mono overflow-x-auto" style={{ background: '#070d1a' }} {...p}>{children}</pre>
                       </div>
-                      <pre className="p-4 text-sm font-mono overflow-x-auto" style={{ background: '#070d1a' }} {...p} />
-                    </div>
-                  ),
+                    );
+                  },
                   ul: ({node, ...p}) => <ul className="mt-3 mb-2 space-y-1.5 list-disc list-inside" {...p} />,
                   ol: ({node, ...p}) => <ol className="mt-3 mb-2 space-y-1.5 list-decimal list-inside" {...p} />,
                   li: ({node, ...p}) => <li className="text-slate-300 leading-relaxed" {...p} />,
