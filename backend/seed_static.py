@@ -198,8 +198,9 @@ LESSONS = {
       {"stdin": "15", "expected_stdout": "Menor de idade"},
     ],
     "quiz": [
-      {"question": "O que o bloco else executa?", "options": ["Sempre executa, independente da condição", "Executa quando a condição do if é falsa", "Executa antes do if", "Executa quando há erro"], "correct": 1},
-      {"question": "Por que usar int(input()) ao ler uma idade?", "options": ["Para formatar o texto", "Porque input() retorna string e precisamos de número inteiro", "Para tornar a leitura mais rápida", "Porque int() é obrigatório com input()"], "correct": 1},
+      {"question": "O comparador `>=` representa qual símbolo matemático?", "options": ["≠ (diferente)", "≤ (menor ou igual)", "= (igual)", "≥ (maior ou igual)"], "correct": 3},
+      {"question": "O bloco `else` executa em qual situação?", "options": ["Sempre, independente da condição", "Quando a condição do `if` é falsa", "Antes do `if`", "Quando há erro no código"], "correct": 1},
+      {"question": "Por que usamos `int(input())` ao ler uma idade?", "options": ["Para formatar o texto", "Para tornar a leitura mais rápida", "Porque `input()` retorna texto e precisamos de número inteiro", "Porque `int()` é obrigatório com `input()`"], "correct": 2},
     ],
   },
   {
