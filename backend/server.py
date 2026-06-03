@@ -541,12 +541,30 @@ async def admin_reseed(request: Request):
     try:
         import sys, importlib
         sys.path.insert(0, str(ROOT_DIR))
+        if "seed_static" in sys.modules:
+            del sys.modules["seed_static"]
         import seed_static as _seed
-        importlib.reload(_seed)
         await _seed.main()
         return {"ok": True, "message": "Seed executado com sucesso"}
     except Exception as e:
         raise HTTPException(500, f"Erro no seed: {e}")
+
+
+@api.post("/admin/update-lesson")
+async def admin_update_lesson(request: Request):
+    """Atualiza campos de uma lição diretamente no MongoDB via JSON."""
+    _check_admin(request)
+    body = await request.json()
+    slug = body.get("slug")
+    if not slug:
+        raise HTTPException(400, "slug obrigatório")
+    update_fields = {k: v for k, v in body.items() if k != "slug"}
+    if not update_fields:
+        raise HTTPException(400, "Nenhum campo para atualizar")
+    result = await db.lessons.update_one({"slug": slug}, {"$set": update_fields})
+    if result.matched_count == 0:
+        raise HTTPException(404, f"Lição '{slug}' não encontrada")
+    return {"ok": True, "slug": slug, "updated": list(update_fields.keys())}
 
 
 @api.get("/tracks")
