@@ -129,9 +129,10 @@ export default function JourneyPage() {
 
   const statusOf = (lesson) => {
     if (completed.has(lesson.slug)) return 'done';
-    if (lesson.requires_pro) return 'locked';
+    if (lesson.requires_pro) return 'locked_pro';
     if (lesson.order === firstIncompleteOrder) return 'active';
-    return 'unlocked';
+    // Lessons after the current active one are sequentially locked
+    return 'locked_seq';
   };
 
   const done = completed.size;
@@ -244,45 +245,71 @@ export default function JourneyPage() {
                     const status = statusOf(lesson);
                     const isDone = status === 'done';
                     const isActive = status === 'active';
-                    const isUnlocked = status === 'unlocked';
-                    const isLocked = status === 'locked';
+                    const isLockedPro = status === 'locked_pro';
+                    const isLockedSeq = status === 'locked_seq';
+                    const isLocked = isLockedPro || isLockedSeq;
                     const offsetX = [0, -80, 80, -40, 40, 0, -60, 60][i % 8];
+
+                    const hexStyle = {
+                      clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
+                      background: isDone ? '#A3E635' : isActive ? path.color : '#1C2235',
+                      boxShadow: isDone ? '0 8px 0 #84CC16' : isActive ? `0 8px 0 ${path.color}99` : '0 8px 0 #0f1425',
+                    };
+
+                    const nodeContent = (
+                      <>
+                        <div className="w-20 h-20 flex items-center justify-center" style={hexStyle}>
+                          {isDone
+                            ? <Check size={28} className="text-[#0A0F1E]" strokeWidth={3} />
+                            : isActive
+                              ? <Play size={24} className="text-white fill-white" />
+                              : <Lock size={22} className="text-slate-500" />}
+                        </div>
+                        {isLockedPro && (
+                          <span
+                            className="absolute -top-1 -right-1 px-1.5 py-0.5 rounded-md text-[9px] font-bold tracking-wider"
+                            style={{ background: '#A3E635', color: '#0A0F1E' }}
+                          >
+                            PRO
+                          </span>
+                        )}
+                      </>
+                    );
+
                     return (
                       <div key={lesson.slug} style={{ marginLeft: offsetX }} className="relative flex flex-col items-center">
                         {i > 0 && (
                           <div className="w-1 h-8" style={{ background: isLocked ? 'var(--cf-border)' : path.color }} />
                         )}
-                        <Link
-                          to={isLocked ? '/planos' : `/licao/${lesson.slug}`}
-                          data-testid={isLocked ? `lesson-locked-${lesson.slug}` : `lesson-node-${lesson.slug}`}
-                          className={`relative w-20 h-20 flex items-center justify-center transform transition hover:scale-110`}
-                          title={isLocked ? 'Lição Pro — clique para ver planos' : lesson.title}
-                        >
-                          <div
-                            className="w-20 h-20 flex items-center justify-center"
-                            style={{
-                              clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
-                              background: isDone ? '#A3E635' : isActive ? path.color : isUnlocked ? `${path.color}66` : '#1C2235',
-                              boxShadow: isDone ? '0 8px 0 #84CC16' : isActive ? `0 8px 0 ${path.color}99` : isUnlocked ? `0 8px 0 ${path.color}44` : '0 8px 0 #0f1425',
-                            }}
+
+                        {/* Nó clicável: concluído, ativo ou Pro (redireciona para planos) */}
+                        {(isDone || isActive || isLockedPro) ? (
+                          <Link
+                            to={isLockedPro ? '/planos' : `/licao/${lesson.slug}`}
+                            data-testid={isLockedPro ? `lesson-locked-${lesson.slug}` : `lesson-node-${lesson.slug}`}
+                            className="relative w-20 h-20 flex items-center justify-center transform transition hover:scale-110"
+                            title={isLockedPro ? 'Lição Pro — clique para ver planos' : lesson.title}
                           >
-                            {isDone ? <Check size={28} className="text-[#0A0F1E]" strokeWidth={3} /> : (isActive || isUnlocked) ? <Play size={24} className="text-white fill-white" /> : <Lock size={22} className="text-slate-500" />}
+                            {nodeContent}
+                          </Link>
+                        ) : (
+                          /* Nó travado sequencialmente — não clicável */
+                          <div
+                            data-testid={`lesson-seq-locked-${lesson.slug}`}
+                            className="relative w-20 h-20 flex items-center justify-center cursor-not-allowed opacity-60"
+                            title="Complete a lição anterior para desbloquear"
+                          >
+                            {nodeContent}
                           </div>
-                          {isLocked && (
-                            <span
-                              className="absolute -top-1 -right-1 px-1.5 py-0.5 rounded-md text-[9px] font-bold tracking-wider"
-                              style={{ background: '#A3E635', color: '#0A0F1E' }}
-                            >
-                              PRO
-                            </span>
-                          )}
-                        </Link>
+                        )}
+
                         <span className={`mt-3 text-sm font-bold max-w-[220px] text-center ${isLocked ? 'text-slate-500' : 'text-white'}`}>{lesson.title}</span>
                         {isActive && (
                           <span className="mt-1.5 px-3 py-1 rounded-full text-[10px] font-bold tracking-wider text-white" style={{ background: path.color }}>
                             CONTINUAR
                           </span>
-                        )}                      </div>
+                        )}
+                      </div>
                     );
                   })}
                 </div>
