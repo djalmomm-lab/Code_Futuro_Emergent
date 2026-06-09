@@ -622,7 +622,7 @@ export default function Lesson() {
             <h2 className="font-display text-3xl font-bold text-white mb-2">Atividade concluída!</h2>
             <p className="text-slate-400 mb-8">Você completou o exercício e respondeu todas as perguntas corretamente.</p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              {nextSlug && (
+              {nextSlug ? (
                 <Link
                   to={`/licao/${nextSlug}`}
                   className="inline-flex items-center justify-center gap-2 px-8 py-3 rounded-xl font-bold text-base"
@@ -630,7 +630,31 @@ export default function Lesson() {
                 >
                   Próxima atividade <ChevronRight size={18} />
                 </Link>
-              )}
+              ) : (() => {
+                const NEXT_PATH = {
+                  'python-zero': { slug: 'javascript',  name: 'JavaScript' },
+                  'javascript':  { slug: 'html-css',    name: 'HTML & CSS' },
+                  'html-css':    { slug: 'sql',         name: 'SQL' },
+                  'sql':         { slug: 'typescript',  name: 'TypeScript' },
+                  'typescript':  { slug: 'java',        name: 'Java' },
+                  'java':        { slug: 'cpp',         name: 'C++' },
+                  'cpp':         { slug: 'go',          name: 'Go' },
+                  'go':          { slug: 'ai-prompts',  name: 'AI Prompts' },
+                };
+                const next = NEXT_PATH[lesson.path_slug];
+                return next ? (
+                  <div className="flex flex-col items-center gap-3 w-full">
+                    <p className="text-[#A3E635] font-bold text-sm">🏆 Você concluiu esta trilha!</p>
+                    <Link
+                      to={`/jornada/${next.slug}`}
+                      className="inline-flex items-center justify-center gap-2 px-8 py-3 rounded-xl font-bold text-base w-full sm:w-auto"
+                      style={{ background: '#A3E635', color: '#0A0F1E' }}
+                    >
+                      Começar {next.name} <ChevronRight size={18} />
+                    </Link>
+                  </div>
+                ) : null;
+              })()}
               <button
                 onClick={() => navigate(`/jornada/${lesson.path_slug}`)}
                 className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl border border-slate-600 text-slate-300 font-bold text-base hover:border-slate-400"
