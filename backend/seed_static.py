@@ -2039,13 +2039,15 @@ def _slug_base(title: str) -> str:
 
 def _build_doc(path_cfg: dict, les: dict) -> dict:
     order = les["order"]
+    slug = les.get("slug") or f"{path_cfg['slug']}-{order:02d}-{_slug_base(les['title'])}"
     return {
         "id": str(uuid.uuid4()),
-        "slug": f"{path_cfg['slug']}-{order:02d}-{_slug_base(les['title'])}",
+        "slug": slug,
         "path_slug": path_cfg["slug"],
         "order": order,
         "title": les["title"],
         "chapter": les.get("chapter", "Capítulo 1"),
+        "theory": les.get("theory", ""),
         "instruction_pt": les.get("instruction_pt", ""),
         "instruction_en": les.get("instruction_en", ""),
         "instruction_es": les.get("instruction_es", ""),
