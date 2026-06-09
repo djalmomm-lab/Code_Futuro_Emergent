@@ -162,7 +162,7 @@ export default function JourneyPage() {
           >
             <ArrowLeft size={16} /> Catálogo
           </button>
-          {pct === 100 && nextPath && (
+          {done >= total && total > 0 && nextPath && (
             <Link
               to={`/jornada/${nextPath.slug}`}
               className="flex items-center gap-2 text-sm font-bold px-4 py-2 rounded-xl transition hover:opacity-90"
