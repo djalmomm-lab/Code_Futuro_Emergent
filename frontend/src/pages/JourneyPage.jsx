@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Lock, Check, Play, Flame, Star, Zap, Crown, RefreshCw, AlertCircle } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Lock, Check, Play, Flame, Star, Zap, Crown, RefreshCw, AlertCircle } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { useLanguage } from '../context/LanguageContext';
@@ -138,13 +138,39 @@ export default function JourneyPage() {
   const total = lessons.length || 1;
   const pct = (done / total) * 100;
 
+  const PATH_NEXT = {
+    'python-zero': { slug: 'javascript',  name: 'JavaScript' },
+    'javascript':  { slug: 'html-css',    name: 'HTML & CSS' },
+    'html-css':    { slug: 'sql',         name: 'SQL' },
+    'sql':         { slug: 'typescript',  name: 'TypeScript' },
+    'typescript':  { slug: 'java',        name: 'Java' },
+    'java':        { slug: 'cpp',         name: 'C++' },
+    'cpp':         { slug: 'go',          name: 'Go' },
+    'go':          { slug: 'ai-prompts',  name: 'AI Prompts' },
+  };
+  const nextPath = PATH_NEXT[slug];
+
   return (
     <div className="min-h-screen" style={{ background: 'var(--cf-space)' }}>
       <Navbar />
       <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <button onClick={() => navigate('/catalogo')} className="text-slate-400 hover:text-white flex items-center gap-2 text-sm font-semibold mb-6">
-          <ArrowLeft size={16} /> Catálogo
-        </button>
+        <div className="flex items-center justify-between mb-6">
+          <button
+            onClick={() => navigate('/catalogo')}
+            className="text-slate-400 hover:text-white flex items-center gap-2 text-sm font-semibold"
+          >
+            <ArrowLeft size={16} /> Catálogo
+          </button>
+          {pct === 100 && nextPath && (
+            <Link
+              to={`/jornada/${nextPath.slug}`}
+              className="flex items-center gap-2 text-sm font-bold px-4 py-2 rounded-xl transition hover:opacity-90"
+              style={{ background: '#A3E635', color: '#0A0F1E' }}
+            >
+              {nextPath.name} <ArrowRight size={16} />
+            </Link>
+          )}
+        </div>
 
         <div className="cf-card p-6 md:p-8 relative overflow-hidden">
           <div className="absolute -top-20 -right-20 w-60 h-60 rounded-full blur-3xl opacity-50" style={{ background: path.color }} />
