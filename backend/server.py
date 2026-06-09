@@ -2,7 +2,7 @@
 
 Single-file for MVP - easy to split later.
 """
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta, date, timezone
 from pathlib import Path
 from typing import Optional, Literal
 import os
@@ -141,6 +141,15 @@ def is_free_lesson(lesson: dict) -> bool:
     return lesson.get("order", 0) <= FREE_LESSONS_PER_PATH
 
 
+# Brasil nao usa horario de verao desde 2019 -> UTC-3 fixo.
+BR_TZ = timezone(timedelta(hours=-3))
+
+
+def today_br() -> date:
+    """Data atual no fuso de Brasilia (UTC-3), usado para o calculo de streak."""
+    return datetime.now(BR_TZ).date()
+
+
 def calc_age(birth_date: str) -> int:
     bd = datetime.strptime(birth_date, "%Y-%m-%d").date()
     today = date.today()
@@ -211,8 +220,8 @@ async def ensure_progress(user_id: str) -> dict:
             changed["energy"] = prog["energy"]
             changed["last_energy_reset"] = prog["last_energy_reset"]
 
-    # ── Zera xp_today se mudou o dia ────────────────────────────────────────
-    today = date.today().isoformat()
+    # ── Zera xp_today se mudou o dia (fuso de Brasilia) ─────────────────────
+    today = today_br().isoformat()
     if prog.get("last_streak_date") and prog.get("last_streak_date") != today and prog.get("xp_today", 0) > 0:
         prog["xp_today"] = 0
         changed["xp_today"] = 0
@@ -381,10 +390,10 @@ async def complete_lesson(data: CompleteLessonIn, user=Depends(current_user)):
         return {"already_completed": True, "progress": serialize(prog), "xp_earned": 0}
 
     xp = 50
-    today = date.today().isoformat()
+    today = today_br().isoformat()
     new_streak = prog["streak"]
     if prog.get("last_streak_date") != today:
-        if prog.get("last_streak_date") == (date.today() - timedelta(days=1)).isoformat():
+        if prog.get("last_streak_date") == (today_br() - timedelta(days=1)).isoformat():
             new_streak += 1
         else:
             new_streak = 1
