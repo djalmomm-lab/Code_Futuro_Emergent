@@ -940,11 +940,11 @@ LESSONS = {
     "instruction_pt": "Com `convidados = [\"Ana\", \"Carlos\", \"Beatriz\"]`, faça (na ordem):\n\n1. Adicione `\"Diego\"` com `push()`\n2. Exiba o `length` → `4`\n3. Exiba se `\"Carlos\"` está na lista → `true`\n4. Exiba se `\"Pedro\"` está na lista → `false`\n\nVeja um exemplo com outro array:\n\n```javascript\nconst frutas = [\"maca\", \"banana\"];\nfrutas.push(\"uva\");\nconsole.log(frutas.length);             // 3\nconsole.log(frutas.includes(\"banana\")); // true\nconsole.log(frutas.includes(\"pera\"));   // false\n```",
     "instruction_en": "Push Diego to the array, then display length, includes Carlos, includes Pedro.",
     "instruction_es": "Agrega Diego con push, luego muestra length, includes Carlos, includes Pedro.",
-    "starter_code": "const convidados = [\"Ana\", \"Carlos\", \"Beatriz\"];\nconvidados.push(\"Diego\");\nconsole.log(convidados.length);\nconsole.log(convidados.includes(\"Carlos\"));\nconsole.log(convidados.includes(\"Pedro\"));\n",
-    "hint": "O código já está quase completo — execute e observe o resultado.",
+    "starter_code": "const convidados = [\"Ana\", \"Carlos\", \"Beatriz\"];\nconvidados.___(\"Diego\");\nconsole.log(convidados.___);\nconsole.log(convidados.includes(___));\nconsole.log(convidados.includes(___));\n",
+    "hint": "Complete com `push`, `length` e `includes(...)`.",
     "hints": [
-      "O código já está correto — execute e observe: `push` adiciona Diego, `length` vira 4.",
-      "`includes(\"Carlos\")` retorna `true`; `includes(\"Pedro\")` retorna `false` — Pedro não está na lista.",
+      "Use `push(\"Diego\")` para adicionar e `length` para exibir o tamanho da lista.",
+      "Complete com `includes(\"Carlos\")` e `includes(\"Pedro\")` para verificar se cada nome está na lista.",
     ],
     "tests": [
       {
