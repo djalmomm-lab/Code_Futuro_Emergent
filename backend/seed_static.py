@@ -717,7 +717,7 @@ LESSONS = {
     "title": "for loop",
     "chapter": "Capítulo 2: Controle de Fluxo",
     "theory": "O `for` repete um bloco um número determinado de vezes — perfeito quando você sabe quantas iterações precisa.\n\n## Como funciona\n\n```javascript\nfor (let i = 1; i <= 5; i++) {\n  console.log(`Passo ${i}`);\n}\n// Passo 1  Passo 2  Passo 3  Passo 4  Passo 5\n```\n\nO `for` tem três partes separadas por `;`:\n- **Início**: `let i = 1` — cria e inicializa o contador\n- **Condição**: `i <= 5` — enquanto isso for true, o loop continua\n- **Incremento**: `i++` — atualiza o contador a cada volta\n\n## Acumulando valores\n\n```javascript\nlet soma = 0;\nfor (let i = 1; i <= 4; i++) {\n  soma += i;\n}\nconsole.log(soma);  // 10 (1+2+3+4)\n```\n\n## No exercício\n\nComplete os dois `___` no `for` para exibir a tabuada do 4 de 1 a 5.",
-    "instruction_pt": "Complete o `for` para exibir a tabuada do 4, do 1 ao 5 (veja a saída esperada abaixo).",
+    "instruction_pt": "Complete o `for` para exibir a **tabuada do 4**, do 1 ao 5 (veja a saída esperada abaixo).\n\nVeja um exemplo com a tabuada do 2:\n\n```javascript\nfor (let i = 1; i <= 3; i++) {\n  console.log(`2 x ${i} = ${2 * i}`);\n}\n```",
     "instruction_en": "Complete the for loop to display the multiplication table of 4 from 1 to 5.",
     "instruction_es": "Completa el bucle for para mostrar la tabla del 4 del 1 al 5.",
     "starter_code": "// Exiba a tabuada do 4 de 1 a 5\nfor (let i = ___; i <= ___; i++) {\n  console.log(`4 x ${i} = ${4 * i}`);\n}\n",
