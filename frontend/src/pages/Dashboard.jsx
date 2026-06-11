@@ -60,7 +60,11 @@ export default function Dashboard() {
   }, [navigate]);
 
   const progressPct = Math.min(100, (progress.xpToday / progress.dailyGoal) * 100);
-  const featuredPath = paths[0];
+  // Prioriza a trilha em andamento (iniciada, mas não concluída);
+  // caso contrário, a primeira trilha ainda não iniciada; por fim, a primeira da lista.
+  const inProgress = paths.find((p) => p.completed_lessons > 0 && p.completed_lessons < p.total_lessons);
+  const notStarted = paths.find((p) => !p.completed_lessons);
+  const featuredPath = inProgress || notStarted || paths[0];
 
   return (
     <div className="min-h-screen" style={{ background: 'var(--cf-space)' }}>

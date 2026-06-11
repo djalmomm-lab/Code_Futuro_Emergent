@@ -577,13 +577,19 @@ async def admin_update_lesson(request: Request):
 
 
 @api.get("/tracks")
-async def tracks():
+async def tracks(user=Depends(optional_user)):
     """List learning paths from DB (seeded by seed_lessons.py)."""
     cursor = db.paths.find({}, {"_id": 0})
     rows = await cursor.to_list(100)
     # Sort: highlight common beginners first
     order = ["python-zero", "javascript", "html-css", "sql", "typescript", "java", "cpp", "go", "ai-prompts"]
     rows.sort(key=lambda r: order.index(r["slug"]) if r["slug"] in order else 99)
+
+    if user:
+        for row in rows:
+            st = await _track_completion_status(user["id"], row["slug"])
+            row["completed_lessons"] = st["completed"]
+
     return {"paths": rows}
 
 
