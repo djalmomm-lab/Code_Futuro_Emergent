@@ -454,6 +454,25 @@ async def consume_energy(user=Depends(current_user)):
     return {"energy": prog["energy"], "max_energy": prog["max_energy"]}
 
 
+# Perfis fictícios para a liga não parecer vazia enquanto a base de usuários
+# cresce. São substituídos automaticamente conforme usuários reais sobem no
+# ranking (ordenação por xp) ou quando o número de usuários reais atinge o limite.
+LEAGUE_PLACEHOLDERS = [
+    {"user_id": "seed-01", "name": "Marina Souza", "xp": 3120, "streak": 14, "level": 9},
+    {"user_id": "seed-02", "name": "Lucas Almeida", "xp": 2840, "streak": 9, "level": 8},
+    {"user_id": "seed-03", "name": "Beatriz Lima", "xp": 2510, "streak": 21, "level": 7},
+    {"user_id": "seed-04", "name": "Gabriel Costa", "xp": 2275, "streak": 5, "level": 7},
+    {"user_id": "seed-05", "name": "Ana Ferreira", "xp": 2030, "streak": 7, "level": 6},
+    {"user_id": "seed-06", "name": "Pedro Henrique", "xp": 1840, "streak": 3, "level": 6},
+    {"user_id": "seed-07", "name": "Camila Rocha", "xp": 1605, "streak": 12, "level": 5},
+    {"user_id": "seed-08", "name": "Rafael Santos", "xp": 1390, "streak": 2, "level": 5},
+    {"user_id": "seed-09", "name": "Juliana Pereira", "xp": 1180, "streak": 6, "level": 4},
+    {"user_id": "seed-10", "name": "Thiago Martins", "xp": 980, "streak": 1, "level": 4},
+    {"user_id": "seed-11", "name": "Larissa Oliveira", "xp": 820, "streak": 4, "level": 3},
+    {"user_id": "seed-12", "name": "Bruno Carvalho", "xp": 690, "streak": 1, "level": 3},
+]
+
+
 @api.get("/leaderboard")
 async def leaderboard(period: str = "week", limit: int = 20):
     cursor = db.progress.find().sort("xp_total", -1).limit(limit)
@@ -469,7 +488,15 @@ async def leaderboard(period: str = "week", limit: int = 20):
             "streak": p["streak"],
             "level": p["level"],
         })
-    return {"period": period, "rows": rows}
+
+    if len(rows) < limit:
+        for bot in LEAGUE_PLACEHOLDERS:
+            if len(rows) >= limit:
+                break
+            rows.append(bot)
+        rows.sort(key=lambda r: r["xp"], reverse=True)
+
+    return {"period": period, "rows": rows[:limit]}
 
 
 ADMIN_SECRET = os.environ.get("ADMIN_SECRET", "")
