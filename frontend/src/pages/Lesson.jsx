@@ -701,13 +701,23 @@ export default function Lesson() {
             </ReactMarkdown>
           </div>
 
-          {expected && (
+          {expected && !isHTML && (
             <div className="mt-5 rounded-xl overflow-hidden border" style={{ borderColor: 'rgba(163,230,53,0.2)' }}>
               <div className="px-4 py-2 text-xs font-bold uppercase tracking-wider text-[#A3E635]" style={{ background: '#0d1425' }}>
                 Saída esperada
               </div>
               <div className="p-4 font-code text-sm" style={{ background: 'var(--cf-panel-light)' }}>
                 <pre className="text-[#A3E635] whitespace-pre-wrap">{expected}</pre>
+              </div>
+            </div>
+          )}
+          {isHTML && (
+            <div className="mt-5 rounded-xl overflow-hidden border" style={{ borderColor: 'rgba(163,230,53,0.2)' }}>
+              <div className="px-4 py-2 text-xs font-bold uppercase tracking-wider text-[#A3E635]" style={{ background: '#0d1425' }}>
+                Como será validado
+              </div>
+              <div className="p-4 text-sm text-slate-400" style={{ background: 'var(--cf-panel-light)' }}>
+                Seu código HTML será verificado automaticamente. Use a aba <span className="text-slate-200 font-semibold">Preview</span> para conferir o resultado visual antes de executar.
               </div>
             </div>
           )}
@@ -789,7 +799,12 @@ export default function Lesson() {
                     {test.passed ? <CheckCircle2 size={16} className="text-[#A3E635] mt-0.5" /> : <XCircle size={16} className="text-slate-500 mt-0.5" />}
                     <div className="flex-1 min-w-0">
                       <div className="text-slate-200 font-semibold">Teste #{i + 1}</div>
-                      <div className="text-xs text-slate-500 font-code mt-0.5 whitespace-pre-wrap">expected: {test.expected_stdout || test.expected}</div>
+                      {!isHTML && (
+                        <div className="text-xs text-slate-500 font-code mt-0.5 whitespace-pre-wrap">expected: {test.expected_stdout || test.expected}</div>
+                      )}
+                      {isHTML && (
+                        <div className="text-xs text-slate-500 mt-0.5">Validação automática do HTML — clique em Executar para verificar.</div>
+                      )}
                     </div>
                   </div>
                 ))
