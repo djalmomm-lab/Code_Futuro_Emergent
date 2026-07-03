@@ -586,6 +586,14 @@ async def admin_reseed(request: Request):
         raise HTTPException(500, f"Erro no seed: {e}")
 
 
+@api.delete("/admin/clear-lessons/{path_slug}")
+async def admin_clear_lessons(path_slug: str, request: Request):
+    """Remove todas as lições de uma trilha (use antes de reseed quando orders mudam)."""
+    _check_admin(request)
+    result = await db.lessons.delete_many({"path_slug": path_slug})
+    return {"ok": True, "deleted": result.deleted_count, "path_slug": path_slug}
+
+
 @api.post("/admin/update-lesson")
 async def admin_update_lesson(request: Request):
     """Atualiza campos de uma lição diretamente no MongoDB via JSON."""
