@@ -19,6 +19,7 @@ import Certificates from './pages/Certificates';
 import VerifyCertificate from './pages/VerifyCertificate';
 import Schools from './pages/Schools';
 import ClassDetail from './pages/ClassDetail';
+import AdminPanel from './pages/AdminPanel';
 
 function App() {
   return (
@@ -46,6 +47,7 @@ function App() {
             <Route path="/verificar/:certId" element={<VerifyCertificate />} />
             <Route path="/escolas" element={<Schools />} />
             <Route path="/escolas/:classId" element={<ClassDetail />} />
+            <Route path="/admin" element={<AdminPanel />} />
           </Routes>
         </BrowserRouter>
         <Toaster position="top-right" richColors />
